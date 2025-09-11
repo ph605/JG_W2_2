@@ -40,6 +40,13 @@ public class TileBehavior : MonoBehaviour
                 if (obstacle != null)
                 {
                     obstacle.transform.SetParent(transform);
+
+                    Vector3 finalScale = obstacleData.scale;
+                    if (finalScale == Vector3.zero)
+                        finalScale = Vector3.one;
+
+                    obstacle.transform.localScale = finalScale;
+                    Debug.Log(finalScale.ToString());
                 }
             }
         }

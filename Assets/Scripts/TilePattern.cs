@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 
-public class TilePattern : MonoBehaviour
+[CreateAssetMenu(fileName = "NewTilePattern", menuName = "Map/Tile Pattern")]
+public class TilePattern : ScriptableObject
 {
     [Tooltip("이 패턴에 배치될 장애물들의 정보 배열")]
     public ObstacleData[] obstacleLayout;

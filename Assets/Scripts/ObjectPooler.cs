@@ -29,7 +29,7 @@ public class ObjectPooler : MonoBehaviour
         // 2. Instance가 아직 없다면, 이 오브젝트를 유일한 Instance로 지정합니다.
         Instance = this;
         InitPool();
-        // 3. ★★★ 이 오브젝트를 씬이 바뀌어도 파괴되지 않도록 설정합니다. ★★★
+        // 3. 이 오브젝트를 씬이 바뀌어도 파괴되지 않도록 설정합니다.
         DontDestroyOnLoad(gameObject);
     }
 
@@ -62,10 +62,10 @@ public class ObjectPooler : MonoBehaviour
 
     public GameObject SpawnFromPool(GameObject prefab, Vector3 position, Quaternion rotation)
     {
-        Debug.Log("SpawnFromPool " + prefab);
+        // Debug.Log("SpawnFromPool " + prefab);
         if (poolDictionary.ContainsKey(prefab) == false)
         {
-            Debug.LogWarning("Pool with name " + prefab.name + " doesn't exist.");
+            // Debug.LogWarning("Pool with name " + prefab.name + " doesn't exist.");
             return null;
         }
 
@@ -90,14 +90,14 @@ public class ObjectPooler : MonoBehaviour
         return objectToSpawn;
     }
 
-    // ▼▼▼ 반납 함수가 태그 대신 GameObject를 받도록 변경 ▼▼▼
+    // 반납 함수가 태그 대신 GameObject를 받도록 변경
     public void ReturnToPool(GameObject objectToReturn)
     {
         // 1. 반납할 오브젝트의 '출신 정보'를 확인
         PooledObjectInfo info = objectToReturn.GetComponent<PooledObjectInfo>();
         if (info == null)
         {
-            Debug.LogWarning("Trying to return an object that was not pooled: " + objectToReturn.name);
+            // Debug.LogWarning("Trying to return an object that was not pooled: " + objectToReturn.name);
             Destroy(objectToReturn);
             return;
         }
@@ -106,7 +106,7 @@ public class ObjectPooler : MonoBehaviour
         GameObject originalPrefab = info.OriginalPrefab;
         if (!poolDictionary.ContainsKey(originalPrefab))
         {
-            Debug.LogWarning("Pool for prefab " + originalPrefab.name + " doesn't exist.");
+            // Debug.LogWarning("Pool for prefab " + originalPrefab.name + " doesn't exist.");
             Destroy(objectToReturn);
             return;
         }

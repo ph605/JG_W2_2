@@ -35,13 +35,6 @@ public class MapGenerator : MonoBehaviour
         GameObject prefabInPooler = ObjectPooler.Instance.pools[0].prefab;
         // MapGenerator 자신에게 등록된 프리팹
         GameObject prefabInGenerator = this.emptyTilePrefab;
-
-        // 두 변수가 같은 메모리상의 오브젝트를 참조하는지 직접 비교
-        Debug.Log("두 프리팹은 같은 오브젝트인가? " + (prefabInPooler == prefabInGenerator));
-
-        // 각 오브젝트의 고유 ID를 출력하여 비교
-        Debug.Log("Pooler 프리팹 ID: " + prefabInPooler.GetInstanceID());
-        Debug.Log("Generator 프리팹 ID: " + prefabInGenerator.GetInstanceID());
     }
 
     void Update()

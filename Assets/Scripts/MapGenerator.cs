@@ -15,6 +15,15 @@ public class MapGenerator : MonoBehaviour
     public float tileLength = 50f;
     public int visibleTilesOnScreen = 5;
 
+    [Header("결승 지점 설정")]
+    [Tooltip("결승 지점까지 생성할 일반 타일의 총 개수")]
+    public int totalTilesToGoal = 30;
+    [Tooltip("결승 지점 역할을 할 타일 프리팹")]
+    public GameObject finishLinePrefab;
+
+    private int tilesSpawnedCount = 1;
+    private bool isGoalSpawned = false;
+
     private float spawnZ = 0f;
     private List<GameObject> activeTiles = new List<GameObject>();
 
@@ -39,7 +48,12 @@ public class MapGenerator : MonoBehaviour
 
     void Update()
     {
-        if (playerTransform.position.z - tileLength > spawnZ - (visibleTilesOnScreen * tileLength))
+        // 목표 지점이 생기기 전까지, 맵 생성
+        if (isGoalSpawned)
+            return;
+
+        float tileRecycleTriggerZ = spawnZ - (visibleTilesOnScreen * tileLength) + tileLength;
+        if (playerTransform.position.z > tileRecycleTriggerZ)
         {
             Debug.Log("Spawn");
             SpawnTile();
@@ -51,18 +65,39 @@ public class MapGenerator : MonoBehaviour
     }
     private void SpawnTile()
     {
+        // 결승 지점 맵 생성
+        if (tilesSpawnedCount >= totalTilesToGoal)
+        {
+            isGoalSpawned = true;
+            GameObject finishTile = Instantiate(finishLinePrefab, Vector3.forward * spawnZ, Quaternion.identity);
+            activeTiles.Add(finishTile);
+            spawnZ += tileLength;
+
+            return;
+        }
+
         // 1. 비어있는 기본 타일을 풀에서 가져옴
         GameObject newTile = ObjectPooler.Instance.SpawnFromPool(emptyTilePrefab, Vector3.forward * spawnZ, Quaternion.identity);
         activeTiles.Add(newTile);
         spawnZ += tileLength;
 
-        // 
+        // 현재 패턴이 없으면, 
         if (tilePatterns.Count == 0)
             return;
 
-        // 2. 패턴 목록에서 무작위로 패턴을 하나 선택
-        TilePattern selectedPattern = tilePatterns[Random.Range(0, tilePatterns.Count)];
-
+        TilePattern selectedPattern;
+        // 2. 순서대로 모든 패턴 선택
+        if (tilesSpawnedCount < tilePatterns.Count)
+        {
+            // 리스트의 순서에 따라 패턴을 선택
+            selectedPattern = tilePatterns[tilesSpawnedCount];
+        }
+        // 나중에는 무작위 패턴 선택
+        else
+        {
+            selectedPattern = tilePatterns[Random.Range(0, tilePatterns.Count)];
+        }
+        ++tilesSpawnedCount;
         // 3. 타일에 붙어있는 TileBehavior 스크립트에게 선택된 패턴으로 장애물을 생성하라고 명령
         newTile.GetComponent<TileBehavior>().GenerateObstacles(selectedPattern);
     }

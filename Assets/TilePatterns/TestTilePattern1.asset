@@ -14,6 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   obstacleLayout:
   - type: 0
-    position: {x: 0, y: 0, z: 0}
+    position: {x: 10, y: 2, z: 0}
     eulerAngles: {x: 0, y: 0, z: 0}
     scale: {x: 0, y: 0, z: 0}
+  - type: 0
+    position: {x: 15, y: 10, z: 30}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 3, y: 3, z: 3}
+  - type: 1
+    position: {x: -20, y: 5, z: -30}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 2, y: 2, z: 2}

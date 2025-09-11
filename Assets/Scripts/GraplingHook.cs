@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Rider.Unity.Editor;
@@ -5,6 +6,7 @@ using UnityEngine;
 
 public class GrapplingHook : MonoBehaviour
 {
+    public String currentTag = "Top";
     public LayerMask layerMask;
     RaycastHit hit;
     LineRenderer lr;
@@ -36,23 +38,38 @@ public class GrapplingHook : MonoBehaviour
     {
         HookPoint();
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && !isSwing)
         {
             StartSwing();
             lastMousePos = Input.mousePosition; // 드래그 시작 위치
         }
-        else if (Input.GetMouseButtonUp(0))
+        else if (Input.GetMouseButtonUp(0) && isSwing)
         {
             EndSwing();
         }
 
         if (isSwing)
         {
-            UpdateSpringForceByDrag();
+            if (Input.GetKey(KeyCode.W))
+            {
+                if (currentTag == "Top")
+                {
+                    rb.AddForce(Vector3.forward * 0.8f,ForceMode.Force);
+                }
+                if (currentTag =="Left")
+                {
+                    rb.AddForce(Vector3.forward * 2f, ForceMode.Force);
+                    rb.AddForce(Vector3.up * 2.0f,ForceMode.Force);
+                }
+                if (currentTag =="Right")
+                {
+                    rb.AddForce(Vector3.forward * 2f, ForceMode.Force);
+                    rb.AddForce(Vector3.up * 2.0f,ForceMode.Force);
+                }
+            }
+            
         }
-
         DrawRope();
-
         lastMousePos = Input.mousePosition; // 매 프레임 갱신
     }
     void UpdateSpringForceByDrag()
@@ -79,7 +96,7 @@ public class GrapplingHook : MonoBehaviour
             // float dragMagnitude = mouseDelta.magnitude;
             // float mappedValue = Mathf.Clamp(mouseDelta.y * 2f, 5f, 20f);
             rb.linearDamping = 0;
-            rb.AddForce(Vector3.forward * 0.02f, ForceMode.Impulse);
+            rb.AddForce(Vector3.forward * 0.04f, ForceMode.Force);
             
         if (sj != null)
             {
@@ -131,7 +148,18 @@ public class GrapplingHook : MonoBehaviour
         isSwing = true;
 
         spot = hit.point;   // 로프를 연결할 지점 설정
-
+        if (hit.transform.CompareTag("Top"))
+        {
+            currentTag = "Top";
+        }
+        if (hit.transform.CompareTag("Left"))
+        {
+            currentTag = "Left";
+        }
+        if (hit.transform.CompareTag("Right"))
+        {
+            currentTag = "Right";
+        }
         lr.positionCount = 2;                   // 라인 렌더러의 점 개수 설정
         lr.SetPosition(0, transform.position);  // 첫 번째 점을 플레이어 위치로 설정
         lr.SetPosition(1, hit.point);           // 두 번째 점을 레이캐스트 위치로 설정
@@ -152,6 +180,10 @@ public class GrapplingHook : MonoBehaviour
 
     void EndSwing()
     {
+        rb.linearVelocity = new Vector3(rb.linearVelocity.x * 0.1f,
+        rb.linearVelocity.y,
+        rb.linearVelocity.z)
+         ;
         isSwing = false;
         lr.positionCount = 0;   // 라인 렌더러의 점 개수를 0으로 설정하여 선을 지움
         Destroy(sj);            // 스프링 조인트 컴포넌트 파괴

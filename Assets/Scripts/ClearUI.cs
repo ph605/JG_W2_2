@@ -1,4 +1,4 @@
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,15 +13,16 @@ public class ClearUI : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
-        buttonLobby.onClick.AddListener(() => LoadScene(SceneType.Lobby));
-        buttonRestart.onClick.AddListener(() => LoadScene(SceneManager.instance.GetCurrentStage()));
+        buttonLobby.onClick.AddListener(() => SceneManager.instance.LoadLobbyScene());
+        buttonRestart.onClick.AddListener(() => SceneManager.instance.ReloadCurrentScene());
         buttonNextStage.onClick.AddListener(() => SceneManager.instance.LoadNextScene());
         buttonExit.onClick.AddListener(() => SceneManager.instance.QuitGame());
     }
 
-    private void LoadScene(SceneType scene)
+    public void SetGame(bool isClear)
     {
-        SceneManager.instance.LoadSceneByName(scene.ToString());
+        textTitle.text = isClear ? "Clear" : "Fail";
+        buttonNextStage.enabled = isClear;
     }
 
 }

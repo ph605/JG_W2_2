@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 
 public class LobbyManager : MonoBehaviour
@@ -11,30 +11,30 @@ public class LobbyManager : MonoBehaviour
 
     void Awake()
     {
-        // 2. °¢ ¹öÆ°ÀÌ Å¬¸¯µÇ¾úÀ» ¶§ ½ÇÇàµÉ ÇÔ¼ö¸¦ ¿¬°á(µî·Ï)ÇÕ´Ï´Ù.
-        // AddListener¸¦ »ç¿ëÇÏ¸é ÀÎ½ºÆåÅÍÀÇ OnClick()À» ¼³Á¤ÇÒ ÇÊ¿ä°¡ ¾ø½À´Ï´Ù.
+        // 2. ê° ë²„íŠ¼ì´ í´ë¦­ë˜ì—ˆì„ ë•Œ ì‹¤í–‰ë  í•¨ìˆ˜ë¥¼ ì—°ê²°(ë“±ë¡)í•©ë‹ˆë‹¤.
+        // AddListenerë¥¼ ì‚¬ìš©í•˜ë©´ ì¸ìŠ¤íŽ™í„°ì˜ OnClick()ì„ ì„¤ì •í•  í•„ìš”ê°€ ì—†ìŠµë‹ˆë‹¤.
 
-        // Æ©Åä¸®¾ó ¹öÆ° Å¬¸¯ ½Ã Tutorial ¾À ·Îµå
+        // íŠœí† ë¦¬ì–¼ ë²„íŠ¼ í´ë¦­ ì‹œ Tutorial ì”¬ ë¡œë“œ
         buttonTutorial.onClick.AddListener(() => LoadScene(SceneType.Tutorial));
 
-        // 1½ºÅ×ÀÌÁö ¹öÆ° Å¬¸¯ ½Ã Stage1 ¾À ·Îµå
+        // 1ìŠ¤í…Œì´ì§€ ë²„íŠ¼ í´ë¦­ ì‹œ Stage1 ì”¬ ë¡œë“œ
         buttonStage1.onClick.AddListener(() => LoadScene(SceneType.Stage1));
 
-        // 2½ºÅ×ÀÌÁö ¹öÆ° Å¬¸¯ ½Ã Stage2 ¾À ·Îµå
+        // 2ìŠ¤í…Œì´ì§€ ë²„íŠ¼ í´ë¦­ ì‹œ Stage2 ì”¬ ë¡œë“œ
         buttonStage2.onClick.AddListener(() => LoadScene(SceneType.Stage2));
 
-        // 3½ºÅ×ÀÌÁö ¹öÆ° Å¬¸¯ ½Ã Stage3 ¾À ·Îµå
+        // 3ìŠ¤í…Œì´ì§€ ë²„íŠ¼ í´ë¦­ ì‹œ Stage3 ì”¬ ë¡œë“œ
         buttonStage3.onClick.AddListener(() => LoadScene(SceneType.Stage3));
 
-        // Ã§¸°Áö ¹öÆ° Å¬¸¯ ½Ã StageChallenge ¾À ·Îµå
+        // ì±Œë¦°ì§€ ë²„íŠ¼ í´ë¦­ ì‹œ StageChallenge ì”¬ ë¡œë“œ
         buttonStageChallenge.onClick.AddListener(() => LoadScene(SceneType.StageChallenge));
     }
 
-    // 3. ¾ÀÀ» ½ÇÁ¦·Î ·ÎµåÇÏ´Â ÇÔ¼öÀÔ´Ï´Ù.
+    // 3. ì”¬ì„ ì‹¤ì œë¡œ ë¡œë“œí•˜ëŠ” í•¨ìˆ˜ìž…ë‹ˆë‹¤.
     private void LoadScene(SceneType scene)
     {
-        // ÀÌÀü¿¡ ¸¸µç SceneManager ½Ì±ÛÅÏÀ» È£ÃâÇÕ´Ï´Ù.
-        // enum ¸â¹ö¸¦ ¹®ÀÚ¿­·Î º¯È¯ÇÏ¿© Àü´ÞÇÕ´Ï´Ù. (¿¹: SceneType.Stage1 -> "Stage1")
+        // ì´ì „ì— ë§Œë“  SceneManager ì‹±ê¸€í„´ì„ í˜¸ì¶œí•©ë‹ˆë‹¤.
+        // enum ë©¤ë²„ë¥¼ ë¬¸ìžì—´ë¡œ ë³€í™˜í•˜ì—¬ ì „ë‹¬í•©ë‹ˆë‹¤. (ì˜ˆ: SceneType.Stage1 -> "Stage1")
         SceneManager.instance.LoadSceneByName(scene.ToString());
     }
 }

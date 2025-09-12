@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -23,42 +23,42 @@ public class SceneManager : MonoBehaviour
 
     void Awake()
     {
-        // ½Ì±ÛÅÏ ÆĞÅÏ ±¸Çö
+        // ì‹±ê¸€í„´ íŒ¨í„´ êµ¬í˜„
         if (instance != null && instance != this)
         {
-            // ÀÌ¹Ì ÀÎ½ºÅÏ½º°¡ Á¸ÀçÇÏ¸é »õ·Î »ı±ä °ÍÀ» ÆÄ±«
+            // ì´ë¯¸ ì¸ìŠ¤í„´ìŠ¤ê°€ ì¡´ì¬í•˜ë©´ ìƒˆë¡œ ìƒê¸´ ê²ƒì„ íŒŒê´´
             Destroy(gameObject);
             return;
         }
-        // ÀÌ ¿ÀºêÁ§Æ®¸¦ À¯ÀÏÇÑ ÀÎ½ºÅÏ½º·Î ¼³Á¤
+        // ì´ ì˜¤ë¸Œì íŠ¸ë¥¼ ìœ ì¼í•œ ì¸ìŠ¤í„´ìŠ¤ë¡œ ì„¤ì •
         instance = this;
 
-        // ¾ÀÀÌ ÀüÈ¯µÇ¾îµµ ÀÌ ¿ÀºêÁ§Æ®´Â ÆÄ±«µÇÁö ¾ÊÀ½
+        // ì”¬ì´ ì „í™˜ë˜ì–´ë„ ì´ ì˜¤ë¸Œì íŠ¸ëŠ” íŒŒê´´ë˜ì§€ ì•ŠìŒ
         DontDestroyOnLoad(gameObject);
     }
 
     public void LoadSceneByName(string sceneName)
     {
-        // ÀÌ¸§ Ãæµ¹À» ÇÇÇÏ±â À§ÇØ ÀüÃ¼ °æ·Î¸¦ ¸í½Ã
+        // ì´ë¦„ ì¶©ëŒì„ í”¼í•˜ê¸° ìœ„í•´ ì „ì²´ ê²½ë¡œë¥¼ ëª…ì‹œ
         UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
     }
 
     public void LoadLobbyScene()
     {
-        // ÀÌ¸§ Ãæµ¹À» ÇÇÇÏ±â À§ÇØ ÀüÃ¼ °æ·Î¸¦ ¸í½Ã
+        // ì´ë¦„ ì¶©ëŒì„ í”¼í•˜ê¸° ìœ„í•´ ì „ì²´ ê²½ë¡œë¥¼ ëª…ì‹œ
         UnityEngine.SceneManagement.SceneManager.LoadScene("Lobby");
     }
 
     public void ReloadCurrentScene()
     {
-        // ÀÌ¸§ Ãæµ¹À» ÇÇÇÏ±â À§ÇØ ÀüÃ¼ °æ·Î¸¦ ¸í½Ã
+        // ì´ë¦„ ì¶©ëŒì„ í”¼í•˜ê¸° ìœ„í•´ ì „ì²´ ê²½ë¡œë¥¼ ëª…ì‹œ
         string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
         UnityEngine.SceneManagement.SceneManager.LoadScene(currentSceneName);
     }
 
     public void LoadNextScene()
     {
-        // ÀÌ¸§ Ãæµ¹À» ÇÇÇÏ±â À§ÇØ ÀüÃ¼ °æ·Î¸¦ ¸í½Ã
+        // ì´ë¦„ ì¶©ëŒì„ í”¼í•˜ê¸° ìœ„í•´ ì „ì²´ ê²½ë¡œë¥¼ ëª…ì‹œ
         int currentSceneIndex = UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex;
         int nextSceneIndex = currentSceneIndex + 1;
 
@@ -75,28 +75,11 @@ public class SceneManager : MonoBehaviour
     public void QuitGame()
     {
 #if UNITY_EDITOR
-        // À¯´ÏÆ¼ ¿¡µğÅÍ¿¡¼­ ½ÇÇà ÁßÀÏ °æ¿ì, ÇÃ·¹ÀÌ ¸ğµå¸¦ ÁßÁöÇÕ´Ï´Ù.
+        // ìœ ë‹ˆí‹° ì—ë””í„°ì—ì„œ ì‹¤í–‰ ì¤‘ì¼ ê²½ìš°, í”Œë ˆì´ ëª¨ë“œë¥¼ ì¤‘ì§€í•©ë‹ˆë‹¤.
         EditorApplication.isPlaying = false;
 #else
-        // ºôµåµÈ °ÔÀÓ¿¡¼­ ½ÇÇà ÁßÀÏ °æ¿ì, ¾îÇÃ¸®ÄÉÀÌ¼ÇÀ» Á¾·áÇÕ´Ï´Ù.
+        // ë¹Œë“œëœ ê²Œì„ì—ì„œ ì‹¤í–‰ ì¤‘ì¼ ê²½ìš°, ì–´í”Œë¦¬ì¼€ì´ì…˜ì„ ì¢…ë£Œí•©ë‹ˆë‹¤.
         Application.Quit();
 #endif
-    }
-
-    // ÇöÀç ½ºÅ×ÀÌÁö ÀÌ¸§ °¡Á®¿À±â
-    public SceneType GetCurrentStage()
-    {
-        string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-
-        if (Enum.TryParse(currentSceneName, out SceneType result))
-        {
-            return result;
-        }
-        else
-        {
-            // ¸¸¾à ¾À ÀÌ¸§°ú ÀÏÄ¡ÇÏ´Â enum ¸â¹ö°¡ ¾ø´Ù¸é UnknownÀ» ¹İÈ¯ÇÕ´Ï´Ù.
-            Debug.LogWarning($"'{currentSceneName}' ¾À°ú ÀÏÄ¡ÇÏ´Â SceneTypeÀ» Ã£À» ¼ö ¾ø½À´Ï´Ù.");
-            return SceneType.Lobby;
-        }
     }
 }

@@ -1,5 +1,16 @@
 using UnityEngine;
 
+public enum SceneType
+{ 
+    Lobby,
+    Tutorial,
+    Stage1,
+    Stage2,
+    Stage3,
+    StageChallenge
+};
+
+
 public class SceneManager : MonoBehaviour
 {
     public static SceneManager instance;

@@ -9,6 +9,8 @@ public class PlayerGrapple : MonoBehaviour
     [SerializeField] PlayerInput playerInput;     // PlayerInput (없으면 동일 오브젝트에서 자동 획득)
     [SerializeField] GameObject aim;              // 에이밍 표시 오브젝트(선택)
 
+    [SerializeField] PlayerCameraController cameraController; // 이 줄을 추가하세요
+
     [Header("Aim/Raycast")]
     [SerializeField] LayerMask layerMask = ~0;    // 훅 가능 표면 레이어(조준 탐색)
     [SerializeField] float rayDistance = 60f;     // 에이밍 탐색 거리
@@ -32,6 +34,10 @@ public class PlayerGrapple : MonoBehaviour
     [SerializeField] bool enableWallPush = true;    // 옆벽 스윙 가속 사용 여부
     [SerializeField] float pushSideways = 20f;      // 옆벽 스윙 시 측면으로 미는 힘
 
+    // PlayerGrapple 스크립트 상단 변수 선언부에 추가
+    [Header("Refs")]
+    [SerializeField] PlayerController playerController; // PlayerController 참조 추가
+
     // 상태
     Rigidbody rb;
     SpringJoint sj;
@@ -48,6 +54,7 @@ public class PlayerGrapple : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         if (!playerInput) playerInput = GetComponent<PlayerInput>();
+        if (!playerController) playerController = GetComponent<PlayerController>(); // 이 줄 추가
 
         if (playerInput != null)
         {
@@ -101,15 +108,15 @@ public class PlayerGrapple : MonoBehaviour
             var kb = Keyboard.current;
             if (kb != null && kb.wKey.isPressed)
             {
-                if (currentLayer == LayerMask.NameToLayer("Top"))
+                if (currentLayer == LayerMask.NameToLayer("Left"))
                 {
-                    rb.AddForce(cam.transform.forward * pushForwardTop, ForceMode.Force);
+                    // 왼쪽 벽에 붙었을 때 플레이어의 오른쪽으로 힘을 줌
+                    rb.AddForce(transform.right * pushSideways, ForceMode.Force);
                 }
-                else if (currentLayer == LayerMask.NameToLayer("Left") ||
-                         currentLayer == LayerMask.NameToLayer("Right"))
+                else if (currentLayer == LayerMask.NameToLayer("Right"))
                 {
-                    rb.AddForce(cam.transform.forward * pushForwardSide, ForceMode.Force);
-                    rb.AddForce(Vector3.up * pushUpSide, ForceMode.Force);
+                    // 오른쪽 벽에 붙었을 때 플레이어의 왼쪽으로 힘을 줌
+                    rb.AddForce(-transform.right * pushSideways, ForceMode.Force);
                 }
             }
         }
@@ -174,18 +181,30 @@ public class PlayerGrapple : MonoBehaviour
 
     // ─────────────────────────────────────────────────────────────
     // 스윙 시작
+    // PlayerGrapple.cs
+
     void TryStartSwing()
     {
         if (isSwing) return;
         if (lastHit.point == Vector3.zero) return;
 
         isSwing = true;
-
         anchor = lastHit.point;
-        currentLayer = lastHit.collider ? lastHit.collider.gameObject.layer : -1; // ★ 레이어 저장
+        currentLayer = lastHit.collider ? lastHit.collider.gameObject.layer : -1;
 
+        // 1. 컨트롤 잠금
+        if (playerController != null)
+            playerController.LockRotation();
 
-        // 라인렌더러 준비
+        // 2. 카메라 효과 적용
+        if (cameraController != null)
+        {
+            cameraController.EnterSwingView();
+
+       
+        }
+
+        // 3. 라인 렌더러 준비
         if (rope)
         {
             rope.enabled = true;
@@ -194,11 +213,10 @@ public class PlayerGrapple : MonoBehaviour
             rope.SetPosition(1, anchor);
         }
 
-        // 스프링 조인트 생성
+        // 4. 스프링 조인트(물리) 생성
         if (!sj) sj = gameObject.AddComponent<SpringJoint>();
         sj.autoConfigureConnectedAnchor = false;
         sj.connectedAnchor = anchor;
-
         sj.spring = springForce;
         sj.damper = springDamper;
         sj.massScale = springMass;
@@ -206,33 +224,35 @@ public class PlayerGrapple : MonoBehaviour
         float dis = Vector3.Distance(transform.position, anchor);
         sj.maxDistance = Mathf.Max(0.01f, dis * maxDistFrac);
         sj.minDistance = Mathf.Clamp(dis * minDistFrac, 0f, sj.maxDistance);
-
-        // 필요 시 약간의 감쇠를 위해 선형 댐핑을 낮추거나 조정 가능
-        // rb.linearDamping = ...
     }
 
     // 스윙 종료
+    // PlayerGrapple.cs
+
     void EndSwing()
     {
         if (!isSwing) return;
 
-        // 살짝 감쇠해 튀는 느낌 감소
-        rb.linearVelocity = new Vector3(
-            rb.linearVelocity.x * 0.5f,
-            rb.linearVelocity.y * 0.8f,
-            rb.linearVelocity.z
-        );
-
         isSwing = false;
 
+        // 1. 컨트롤 잠금 해제
+        if (playerController != null)
+            playerController.UnlockRotation();
+        if (cameraController != null)
+            cameraController.ExitSwingView();
+
+        // 2. 물리 효과 정리
+        rb.linearVelocity *= 0.5f; // 속도 살짝 줄여 안정화
+        if (sj)
+            Destroy(sj);
+        sj = null;
+
+        // 3. 시각 효과 정리
         if (rope)
         {
             rope.positionCount = 0;
             rope.enabled = false;
         }
-
-        if (sj) Destroy(sj);
-        sj = null;
     }
 
     // ─────────────────────────────────────────────────────────────

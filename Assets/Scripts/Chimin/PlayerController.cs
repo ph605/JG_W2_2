@@ -1,83 +1,58 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;   // UI Image.fillAmount
-using TMPro;            // ³²Àº ½Ã°£ ÅØ½ºÆ® Ç¥½Ã
-using UnityEngine.Events;   // ÀÌº¥Æ®¿ë
+using UnityEngine.UI;
+using TMPro;
+using UnityEngine.Events;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Movement")]
     [SerializeField] float moveSpeed = 5f;
     [SerializeField] float rotationSpeed = 0.1f;
-    [SerializeField] float cameraRotationSpeed = 0.05f;
-    [SerializeField] float minPitch = -30f;
-    [SerializeField] float maxPitch = 60f;
-    [SerializeField] float cameraDistance = 10f;
 
-    [SerializeField] LayerMask cameraCollisionMask = ~0;
-    [SerializeField] float minCameraDistance = 0.3f;
-    [SerializeField] float cameraProbeRadius = 0.2f;
-    [SerializeField] float cameraCollisionLerp = 20f;
-    float currentCamDist;
+    [Header("Haste (Charging)")]
+    [SerializeField] float hasteHoldSeconds = 1.5f;
+    [SerializeField] float hasteMultiplier = 3f;
+    [SerializeField] InputActionReference hasteChargeAction;
 
-    [SerializeField] ParticleSystem starParticlePrefab;
-
-    // ¦¡ Haste(Â÷Â¡) ¦¡
-    [SerializeField] float hasteHoldSeconds = 1.5f;   // CAPS LOCK À¯Áö ½Ã Â÷Â¡ ½Ã°£
-    [SerializeField] float hasteMultiplier = 3f;      // Â÷Â¡ ¿Ï·á ÈÄ ¼Óµµ ¹è¼ö
-    bool isHasteReady = false;                        // Â÷Â¡ ¿Ï·á ¿©ºÎ
-    float capsHoldTimer = 0f;                         // CAPS LOCK ´©¸¥ ½Ã°£ ´©Àû
-    [SerializeField] InputActionReference hasteChargeAction; // ¼±ÅÃ: ¾×¼ÇÀ¸·Îµµ È¦µå °¨Áö
     [Header("Haste UI")]
-    [SerializeField] Image hasteFillImage;            // Â÷Â¡ ¹Ù
-    [SerializeField] TMP_Text hasteRemainText;        // ³²Àº ½Ã°£ ÅØ½ºÆ®
-    bool isHasteActive = false;                       // Â÷Â¡ ¿Ï·á ÈÄ Àü¹æ ÁúÁÖ »óÅÂ(¸ØÃâ ¼ö ¾øÀ½)
+    [SerializeField] Image hasteFillImage;
+    [SerializeField] TMP_Text hasteRemainText;
 
-    // ¦¡ Camera FX ¦¡
-    [Header("Camera FX")]
-    [SerializeField] float chargeShakeMax = 0.15f;    // Â÷Â¡ Áß ÃÖ´ë Èçµé¸²
-    [SerializeField] float chargeShakeFreq = 18f;     // Â÷Â¡ Èçµé¸² ÁÖÆÄ¼ö
-    [SerializeField] float speedShakeIntensity = 0.12f; // ÁúÁÖ Áß Áö¼Ó Èçµé¸²
-    [SerializeField] float speedShakeFreq = 22f;      // ÁúÁÖ Èçµé¸² ÁÖÆÄ¼ö
-    [SerializeField] float burstShakeIntensity = 0.35f; // Ãâ¹ß ÀÓÆŞ½º ¼¼±â
-    [SerializeField] float burstShakeDecay = 4f;      // ÀÓÆŞ½º °¨¼è ¼Óµµ
-    [SerializeField] float posJitter = 0.05f;         // Ä«¸Ş¶ó À§Ä¡ Èçµé¸² ¹üÀ§
-    [SerializeField] float rotJitter = 1.5f;          // Ä«¸Ş¶ó È¸Àü Èçµé¸² ¹üÀ§(µµ)
-    [SerializeField] float launchKickBack = 0.6f;     // Ãâ¹ß ¼ø°£ µÚ·Î Å±¹é °Å¸®
-    [SerializeField] float launchKickTime = 0.15f;    // Å±¹é À¯Áö ½Ã°£
-    [SerializeField] float hasteFov = 72f;            // ÁúÁÖ Áß FOV
-    [SerializeField] float fovLerp = 6f;              // FOV º¸°£ °­µµ
-
-    [Header("Control Lock (no GameManager)")]
-    [SerializeField] bool controllerLocked = false;     // ÇÊ¿ä ½Ã ¿ÜºÎ¿¡¼­ ÀÌµ¿/ÀÔ·Â Àá±×±â
+    [Header("Control Lock")]
+    [SerializeField] bool controllerLocked = false;
     public void LockController() => controllerLocked = true;
     public void UnlockController() => controllerLocked = false;
 
-    [Header("Events (replace GameManager calls)")]
-    public UnityEvent onStageClear;                     // Å¬¸®¾î ½Ã ¹ß»ı
-    public UnityEvent<GameObject> onCollectStar;        // ¾ÆÀÌÅÛ ¸ÔÀ» ¶§ Àü´Ş
-    public UnityEvent onDeathRequested;                 // »ç¸Á/¸®½ºÆù ¿äÃ»
+    [Header("Events")]
+    public UnityEvent onStageClear;
+    public UnityEvent<GameObject> onCollectStar;
+    public UnityEvent onDeathRequested;
 
-    float burstShakeTimer = 0f;
-    float launchKickTimer = 0f;
-    bool wasHasteActive = false;
-    float baseFov;
-    float perlinSeed;
+    private bool canRotate = true; // íšŒì „ ê°€ëŠ¥ ì—¬ë¶€ë¥¼ ë‚˜íƒ€ë‚´ëŠ” í”Œë˜ê·¸
 
-    public Camera playerCamera;
+    // ... (ë‹¤ë¥¸ í•¨ìˆ˜ë“¤ ì•„ë˜ì— ì´ ë‘ í•¨ìˆ˜ë¥¼ ì¶”ê°€)
+    public void LockRotation() => canRotate = false;
+    public void UnlockRotation() => canRotate = true;
+
+    // CameraControllerê°€ ì°¸ì¡°í•  í”Œë ˆì´ì–´ ìƒíƒœ
+    public bool IsHasteActive { get; private set; } = false;
+    public bool IsHasteReady { get; private set; } = false;
+    public float HasteHoldTimer { get; private set; } = 0f;
+    public float HasteHoldDuration => hasteHoldSeconds;
+    public bool WasHasteActive { get; private set; } = false;
+    public bool IsClinging { get; set; }
+
+
 
     Rigidbody rb;
     Vector2 moveInput;
-    Vector2 lookInput;
-    float cameraPitch = 0f;
-
-    public bool IsClinging { get; set; }
-
-    Player playerCore; // Player ÄÄÆ÷³ÍÆ® Ä³½Ã
+    // ë§ˆìš°ìŠ¤ ì…ë ¥ì„ ë‹¤ë¥¸ ìŠ¤í¬ë¦½íŠ¸ì—ì„œ ì½ì„ ìˆ˜ ìˆë„ë¡ public ì†ì„±ìœ¼ë¡œ ë³€ê²½
+    public Vector2 LookInput { get; private set; }
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        playerCore = GetComponent<Player>();
     }
 
     void OnEnable()
@@ -86,18 +61,20 @@ public class PlayerController : MonoBehaviour
             hasteChargeAction.action.Enable();
     }
 
-    void Start()
+    void OnDisable()
     {
+        ResetHasteState();
+        UpdateHasteUI(false);
 
-        currentCamDist = cameraDistance;
-
-        baseFov = playerCamera ? playerCamera.fieldOfView : 60f;
-        perlinSeed = Random.value * 1000f;
+        if (hasteChargeAction != null && hasteChargeAction.action != null)
+            hasteChargeAction.action.Disable();
     }
 
+    // ì…ë ¥ ì´ë²¤íŠ¸ í•¸ë“¤ëŸ¬
     void OnMove(InputValue value) => moveInput = value.Get<Vector2>();
-    void OnLook(InputValue value) => lookInput = value.Get<Vector2>();
+    void OnLook(InputValue value) => LookInput = value.Get<Vector2>();
 
+    // ì§ˆì£¼ í‚¤(CapsLock) í™€ë“œ ìƒíƒœ í™•ì¸
     bool IsHasteHolding()
     {
         if (hasteChargeAction != null && hasteChargeAction.action != null && hasteChargeAction.action.IsPressed())
@@ -107,73 +84,17 @@ public class PlayerController : MonoBehaviour
         return kb != null && kb.capsLockKey.isPressed;
     }
 
-    void ProcessLook()
+    void Update()
     {
-        float yaw = transform.eulerAngles.y + lookInput.x * rotationSpeed;
-        cameraPitch -= lookInput.y * cameraRotationSpeed;
-        cameraPitch = Mathf.Clamp(cameraPitch, minPitch, maxPitch);
-        transform.eulerAngles = new Vector3(0f, yaw, 0f);
-
-        Quaternion camRot = Quaternion.Euler(cameraPitch, yaw, 0f);
-        Vector3 pivot = transform.position + Vector3.up * 1.5f;
-
-        Vector3 desiredDir = camRot * Vector3.back;
-        float desiredDist = cameraDistance;
-
-        float targetDist = desiredDist;
-        if (Physics.SphereCast(
-                pivot,
-                cameraProbeRadius,
-                desiredDir,
-                out RaycastHit hit,
-                desiredDist,
-                cameraCollisionMask,
-                QueryTriggerInteraction.Ignore))
+        if (controllerLocked)
         {
-            targetDist = Mathf.Max(minCameraDistance, hit.distance - cameraProbeRadius);
+            ResetHasteState();
+            UpdateHasteUI(false);
+            return;
         }
 
-        // Ãâ¹ß Å±¹é(Ä«¸Ş¶ó °Å¸® º¸Á¤)À» °Å¸® º¸°£ Àü¿¡ Àû¿ë
-        ApplyLaunchKick(ref targetDist);
-
-        currentCamDist = Mathf.Lerp(
-            currentCamDist,
-            targetDist,
-            1f - Mathf.Exp(-cameraCollisionLerp * Time.deltaTime));
-
-        Vector3 camPos = pivot + desiredDir * currentCamDist;
-        playerCamera.transform.position = camPos;
-        playerCamera.transform.LookAt(pivot);
-
-        // ÁúÁÖ Áß FOV È®´ë
-        float targetFov = isHasteActive ? hasteFov : baseFov;
-        playerCamera.fieldOfView = Mathf.Lerp(
-            playerCamera.fieldOfView,
-            targetFov,
-            1f - Mathf.Exp(-fovLerp * Time.deltaTime)
-        );
-
-        // ¸¶Áö¸·¿¡ Èçµé¸² Àû¿ë(À§Ä¡/È¸Àü ³ëÀÌÁî)
-        ApplyCameraShake();
-    }
-
-    void UpdateHasteUI(bool holding)
-    {
-        if (hasteFillImage)
-        {
-            float t = 0f;
-            if (isHasteActive) t = 1f; // ÁúÁÖ Áß¿£ Ç×»ó °¡µæ
-            else if (holding) t = Mathf.Clamp01(capsHoldTimer / hasteHoldSeconds);
-            hasteFillImage.fillAmount = t;
-        }
-
-        if (hasteRemainText)
-        {
-            if (!isHasteActive && holding && !isHasteReady)
-                hasteRemainText.text = (hasteHoldSeconds - capsHoldTimer).ToString("0.0") + "s";
-            else
-                hasteRemainText.text = "";
-        }
+        ProcessHaste();
+        ProcessPlayerRotation();
     }
 
     void FixedUpdate()
@@ -182,82 +103,52 @@ public class PlayerController : MonoBehaviour
         ProcessMove();
     }
 
-    void LateUpdate()
+    void ProcessPlayerRotation()
     {
-        if (controllerLocked) return;
-        ProcessLook();
+        // â–¼â–¼â–¼ ì´ ifë¬¸ìœ¼ë¡œ ê°ì‹¸ì£¼ì„¸ìš” â–¼â–¼â–¼
+        if (canRotate)
+        {
+            // ë§ˆìš°ìŠ¤ ì¢Œìš° ì›€ì§ì„ìœ¼ë¡œ í”Œë ˆì´ì–´ ì „ì²´ë¥¼ íšŒì „
+            float yaw = transform.eulerAngles.y + LookInput.x * rotationSpeed;
+            transform.eulerAngles = new Vector3(0f, yaw, 0f);
+        }
     }
 
-    void Update()
+    void ProcessHaste()
     {
-        if (controllerLocked)
-        {
-            capsHoldTimer = 0f;
-            isHasteReady = false;
-            isHasteActive = false;
-            burstShakeTimer = 0f;
-            launchKickTimer = 0f;
-            wasHasteActive = false;
-            if (hasteFillImage) hasteFillImage.fillAmount = 0f;
-            if (hasteRemainText) hasteRemainText.text = "";
-            return;
-        }
+        WasHasteActive = IsHasteActive; // ì´ì „ í”„ë ˆì„ ìƒíƒœ ì €ì¥
 
-        // ÁúÁÖ°¡ ÀÌ¹Ì ½ÃÀÛµÇ¾úÀ¸¸é À¯Áö(¸ØÃâ ¼ö ¾øÀ½)
-        if (isHasteActive)
+        if (IsHasteActive)
         {
-            capsHoldTimer = hasteHoldSeconds;
-            isHasteReady = true;
+            HasteHoldTimer = hasteHoldSeconds;
+            IsHasteReady = true;
             UpdateHasteUI(true);
         }
         else
         {
-            // ¾ÆÁ÷ ÁúÁÖ Àü: Â÷Â¡ ÁøÇà
             bool holding = IsHasteHolding();
             if (holding)
             {
-                capsHoldTimer = Mathf.Min(capsHoldTimer + Time.deltaTime, hasteHoldSeconds);
-                isHasteReady = capsHoldTimer >= hasteHoldSeconds;
+                HasteHoldTimer = Mathf.Min(HasteHoldTimer + Time.deltaTime, hasteHoldSeconds);
+                IsHasteReady = HasteHoldTimer >= hasteHoldSeconds;
 
-                // Â÷Â¡ ¿Ï·á ¼ø°£ ÁúÁÖ »óÅÂ ·¡Ä¡
-                if (isHasteReady)
-                    isHasteActive = true;
+                if (IsHasteReady)
+                    IsHasteActive = true;
             }
             else
             {
-                capsHoldTimer = 0f;
-                isHasteReady = false;
+                HasteHoldTimer = 0f;
+                IsHasteReady = false;
             }
-
             UpdateHasteUI(holding);
         }
-
-        // Ãâ¹ß ¼ø°£ ÀÓÆŞ½º/Å±¹é Æ®¸®°Å
-        if (!wasHasteActive && isHasteActive)
-        {
-            burstShakeTimer = 1f;             // ÀÓÆŞ½º ½ÃÀÛ
-            launchKickTimer = launchKickTime;  // Å±¹é ½ÃÀÛ
-        }
-        wasHasteActive = isHasteActive;
-    }
-
-    public Vector3 GetMoveDirection()
-    {
-        Vector3 camForward = playerCamera.transform.forward;
-        Vector3 camRight = playerCamera.transform.right;
-        camForward.y = 0;
-        camRight.y = 0;
-        camForward.Normalize();
-        camRight.Normalize();
-        return camRight * moveInput.x + camForward * moveInput.y;
     }
 
     void ProcessMove()
     {
         if (IsClinging) return;
 
-        // ÁúÁÖ Áß: ¹«Á¶°Ç Àü¹æÀ¸·Î 3¹è¼Ó(ÀÔ·Â ¹«½Ã), ¸¶¿ì½º È¸ÀüÀ¸·Î¸¸ ¹æÇâ ÀüÈ¯
-        if (isHasteActive)
+        if (IsHasteActive)
         {
             Vector3 forward = transform.forward;
             Vector3 targetPos = rb.position + forward * (moveSpeed * hasteMultiplier) * Time.fixedDeltaTime;
@@ -265,90 +156,58 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        // Æò»ó½Ã ÀÌµ¿
         Vector3 moveDir = GetMoveDirection();
 
-        // Â÷Â¡ Áß(¾ÆÁ÷ ÁØºñ Àü)¿£ Á¤Áö
-        bool holding = IsHasteHolding();
-        if (holding && !isHasteReady)
+        if (IsHasteHolding() && !IsHasteReady)
             return;
 
-        float speed = moveSpeed * ((holding && isHasteReady) ? hasteMultiplier : 1f);
-        Vector3 target = rb.position + moveDir * speed * Time.fixedDeltaTime;
+        Vector3 target = rb.position + moveDir * moveSpeed * Time.fixedDeltaTime;
         rb.MovePosition(target);
+    }
+
+    public Vector3 GetMoveDirection()
+    {
+        Vector3 forward = transform.forward;
+        Vector3 right = transform.right;
+
+        forward.y = 0;
+        right.y = 0;
+
+        return right.normalized * moveInput.x + forward.normalized * moveInput.y;
+    }
+
+    void UpdateHasteUI(bool holding)
+    {
+        if (hasteFillImage)
+        {
+            float t = 0f;
+            if (IsHasteActive) t = 1f;
+            else if (holding) t = Mathf.Clamp01(HasteHoldTimer / hasteHoldSeconds);
+            hasteFillImage.fillAmount = t;
+        }
+
+        if (hasteRemainText)
+        {
+            if (!IsHasteActive && holding && !IsHasteReady)
+                hasteRemainText.text = (hasteHoldSeconds - HasteHoldTimer).ToString("0.0") + "s";
+            else
+                hasteRemainText.text = "";
+        }
+    }
+
+    void ResetHasteState()
+    {
+        HasteHoldTimer = 0f;
+        IsHasteReady = false;
+        IsHasteActive = false;
+        WasHasteActive = false;
     }
 
     void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Clear"))
         {
-            onStageClear?.Invoke();   // ¿ÜºÎ(UI/¸Å´ÏÀú)°¡ ÀÌ ÀÌº¥Æ® ¹Ş¾Æ¼­ Ã³¸®
+            onStageClear?.Invoke();
         }
-    }
-
-
-
-
-
-
-    void OnDisable()
-    {
-        capsHoldTimer = 0f;
-        isHasteReady = false;
-        isHasteActive = false;
-        burstShakeTimer = 0f;
-        launchKickTimer = 0f;
-        wasHasteActive = false;
-
-        if (hasteFillImage) hasteFillImage.fillAmount = 0f;
-        if (hasteRemainText) hasteRemainText.text = "";
-        if (playerCamera) playerCamera.fieldOfView = baseFov;
-
-        if (hasteChargeAction != null && hasteChargeAction.action != null)
-            hasteChargeAction.action.Disable();
-    }
-
-    // ¦¡ Camera FX Helpers ¦¡
-    void ApplyLaunchKick(ref float targetDist)
-    {
-        if (launchKickTimer <= 0f) return;
-        float k = Mathf.Clamp01(launchKickTimer / launchKickTime); // 1¡æ0
-        targetDist += launchKickBack * k;
-        launchKickTimer = Mathf.Max(0f, launchKickTimer - Time.deltaTime);
-    }
-
-    void ApplyCameraShake()
-    {
-        float amp = 0f;
-        float t = Time.time;
-
-        // Â÷Â¡ Èçµé¸²(Â÷Â¡ ÁøÇàµµ ºñ·Ê)
-        bool holding = IsHasteHolding();
-        if (holding && !isHasteActive)
-        {
-            float chargeT = Mathf.Clamp01(capsHoldTimer / hasteHoldSeconds);
-            amp += chargeShakeMax * chargeT;
-        }
-
-        // Ãâ¹ß ÀÓÆŞ½º(°¨¼è)
-        if (burstShakeTimer > 0f)
-        {
-            amp += burstShakeIntensity * burstShakeTimer;
-            burstShakeTimer = Mathf.MoveTowards(burstShakeTimer, 0f, burstShakeDecay * Time.deltaTime);
-        }
-
-        // ÁúÁÖ Áö¼Ó Èçµé¸²
-        if (isHasteActive) amp += speedShakeIntensity;
-
-        if (amp <= 0f) return;
-
-        float nx = (Mathf.PerlinNoise(perlinSeed + t * chargeShakeFreq, 0f) - 0.5f) * 2f;
-        float ny = (Mathf.PerlinNoise(perlinSeed + 100f + t * speedShakeFreq, 0f) - 0.5f) * 2f;
-
-        Vector3 posOffset = new Vector3(nx, ny, 0f) * posJitter * amp;
-        Vector3 rotOffset = new Vector3(ny, 0f, -nx) * rotJitter * amp;
-
-        playerCamera.transform.position += posOffset;
-        playerCamera.transform.rotation = Quaternion.Euler(playerCamera.transform.eulerAngles + rotOffset);
     }
 }

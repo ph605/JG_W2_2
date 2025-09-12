@@ -2,22 +2,22 @@ using UnityEngine;
 
 using System.Collections;
 using UnityEngine.SceneManagement;
-using UnityEngine.Events;   // (¼±ÅÃ) onDie ÀÌº¥Æ® ¾²·Á¸é
+using UnityEngine.Events;   // (ï¿½ï¿½ï¿½ï¿½) onDie ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 public class Player : MonoBehaviour
 {
     [Header("Shield")]
-    [SerializeField] GameObject shieldPrefab;       // ÀåÂøÇÒ ½¯µå ÇÁ¸®ÆÕ
-    [SerializeField] Transform shieldAttachPoint;   // ºÙÀÏ ±âÁØ(¾øÀ¸¸é Player Áß½É)
-    GameObject activeShield;                        // ÇöÀç ÀåÂøµÈ ½¯µå
+    [SerializeField] GameObject shieldPrefab;       // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    [SerializeField] Transform shieldAttachPoint;   // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Player ï¿½ß½ï¿½)
+    GameObject activeShield;                        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-    // Å¬·¡½º ³»ºÎ(ÇÊµåµé ±ÙÃ³)¿¡ Ãß°¡
+    // Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½Êµï¿½ï¿½ ï¿½ï¿½Ã³)ï¿½ï¿½ ï¿½ß°ï¿½
     [Header("Death/Respawn")]
-    [SerializeField] bool autoReloadOnDeath = true;   // Á×À¸¸é ÀÚµ¿À¸·Î ÇöÀç ¾À ¸®·Îµå
-    [SerializeField] float reloadDelay = 0.5f;        // ¸®·Îµå Áö¿¬ ½Ã°£
+    [SerializeField] bool autoReloadOnDeath = true;   // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Îµï¿½
+    [SerializeField] float reloadDelay = 0.5f;        // ï¿½ï¿½ï¿½Îµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½
 
     [Header("Events (Optional)")]
-    public UnityEvent onDie; // ¿ÜºÎ¿¡¼­ ¿¬°áÇØ ¾µ ¼ö ÀÖ´Â »ç¸Á ÀÌº¥Æ®(¼±ÅÃ)
+    public UnityEvent onDie; // ï¿½ÜºÎ¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ ï¿½Ìºï¿½Æ®(ï¿½ï¿½ï¿½ï¿½)
 
 
     Rigidbody rb;
@@ -32,10 +32,10 @@ public class Player : MonoBehaviour
 
     void OnEnable()
     {
-        isDying = false; // ¸®½ºÆù ½Ã ÃÊ±âÈ­
+        isDying = false; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ê±ï¿½È­
     }
 
-    // ºñÆ®¸®°Å ÄÝ¶óÀÌ´õ(ÀÏ¹Ý Ãæµ¹)
+    // ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½Ý¶ï¿½ï¿½Ì´ï¿½(ï¿½Ï¹ï¿½ ï¿½æµ¹)
     void OnCollisionEnter(Collision collision)
     {
         var col = collision.collider;
@@ -54,7 +54,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    // Æ®¸®°Å ÄÝ¶óÀÌ´õ(Trigger = On)
+    // Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½Ý¶ï¿½ï¿½Ì´ï¿½(Trigger = On)
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Shield"))
@@ -74,18 +74,18 @@ public class Player : MonoBehaviour
     public void EquipShield()
     {
         if (shieldPrefab == null) return;
-        if (activeShield != null) return; // Áßº¹ Âø¿ë ºÒ°¡
+        if (activeShield != null) return; // ï¿½ßºï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ò°ï¿½
 
         Transform attach = shieldAttachPoint != null ? shieldAttachPoint : transform;
 
-        // ÇÁ¸®ÆÕ ½ºÄÉÀÏ À¯Áö: ºÎ¸ð¿¡ ºÙÀÌµÇ scaleÀº °Çµå¸®Áö ¾ÊÀ½
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: ï¿½Î¸ï¿½ ï¿½ï¿½ï¿½Ìµï¿½ scaleï¿½ï¿½ ï¿½Çµå¸®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         activeShield = Instantiate(shieldPrefab, attach.position, attach.rotation, attach);
         activeShield.transform.localPosition = Vector3.zero;
         activeShield.transform.localRotation = Quaternion.identity;
-        // activeShield.transform.localScale = Vector3.one; // °­Á¦ÇÏÁö ¾ÊÀ½
+        // activeShield.transform.localScale = Vector3.one; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     }
 
-    // ÇÊ¿ä ½Ã ¿ÜºÎ¿¡¼­ ÇÑ ¹ø ¼Ò¸ð(¿¹: Æ¯Á¤ ÇÔÁ¤¿¡ ¸Â¾ÒÀ» ¶§)
+    // ï¿½Ê¿ï¿½ ï¿½ï¿½ ï¿½ÜºÎ¿ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½Ò¸ï¿½(ï¿½ï¿½: Æ¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Â¾ï¿½ï¿½ï¿½ ï¿½ï¿½)
     public bool ConsumeShield()
     {
         if (activeShield == null) return false;
@@ -112,23 +112,23 @@ public class Player : MonoBehaviour
         if (rb != null)
         {
             rb.useGravity = false;
-            rb.linearVelocity = Vector3.zero;  // ÇÁ·ÎÁ§Æ® ÄÁº¥¼Ç À¯Áö
+            rb.linearVelocity = Vector3.zero;  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             rb.angularVelocity = Vector3.zero;
         }
 
-        // (¼±ÅÃ) ¿ÜºÎ°¡ ±¸µ¶Çß´Ù¸é ¸ÕÀú ¾Ë¸²
+        // (ï¿½ï¿½ï¿½ï¿½) ï¿½ÜºÎ°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ß´Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ë¸ï¿½
         onDie?.Invoke();
 
-        // GameManager ¾øÀÌµµ µ¿ÀÛ: ÇöÀç ¾ÀÀ» ÀÚÃ¼ ¸®·Îµå
-        if (autoReloadOnDeath)
-            StartCoroutine(ReloadSceneAfterDelay());
+        // // GameManager ï¿½ï¿½ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½Îµï¿½
+        // if (autoReloadOnDeath)
+        //     StartCoroutine(ReloadSceneAfterDelay());
     }
 
-    IEnumerator ReloadSceneAfterDelay()
-    {
-        yield return new WaitForSeconds(reloadDelay);
-        var scene = SceneManager.GetActiveScene();
-        SceneManager.LoadScene(scene.name);
-    }
+    // IEnumerator ReloadSceneAfterDelay()
+    // {
+    //     yield return new WaitForSeconds(reloadDelay);
+    //     var scene = SceneManager.GetActiveScene();
+    //     SceneManager.LoadScene(scene.name);
+    // }
 
 }

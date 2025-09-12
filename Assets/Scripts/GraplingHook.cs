@@ -1,36 +1,44 @@
 using JetBrains.Rider.Unity.Editor;
+using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using Unity.Burst.Intrinsics;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class GrapplingHook : MonoBehaviour
 {
-    public String currentTag = "Top";
     public LayerMask layerMask;
-    RaycastHit hit;
+    
     LineRenderer lr;
     SpringJoint sj;
     ConfigurableJoint cj;
     Rigidbody rb;
     public GameObject aim;
 
-
+    
     float dis;
-    Vector3 spot;
+   
     bool isSwing;
 
     [Header("Raycast")]
     public Camera cam;
     public float maxDistance;
     public float minDistance;
+    Vector3 spot;
+    RaycastHit hit;
+    [Header("Hang")]
+    public float hangingTime;
+    private float currentHangTime = 0;
 
-    [Header("SpringJoint")]
-    public float springForce;
-    public float springDamper;
-    public float springMass;
+    [Header("Drag")]
+    private Vector3 dragStartPos;
+    private bool isDragging;
+    public float dragTime;
+    [SerializeField]
+    private float TempTime;
 
     // --- 지민 ---
     [Header("Dependencies")]
@@ -46,16 +54,39 @@ public class GrapplingHook : MonoBehaviour
 
     void Update()
     {
+        if (isDragging)
+        {
+            TempTime += Time.deltaTime;
+            if (TempTime >= dragTime)
+            {
+                TempTime = 0f;
+                isDragging = false;
+            }
+        }
         if (isSwing)
         {
-            Vector3 hookDir = (spot - transform.position).normalized;
-            Vector3 hookNormal = hit.normal;
-            // Y축 기준으로 signed angle
-            float angle = Vector3.SignedAngle(hookDir, hookNormal, Vector3.up); // -180 ~ 180   
-            // 각도가 90도에 가까울수록 힘 감소
-            float absAngle = Mathf.Abs(angle); // 0~180
-            float factor = Mathf.InverseLerp(90f, 180f, absAngle);
-            UpdateSpringForceByDrag();
+            currentHangTime += Time.deltaTime;
+            float t = currentHangTime / hangingTime;
+            float currentWidth = Mathf.Lerp(0.1f, 0f, t);
+            lr.startWidth = currentWidth;
+            lr.endWidth = currentWidth;
+            if (currentHangTime >= hangingTime)
+            {
+                
+                EndSwing();
+                currentHangTime = 0f;
+                lr.startWidth = 0.1f;
+                isDragging = false;
+            }
+            //  Vector3 dirToAnchor = (spot - transform.position).normalized;
+
+            // // 캐릭터가 바라보는 정면 (forward)
+            // Vector3 forward = transform.forward;
+            // // Y축 기준으로 signed angle
+            // float signedAngle = Vector3.SignedAngle(transform.position, dirToAnchor, Vector3.up);
+
+            // float value = 1f - Mathf.Abs(signedAngle - 90f) / 90f;
+            // float factor = Mathf.InverseLerp(0f, 180f, Mathf.Abs(signedAngle));
             // if (Input.GetKey(KeyCode.W))
             // {
             //     rb.AddForce(Vector3.forward * 5f, ForceMode.Acceleration);
@@ -78,20 +109,20 @@ public class GrapplingHook : MonoBehaviour
             //     //     rb.AddForce(Vector3.up * 5.0f, ForceMode.Force);
             //     // }
             // }
-            if (Input.GetKey(KeyCode.A))
-            {
-                rb.AddForce(Vector3.left * 3f, ForceMode.Acceleration);
-            }
-            if (Input.GetKey(KeyCode.D))
-            {
-                rb.AddForce(Vector3.right * 3f, ForceMode.Acceleration);
-            }
-            if (factor == 0)
-            {
-                factor = 0.01f;
-            }
+            // if (Input.GetKey(KeyCode.A))
+            // {
+            //     rb.AddForce(Vector3.left * 3f, ForceMode.Acceleration);
+            // }
+            // if (Input.GetKey(KeyCode.D))
+            // {
+            //     rb.AddForce(Vector3.right * 3f, ForceMode.Acceleration);
+            // }
+            // if (factor == 0)
+            // {
+            //     factor = 0.01f;
+            // }
             // Debug.Log(rb.maxLinearVelocity = 40f * factor);
-            rb.maxLinearVelocity = 40f * factor;
+            // rb.maxLinearVelocity = 40f / factor;
         }
         else
         {
@@ -101,26 +132,23 @@ public class GrapplingHook : MonoBehaviour
         if (Input.GetMouseButtonDown(0) && !isSwing)
         {
             StartSwing();
+            MouseDown();
             lastMousePos = Input.mousePosition; // 드래그 시작 위치
+        }
+        else if (Input.GetMouseButton(0)&& isSwing)
+        {
+            if (isDragging)
+            {
+                MouseDrag();
+            }
         }
         else if (Input.GetMouseButtonUp(0) && isSwing)
         {
             EndSwing();
+            isDragging = false;
         }
         DrawRope();
         lastMousePos = Input.mousePosition; // 매 프레임 갱신
-    }
-    void UpdateSpringForceByDrag()
-    {
-        Vector3 mouseDelta = Input.mousePosition - lastMousePos;
-        Debug.Log(mouseDelta);
-        // 거의 움직이지 않으면 무시
-        if (mouseDelta.sqrMagnitude < 0.01f) return;
-
-        if (mouseDelta.y < 0) // 뒤로 드래그할 때만 힘 적용
-        {
-            rb.AddForce(Vector3.forward * 15.0f , ForceMode.Force);
-        }
     }
 
 
@@ -138,41 +166,14 @@ public class GrapplingHook : MonoBehaviour
         isSwing = true;
 
         spot = hit.point;   // 로프를 연결할 지점 설정
-        if (hit.transform.CompareTag("Top"))
-        {
-            currentTag = "Top";
-        }
-        if (hit.transform.CompareTag("Left"))
-        {
-            currentTag = "Left";
-        }
-        if (hit.transform.CompareTag("Right"))
-        {
-            currentTag = "Right";
-        }
-
         // --- 지민 ---
         // 스윙 시작 시 카메라 컨트롤러에 로프를 건 '위치(spot)'를 전달
         cameraController?.EnterSwingView(spot);
         // -------------------
-
         lr.positionCount = 2;                   // 라인 렌더러의 점 개수 설정
         lr.SetPosition(0, transform.position);  // 첫 번째 점을 플레이어 위치로 설정
         lr.SetPosition(1, hit.point);           // 두 번째 점을 레이캐스트 위치로 설정
-        /* Spring Joint
-        sj = gameObject.AddComponent<SpringJoint>();    // 스프링 조인트 컴포넌트 추가
-        sj.autoConfigureConnectedAnchor = false;        // 연결된 앵커 자동 설정 비활성화
-        sj.connectedAnchor = spot;                      // 연결 앵커를 훅 지점으로 설정
-
-        sj.spring = springForce;    // 스프링 힘 설정
-        sj.damper = springDamper;   // 스프링 댐퍼 설정
-        sj.massScale = springMass;  // 스프링 질량 설정
-
-        dis = Vector3.Distance(transform.position, spot);   // 플레이어와 로프 연결 지점 간의 거리 계산
-
-        sj.maxDistance = dis * 0.8f;    // 스프링의 최대 길이 설정
-        sj.minDistance = dis * 0.2f;    // 스프링의 최소 길이 설정
-        */
+        
         cj = gameObject.AddComponent<ConfigurableJoint>();
         cj.connectedAnchor = spot; // 줄이 고정된 지점
         cj.autoConfigureConnectedAnchor = false;
@@ -195,9 +196,9 @@ public class GrapplingHook : MonoBehaviour
         }
         else
         {
-            limit.limit = Vector3.Distance(spot, transform.position);   
+            limit.limit = Vector3.Distance(spot, transform.position);
         }
-        
+
         cj.linearLimit = limit;
 
         // 줄을 탄탄하게 (스프링 효과 X)
@@ -210,7 +211,9 @@ public class GrapplingHook : MonoBehaviour
     }
     void EndSwing()
     {
-        rb.linearVelocity = new Vector3(rb.linearVelocity.x * 0.5f,
+        currentHangTime = 0f;
+        lr.startWidth = 0.1f;
+        rb.linearVelocity = new Vector3(rb.linearVelocity.x * 0.3f,
         rb.linearVelocity.y * 0.5f,
         rb.linearVelocity.z * 0.5f);
         isSwing = false;
@@ -225,4 +228,42 @@ public class GrapplingHook : MonoBehaviour
             lr.SetPosition(0, transform.position);  // 로프의 첫 번째 점을 플레이어 위치로 설정하여 선을 그림
         }
     }
+    void MouseDown()
+    {
+        if (isDragging) return; // 이미 드래그 중이면 무시 (한 번만 가능)
+        isDragging = true;
+        dragStartPos = Input.mousePosition;
+    }
+
+    void MouseDrag()
+    {
+        Vector3 currentPos = Input.mousePosition;
+        Vector3 dragDir = (currentPos - dragStartPos).normalized; // 방향
+        if (dragDir.x < -0.1)
+        {
+            Debug.Log("좌");
+            rb.AddForce(Vector3.forward * 2f, ForceMode.Acceleration);
+            rb.AddForce(Vector3.left * 3f, ForceMode.Acceleration);
+        }
+        if (dragDir.x > 0.1)
+        {
+            Debug.Log("우");
+            rb.AddForce(Vector3.forward * 2f, ForceMode.Acceleration);
+            rb.AddForce(Vector3.right * 3f, ForceMode.Acceleration);
+        }
+        if (dragDir.y < 0)
+        {
+            Debug.Log("앞");
+            rb.AddForce(Vector3.forward * 15f, ForceMode.Acceleration);
+        }
+        if (dragDir.y > 0)
+        {
+            Debug.Log("뒤");
+            rb.AddForce(Vector3.back * 5f, ForceMode.Acceleration);
+        }
+
+        dragStartPos = currentPos; // 기준점 갱신 (연속 드래그 반영)
+    }
+
+        
 }

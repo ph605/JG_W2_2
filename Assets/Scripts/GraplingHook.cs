@@ -64,17 +64,17 @@ public class GrapplingHook : MonoBehaviour
                     rb.AddForce(Vector3.forward * 10.0f, ForceMode.Force);
                 }
                 if (currentTag == "Left")
-                    if (currentTag == "Left")
-                    {
-                        rb.AddForce(Vector3.forward * 15.0f, ForceMode.Force);
-                        rb.AddForce(Vector3.up * 5.0f, ForceMode.Force);
-                    }
+                if (currentTag == "Left")
+                {
+                    rb.AddForce(Vector3.forward * 15.0f, ForceMode.Force);
+                    rb.AddForce(Vector3.up * 5.0f, ForceMode.Force);
+                }
                 if (currentTag == "Right")
-                    if (currentTag == "Right")
-                    {
-                        rb.AddForce(Vector3.forward * 15.0f, ForceMode.Force);
-                        rb.AddForce(Vector3.up * 5.0f, ForceMode.Force);
-                    }
+                if (currentTag == "Right")
+                {
+                    rb.AddForce(Vector3.forward * 15.0f, ForceMode.Force);
+                    rb.AddForce(Vector3.up * 5.0f, ForceMode.Force);
+                }
             }
             if (factor == 0)
             {
@@ -154,11 +154,11 @@ public class GrapplingHook : MonoBehaviour
         sj.autoConfigureConnectedAnchor = false;        // 연결된 앵커 자동 설정 비활성화
         sj.connectedAnchor = spot;                      // 연결 앵커를 훅 지점으로 설정
 
-        sj.spring = springForce;    // 스프링 힘 설정
-        sj.damper = springDamper;   // 스프링 댐퍼 설정
-        sj.massScale = springMass;  // 스프링 질량 설정
+    sj.spring = springForce;    // 스프링 힘 설정
+    sj.damper = springDamper;   // 스프링 댐퍼 설정
+    sj.massScale = springMass;  // 스프링 질량 설정
 
-        dis = Vector3.Distance(transform.position, spot);   // 플레이어와 로프 연결 지점 간의 거리 계산
+    dis = Vector3.Distance(transform.position, spot);   // 플레이어와 로프 연결 지점 간의 거리 계산
 
         sj.maxDistance = dis * 0.8f;    // 스프링의 최대 길이 설정
         sj.minDistance = dis * 0.2f;    // 스프링의 최소 길이 설정

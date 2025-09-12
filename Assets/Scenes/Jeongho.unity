@@ -278,6 +278,8 @@ MonoBehaviour:
     size: 50
   - prefab: {fileID: 4187761927622459232, guid: c314e7d0555bc2b409e07c5e75bd56f8, type: 3}
     size: 50
+  - prefab: {fileID: 5653160895305078999, guid: 02be3f10e82aad44e803dc666a85ce0d, type: 3}
+    size: 10
 --- !u!1 &245074357
 GameObject:
   m_ObjectHideFlags: 0
@@ -1053,13 +1055,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49c899de688957a40a5c745ab25f6b32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mapType: 1
   playerTransform: {fileID: 2078739054}
   emptyTilePrefab: {fileID: 5653160895305078999, guid: 38b9b4cca4c6a754cb7c180dffe0dcd3, type: 3}
   tilePatterns:
   - {fileID: 11400000, guid: 6727937304b1c8142ae69525418f1fba, type: 2}
   - {fileID: 11400000, guid: 8bb0f640da6f3f749ab64695e8f1970d, type: 2}
   tileLength: 100
-  visibleTilesOnScreen: 3
+  visibleTilesOnScreen: 2
   totalTilesToGoal: 10
   finishLinePrefab: {fileID: 5653160895305078999, guid: 02be3f10e82aad44e803dc666a85ce0d, type: 3}
 --- !u!1 &1985127142

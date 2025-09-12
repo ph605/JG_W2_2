@@ -8,7 +8,7 @@ using Unity.Burst.Intrinsics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class GrapplingHook : MonoBehaviour
+public class GraplingHook : MonoBehaviour
 {
     public LayerMask layerMask;
     
@@ -41,8 +41,10 @@ public class GrapplingHook : MonoBehaviour
     private float TempTime;
 
     // --- 지민 ---
-    [Header("Dependencies")]
-    public CameraController cameraController; // CameraController 참조 변수 추가
+    [Header("Refs")]
+    [SerializeField] PlayerController playerController;
+    [SerializeField] PlayerCameraController cameraController;
+
     Vector3 lastMousePos;
     void Start()
     {
@@ -117,8 +119,8 @@ public class GrapplingHook : MonoBehaviour
         isSwing = true;
         spot = hit.point;   // 로프를 연결할 지점 설정
         // --- 지민 ---
-        // 스윙 시작 시 카메라 컨트롤러에 로프를 건 '위치(spot)'를 전달
-        cameraController?.EnterSwingView(spot);
+        playerController.LockRotation();
+        cameraController.EnterSwingView();
         // -------------------
         lr.positionCount = 2;                   // 라인 렌더러의 점 개수 설정
         lr.SetPosition(0, transform.position);  // 첫 번째 점을 플레이어 위치로 설정
@@ -156,6 +158,8 @@ public class GrapplingHook : MonoBehaviour
     }
     void EndSwing()
     {
+        playerController.UnlockRotation();
+        cameraController.ExitSwingView();
         currentHangTime = 0f;
         lr.startWidth = 0.1f;
         rb.linearVelocity = new Vector3(rb.linearVelocity.x * 0.3f,
@@ -185,19 +189,19 @@ public class GrapplingHook : MonoBehaviour
         if (dragDir.x < -0.1)
         {
             Debug.Log("좌");
-            rb.AddForce(Vector3.forward * 2f, ForceMode.Acceleration);
-            rb.AddForce(Vector3.left * 3f, ForceMode.Acceleration);
+            rb.AddForce(Vector3.forward * 4f, ForceMode.Acceleration);
+            rb.AddForce(Vector3.left * 6f, ForceMode.Acceleration);
         }
         if (dragDir.x > 0.1)
         {
             Debug.Log("우");
-            rb.AddForce(Vector3.forward * 2f, ForceMode.Acceleration);
-            rb.AddForce(Vector3.right * 3f, ForceMode.Acceleration);
+            rb.AddForce(Vector3.forward * 4f, ForceMode.Acceleration);
+            rb.AddForce(Vector3.right * 6f, ForceMode.Acceleration);
         }
         if (dragDir.y < 0)
         {
             Debug.Log("앞");
-            rb.AddForce(Vector3.forward * 15f, ForceMode.Acceleration);
+            rb.AddForce(Vector3.forward * 300f, ForceMode.Acceleration);
         }
         if (dragDir.y > 0)
         {

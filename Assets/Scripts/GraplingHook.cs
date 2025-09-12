@@ -58,103 +58,111 @@ float dis;
 
         if (isSwing)
         {
+            Vector3 hookDir = (spot - transform.position).normalized;
+            Vector3 hookNormal = hit.normal;
+
+            // Y축 기준으로 signed angle
+            float angle = Vector3.SignedAngle(hookDir, hookNormal, Vector3.up); // -180 ~ 180
+
+
+            // 각도가 90도에 가까울수록 힘 감소
+            float absAngle = Mathf.Abs(angle); // 0~180
+            float factor = Mathf.InverseLerp(90f, 180f, absAngle);
+            Debug.Log(factor);
             if (Input.GetKey(KeyCode.W))
             {
                 if (currentTag == "Top")
                 {
-                    rb.AddForce(Vector3.forward * 0.8f, ForceMode.Force);
+                    rb.AddForce(Vector3.forward * 10.0f, ForceMode.Force);
                 }
                 if (currentTag == "Left")
+                if (currentTag == "Left")
                 {
-                    rb.AddForce(Vector3.forward * 2f, ForceMode.Force);
-                    rb.AddForce(Vector3.up * 2.0f, ForceMode.Force);
+                    rb.AddForce(Vector3.forward * 15.0f, ForceMode.Force);
+                    rb.AddForce(Vector3.up * 5.0f, ForceMode.Force);
                 }
                 if (currentTag == "Right")
+                if (currentTag == "Right")
                 {
-                    rb.AddForce(Vector3.forward * 2f, ForceMode.Force);
-                    rb.AddForce(Vector3.up * 2.0f, ForceMode.Force);
+                    rb.AddForce(Vector3.forward * 15.0f, ForceMode.Force);
+                    rb.AddForce(Vector3.up * 5.0f, ForceMode.Force);
                 }
             }
-
+            // Debug.Log(rb.maxLinearVelocity = 30f * factor);
+            rb.maxLinearVelocity = 40f * factor;
+        }
+        else
+        {
+            rb.maxLinearVelocity = 40f;
         }
         DrawRope();
         lastMousePos = Input.mousePosition; // 매 프레임 갱신
     }
     void UpdateSpringForceByDrag()
-
-
-
-{
-Vector3 mouseDelta = Input.mousePosition - lastMousePos;
-//x,y만 사용 Y축 - 일때 마우스 당기는거
-
-
-// if (mouseDelta.sqrMagnitude < 0.01f) return; // 거의 움직이지 않으면 무시
-
-// 캐릭터 → 훅 지점 방향 (월드 공간)
-Vector3 hookDir = (spot - transform.position).normalized;
-
-// 마우스 드래그 방향 → 월드 공간으로 변환 (카메라 기준)
-// Vector3 camRight = cam.transform.right;
-// Vector3 camUp = cam.transform.up;
-// Vector3 dragWorld = (camRight * mouseDelta.x + camUp * mouseDelta.y).normalized;
-
-// 내적 > 0이면 앞으로, < 0이면 뒤쪽
-// float dot = Vector3.Dot(dragWorld, hookDir);
-
-if (mouseDelta.y< 0) // 뒤로 드래그할 때만 힘 적용
-{
-    Debug.Log("Dragging");
-        // float dragMagnitude = mouseDelta.magnitude;
-        // float mappedValue = Mathf.Clamp(mouseDelta.y * 2f, 5f, 20f);
-        rb.linearDamping = 0;
-        rb.AddForce(Vector3.forward* 0.04f, ForceMode.Force);
-
-    if (sj != null)
-        {
-            // sj.spring = mappedValue;
-            // sj.damper = mappedValue;
-        }
-}
-else
-{
-    if (sj != null)
     {
-        // rb.AddForce(Vector3.down * 0.3f, ForceMode.Impulse);
-        rb.linearDamping += 0.002f;
-        // sj.spring = 5f;
-        // sj.damper = 5f;
+        Vector3 mouseDelta = Input.mousePosition - lastMousePos;
+
+        // 거의 움직이지 않으면 무시
+        if (mouseDelta.sqrMagnitude < 0.01f) return;
+
+        // 캐릭터 → 훅 지점 방향 (월드 공간)
+        Vector3 hookDir = (spot - transform.position).normalized;
+
+        // 훅 지점 법선 벡터
+        Vector3 hookNormal = hit.normal;
+
+        // 두 벡터 사이 각도 (0 ~ 180)
+        float angle = Vector3.Angle(hookDir, hookNormal);
+
+        // 각도가 90도에 가까울수록 힘 감소
+        float factor = Mathf.Cos(angle * Mathf.Deg2Rad);
+        factor = Mathf.Clamp(factor, 0.2f, 1f); // 최소 0.2로 설정, 너무 느리면 스윙이 답답해짐
+
+        if (mouseDelta.y < 0) // 뒤로 드래그할 때만 힘 적용
+        {
+            rb.linearDamping = 0;
+            // 힘에 factor 곱해서 벽 근처에서 속도 감소
+            rb.AddForce(Vector3.forward * 0.04f * factor, ForceMode.Force);
+
+            if (sj != null)
+            {
+                // sj.spring = mappedValue * factor; // 필요 시 스프링도 조절 가능
+                // sj.damper = mappedValue * factor;
+            }
+        }
+        else
+        {
+            if (sj != null)
+            {
+                rb.linearDamping += 0.002f;
+            }
+        }
     }
-}
 
 
-
-}
-
-
-void HookPoint()
-{
-
-    Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-    Physics.Raycast(ray, out RaycastHit rayCastHit, rayDistance, layerMask);
-
-    RaycastHit sphereCastHit;
-    Physics.SphereCast(cam.transform.position, 4, cam.transform.forward, out sphereCastHit, rayDistance, layerMask);
+    void HookPoint()
+    {
+        
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        Physics.Raycast(ray, out hit, rayDistance,layerMask);
+        Debug.DrawRay(spot, hit.normal * 2f, Color.red); // 법선 벡터를 빨간색으로 표시
+        RaycastHit sphereCastHit;
+        Physics.SphereCast(cam.transform.position, 4, cam.transform.forward, out sphereCastHit, rayDistance,layerMask);
 
     Vector3 realHitPoint;
 
-    if (rayCastHit.point != Vector3.zero)
-    {
-        realHitPoint = rayCastHit.point;
-    }
-    else if (sphereCastHit.point != Vector3.zero)
-    {
-        realHitPoint = sphereCastHit.point;
-    }
-    aim.transform.position = rayCastHit.point;
+        if (hit.point != Vector3.zero)
+        {
+            realHitPoint = hit.point;
+        }
+        else if (sphereCastHit.point != Vector3.zero)
+        {
+            realHitPoint = sphereCastHit.point;
+        }
+        aim.transform.position = hit.point;
 
-    hit = rayCastHit.point == Vector3.zero ? sphereCastHit : rayCastHit;
-}
+        hit = hit.point == Vector3.zero ? sphereCastHit : hit;
+    }
 
 void StartSwing()
 {
@@ -199,21 +207,15 @@ void StartSwing()
     sj.minDistance = dis * 0.2f;    // 스프링의 최소 길이 설정
 }
 
-void EndSwing()
-{
-    // --- 지민 ---
-    // 스윙 종료 시 카메라 컨트롤러에 알림
-    cameraController?.ExitSwingView();
-    // -------------------
-
-    rb.linearVelocity = new Vector3(rb.linearVelocity.x * 0.1f,
-    rb.linearVelocity.y,
-    rb.linearVelocity.z)
-     ;
-    isSwing = false;
-    lr.positionCount = 0;   // 라인 렌더러의 점 개수를 0으로 설정하여 선을 지움
-    Destroy(sj);            // 스프링 조인트 컴포넌트 파괴
-}
+    void EndSwing()
+    {
+        rb.linearVelocity = new Vector3(rb.linearVelocity.x * 0.5f,
+        rb.linearVelocity.y * 0.8f,
+        rb.linearVelocity.z);
+        isSwing = false;
+        lr.positionCount = 0;   // 라인 렌더러의 점 개수를 0으로 설정하여 선을 지움
+        Destroy(sj);            // 스프링 조인트 컴포넌트 파괴
+    }
 
 void DrawRope()
 {

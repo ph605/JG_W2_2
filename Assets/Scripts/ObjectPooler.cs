@@ -74,6 +74,7 @@ public class ObjectPooler : MonoBehaviour
         if (poolDictionary[prefab].Count == 0)
         {
             objectToSpawn = Instantiate(prefab);
+            objectToSpawn.transform.SetParent(transform);
             PooledObjectInfo info = objectToSpawn.AddComponent<PooledObjectInfo>();
             info.OriginalPrefab = prefab;
         }

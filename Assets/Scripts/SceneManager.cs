@@ -1,0 +1,63 @@
+using UnityEngine;
+
+public class SceneManager : MonoBehaviour
+{
+    public static SceneManager instance;
+
+    void Awake()
+    {
+        // 싱글턴 패턴 구현
+        if (instance != null && instance != this)
+        {
+            // 이미 인스턴스가 존재하면 새로 생긴 것을 파괴
+            Destroy(gameObject);
+            return;
+        }
+        // 이 오브젝트를 유일한 인스턴스로 설정
+        instance = this;
+
+        // 씬이 전환되어도 이 오브젝트는 파괴되지 않음
+        DontDestroyOnLoad(gameObject);
+    }
+
+    public void LoadSceneByName(string sceneName)
+    {
+        // 이름 충돌을 피하기 위해 전체 경로를 명시
+        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
+    }
+
+    public void LoadLobbyScene()
+    {
+        // 이름 충돌을 피하기 위해 전체 경로를 명시
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Lobby");
+    }
+
+    public void ReloadCurrentScene()
+    {
+        // 이름 충돌을 피하기 위해 전체 경로를 명시
+        string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        UnityEngine.SceneManagement.SceneManager.LoadScene(currentSceneName);
+    }
+
+    public void LoadNextScene()
+    {
+        // 이름 충돌을 피하기 위해 전체 경로를 명시
+        int currentSceneIndex = UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex;
+        int nextSceneIndex = currentSceneIndex + 1;
+
+        if (nextSceneIndex >= UnityEngine.SceneManagement.SceneManager.sceneCountInBuildSettings)
+        {
+            LoadLobbyScene();
+        }
+        else
+        {
+            UnityEngine.SceneManagement.SceneManager.LoadScene(nextSceneIndex);
+        }
+    }
+
+    public void QuitGame()
+    {
+        Debug.Log("게임을 종료합니다.");
+        Application.Quit();
+    }
+}

@@ -1,4 +1,10 @@
+using System;
+using UnityEditor;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public enum SceneType
 { 
@@ -68,7 +74,29 @@ public class SceneManager : MonoBehaviour
 
     public void QuitGame()
     {
-        Debug.Log("게임을 종료합니다.");
+#if UNITY_EDITOR
+        // 유니티 에디터에서 실행 중일 경우, 플레이 모드를 중지합니다.
+        EditorApplication.isPlaying = false;
+#else
+        // 빌드된 게임에서 실행 중일 경우, 어플리케이션을 종료합니다.
         Application.Quit();
+#endif
+    }
+
+    // 현재 스테이지 이름 가져오기
+    public SceneType GetCurrentStage()
+    {
+        string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+
+        if (Enum.TryParse(currentSceneName, out SceneType result))
+        {
+            return result;
+        }
+        else
+        {
+            // 만약 씬 이름과 일치하는 enum 멤버가 없다면 Unknown을 반환합니다.
+            Debug.LogWarning($"'{currentSceneName}' 씬과 일치하는 SceneType을 찾을 수 없습니다.");
+            return SceneType.Lobby;
+        }
     }
 }

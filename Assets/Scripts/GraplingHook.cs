@@ -55,32 +55,42 @@ public class GrapplingHook : MonoBehaviour
             // 각도가 90도에 가까울수록 힘 감소
             float absAngle = Mathf.Abs(angle); // 0~180
             float factor = Mathf.InverseLerp(90f, 180f, absAngle);
-            Debug.Log(factor);
-            // UpdateSpringForceByDrag();
-            if (Input.GetKey(KeyCode.W))
+            UpdateSpringForceByDrag();
+            // if (Input.GetKey(KeyCode.W))
+            // {
+            //     rb.AddForce(Vector3.forward * 5f, ForceMode.Acceleration);
+            //     // rb.AddForce(hookNormal * 5.0f, ForceMode.Force);
+            //     // rb.AddForce(Vector3.up * 10.0f, ForceMode.Force);
+            //     // if (currentTag == "Top")
+            //     // {
+            //     //     rb.AddForce(Vector3.forward * 10.0f, ForceMode.Force);
+            //     // }
+            //     // if (currentTag == "Left")
+            //     // if (currentTag == "Left")
+            //     // {
+            //     //     rb.AddForce(Vector3.forward * 15.0f, ForceMode.Force);
+            //     //     rb.AddForce(Vector3.up * 5.0f, ForceMode.Force);
+            //     // }
+            //     // if (currentTag == "Right")
+            //     // if (currentTag == "Right")
+            //     // {
+            //     //     rb.AddForce(Vector3.forward * 15.0f, ForceMode.Force);
+            //     //     rb.AddForce(Vector3.up * 5.0f, ForceMode.Force);
+            //     // }
+            // }
+            if (Input.GetKey(KeyCode.A))
             {
-                if (currentTag == "Top")
-                {
-                    rb.AddForce(Vector3.forward * 10.0f, ForceMode.Force);
-                }
-                if (currentTag == "Left")
-                if (currentTag == "Left")
-                {
-                    rb.AddForce(Vector3.forward * 15.0f, ForceMode.Force);
-                    rb.AddForce(Vector3.up * 5.0f, ForceMode.Force);
-                }
-                if (currentTag == "Right")
-                if (currentTag == "Right")
-                {
-                    rb.AddForce(Vector3.forward * 15.0f, ForceMode.Force);
-                    rb.AddForce(Vector3.up * 5.0f, ForceMode.Force);
-                }
+                rb.AddForce(Vector3.left * 3f, ForceMode.Acceleration);
+            }
+            if (Input.GetKey(KeyCode.D))
+            {
+                rb.AddForce(Vector3.right * 3f, ForceMode.Acceleration);
             }
             if (factor == 0)
             {
-                factor = 0.001f;
+                factor = 0.01f;
             }
-            Debug.Log(rb.maxLinearVelocity = 40f * factor);
+            // Debug.Log(rb.maxLinearVelocity = 40f * factor);
             rb.maxLinearVelocity = 40f * factor;
         }
         else
@@ -103,7 +113,7 @@ public class GrapplingHook : MonoBehaviour
     void UpdateSpringForceByDrag()
     {
         Vector3 mouseDelta = Input.mousePosition - lastMousePos;
-
+        Debug.Log(mouseDelta);
         // 거의 움직이지 않으면 무시
         if (mouseDelta.sqrMagnitude < 0.01f) return;
 
@@ -149,16 +159,16 @@ public class GrapplingHook : MonoBehaviour
         lr.positionCount = 2;                   // 라인 렌더러의 점 개수 설정
         lr.SetPosition(0, transform.position);  // 첫 번째 점을 플레이어 위치로 설정
         lr.SetPosition(1, hit.point);           // 두 번째 점을 레이캐스트 위치로 설정
-        /*
+        /* Spring Joint
         sj = gameObject.AddComponent<SpringJoint>();    // 스프링 조인트 컴포넌트 추가
         sj.autoConfigureConnectedAnchor = false;        // 연결된 앵커 자동 설정 비활성화
         sj.connectedAnchor = spot;                      // 연결 앵커를 훅 지점으로 설정
 
-    sj.spring = springForce;    // 스프링 힘 설정
-    sj.damper = springDamper;   // 스프링 댐퍼 설정
-    sj.massScale = springMass;  // 스프링 질량 설정
+        sj.spring = springForce;    // 스프링 힘 설정
+        sj.damper = springDamper;   // 스프링 댐퍼 설정
+        sj.massScale = springMass;  // 스프링 질량 설정
 
-    dis = Vector3.Distance(transform.position, spot);   // 플레이어와 로프 연결 지점 간의 거리 계산
+        dis = Vector3.Distance(transform.position, spot);   // 플레이어와 로프 연결 지점 간의 거리 계산
 
         sj.maxDistance = dis * 0.8f;    // 스프링의 최대 길이 설정
         sj.minDistance = dis * 0.2f;    // 스프링의 최소 길이 설정
@@ -197,26 +207,22 @@ public class GrapplingHook : MonoBehaviour
         drive.maximumForce = Mathf.Infinity;
 
         cj.xDrive = cj.yDrive = cj.zDrive = drive;
-}
-
+    }
     void EndSwing()
     {
         rb.linearVelocity = new Vector3(rb.linearVelocity.x * 0.5f,
-        rb.linearVelocity.y * 0.8f,
-        rb.linearVelocity.z);
+        rb.linearVelocity.y * 0.5f,
+        rb.linearVelocity.z * 0.5f);
         isSwing = false;
         lr.positionCount = 0;   // 라인 렌더러의 점 개수를 0으로 설정하여 선을 지움
         // Destroy(sj);            // 스프링 조인트 컴포넌트 파괴
         Destroy(cj);
     }
-
-void DrawRope()
-{
-    if (isSwing)
+    void DrawRope()
     {
-        lr.SetPosition(0, transform.position);  // 로프의 첫 번째 점을 플레이어 위치로 설정하여 선을 그림
+        if (isSwing)
+        {
+            lr.SetPosition(0, transform.position);  // 로프의 첫 번째 점을 플레이어 위치로 설정하여 선을 그림
+        }
     }
-}
-
-
 }

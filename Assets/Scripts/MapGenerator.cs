@@ -41,15 +41,17 @@ public class MapGenerator : MonoBehaviour
     private float tileRecycleTriggerZ;
 
     [Header("방사형으로 생성하는 맵")]
-    // 생성된 타일의 그리드 좌표를 저장하여 중복 생성을 방지
+    // 생성된 타일의 타일 그리드 좌표를 저장하여 중복 생성을 방지
     private HashSet<Vector2Int> spawnedTileCoords = new HashSet<Vector2Int>();
-    // 활성화된 타일을 그리드 좌표와 함께 관리
+    // 활성화된 타일을 타일 그리드 좌표와 함께 관리
     private Dictionary<Vector2Int, GameObject> activeSpreadTiles = new Dictionary<Vector2Int, GameObject>();
     // 각 좌표에 어떤 타일 패턴이 사용되었는지 영구적으로 기록하는 딕셔너리
     private Dictionary<Vector2Int, TilePattern> tileDataHistory = new Dictionary<Vector2Int, TilePattern>();
 
     // 플레이어의 이전 그리드 좌표를 저장
     private Vector2Int lastPlayerCoord;
+    // 플레이어의 시작 그리드 좌표를 저장
+    private Vector2Int startPlayerCoord;
 
 
     void Start()
@@ -81,14 +83,15 @@ public class MapGenerator : MonoBehaviour
                     // 플레이어가 첫 번째 타일의 절반을 지났을 때 다음 타일이 생성되도록 설정
                     tileRecycleTriggerZ = tileLength / 2;
 
-                    SpawnTile();
+                    SpawnNormalTile();
                 }
                 break;
 
             case MapType.Spread:
                 // 플레이어의 시작 그리드 좌표를 계산하고, 주변 타일을 즉시 생성
                 lastPlayerCoord = GetPlayerTileLoc();
-                SpawnSpreadTilesInRadius();
+                startPlayerCoord = lastPlayerCoord;
+                SpawnNormalTile();
                 break;
         }
     }
@@ -106,7 +109,7 @@ public class MapGenerator : MonoBehaviour
                 float tileRecycleTriggerZ = spawnZ - (visibleTilesOnScreen * tileLength) + tileLength;
                 if (playerTransform.position.z > tileRecycleTriggerZ)
                 {
-                    SpawnTile();
+                    SpawnNormalTile();
                     DeleteOldestTile();
 
                     // 다음 타일 교체 지점을 한 타일 길이만큼 앞으로 이동시킴
@@ -120,24 +123,24 @@ public class MapGenerator : MonoBehaviour
                 if (currentPlayerCoord != lastPlayerCoord)
                 {
                     lastPlayerCoord = currentPlayerCoord;
-                    SpawnTile(); // 주변에 없는 타일 생성
+                    SpawnNormalTile(); // 주변에 없는 타일 생성
                     DeleteOldestTile();    // 너무 멀어진 타일 제거
                 }
                 break;
         }
     }
     
-    // 맵 생성
-    private void SpawnTile()
+    // 일반 맵 생성
+    private void SpawnNormalTile()
     {
         switch(mapType)
         {
             case MapType.Line:
-                SpawnLineTile();
+                SpawnNormalLineTile();
                 break;
 
             case MapType.Spread:
-                SpawnSpreadTilesInRadius();
+                SpawnSpreadNormalTilesInRadius();
                 break;
         }
     }
@@ -162,18 +165,11 @@ public class MapGenerator : MonoBehaviour
     // ================================================
 
     // 직선형 맵 생성
-    private void SpawnLineTile()
+    private void SpawnNormalLineTile()
     {
         // 결승 지점 맵 생성
-        if (tilesSpawnedCount >= totalTilesToGoal)
-        {
-            isGoalSpawned = true;
-            GameObject finishTile = Instantiate(finishLinePrefab, Vector3.forward * spawnZ, Quaternion.identity);
-            activeTiles.Add(finishTile);
-            spawnZ += tileLength;
-
+        if (SpawnFinishLineTile())
             return;
-        }
 
         // 1. 비어있는 기본 타일을 풀에서 가져옴
         GameObject newTile = ObjectPooler.Instance.SpawnFromPool(emptyTilePrefab, Vector3.forward * spawnZ, Quaternion.identity);
@@ -199,6 +195,21 @@ public class MapGenerator : MonoBehaviour
         ++tilesSpawnedCount;
         // 3. 타일에 붙어있는 TileBehavior 스크립트에게 선택된 패턴으로 장애물을 생성하라고 명령
         newTile.GetComponent<TileBehavior>().GenerateObstacles(selectedPattern);
+    }
+
+    // 직선형 결승 타일 생성
+    private bool SpawnFinishLineTile()
+    {
+        if (tilesSpawnedCount >= totalTilesToGoal)
+        {
+            isGoalSpawned = true;
+            GameObject finishTile = Instantiate(finishLinePrefab, Vector3.forward * spawnZ, Quaternion.identity);
+            activeTiles.Add(finishTile);
+            spawnZ += tileLength;
+
+            return true;
+        }
+        return false;
     }
 
     // 직선형 맵 제거
@@ -227,8 +238,13 @@ public class MapGenerator : MonoBehaviour
         return new Vector2Int(x, z);
     }
 
+    private Vector2Int GetEachDistance(Vector2Int a, Vector2Int b)
+    {
+        return new Vector2Int(Mathf.Abs(a.x - b.x), Mathf.Abs(a.y - b.y));
+    }
+
     // 플레이어 주변의 정의된 반경 내에 타일을 생성
-    private void SpawnSpreadTilesInRadius()
+    private void SpawnSpreadNormalTilesInRadius()
     {
         for (int x = -visibleTilesOnScreen; x <= visibleTilesOnScreen; x++)
         {
@@ -236,11 +252,15 @@ public class MapGenerator : MonoBehaviour
             {
                 Vector2Int tileLoc = new Vector2Int(lastPlayerCoord.x + x, lastPlayerCoord.y + z);
 
-                // 이 좌표에 타일이 아직 생성되지 않았다면
-                if (!spawnedTileCoords.Contains(tileLoc))
-                {
-                    SpawnSingleSpreadTile(tileLoc);
-                }
+                // 이 좌표에 타일이 생성되었다면, 무시
+                if (spawnedTileCoords.Contains(tileLoc))
+                    continue;
+
+                // 결승 지점을 생성했다면, 무시
+                if (SpawnSpreadFinishTile(tileLoc))
+                    continue;
+
+                SpawnSingleSpreadTile(tileLoc);
             }
         }
     }
@@ -279,13 +299,10 @@ public class MapGenerator : MonoBehaviour
         foreach (Vector2Int tileCoord in activeSpreadTiles.Keys.ToList())
         {
             // 타일과 플레이어 사이의 그리드 거리를 계산
-            float distance = Vector2Int.Distance(tileCoord, lastPlayerCoord);
-
-            int diffX = Mathf.Abs(tileCoord.x - lastPlayerCoord.x);
-            int diffZ = Mathf.Abs(tileCoord.y - lastPlayerCoord.y);
+            Vector2Int diff = GetEachDistance(tileCoord, lastPlayerCoord);
 
             // 거리가 시야 반경 + 여유분보다 크면
-            if (diffX > visibleTilesOnScreen || diffZ > visibleTilesOnScreen)
+            if (diff.x > visibleTilesOnScreen || diff.y > visibleTilesOnScreen)
             {
                 GameObject tileToReturn = activeSpreadTiles[tileCoord];
                 tileToReturn.GetComponent<TileBehavior>().ReturnAllObstaclesToPool();
@@ -295,5 +312,35 @@ public class MapGenerator : MonoBehaviour
                 spawnedTileCoords.Remove(tileCoord); // 다시 생성될 수 있도록 HashSet에서도 제거
             }
         }
+    }
+
+    // 방사형 유형 맵에서 결승 타일 생성
+    private bool SpawnSpreadFinishTile(Vector2Int tileLoc)
+    {
+        Vector2Int diff = GetEachDistance(tileLoc, startPlayerCoord);
+
+        // 1. 결승선 넘어서 초과한 경우에는 아무것도 생성하지 않음.
+        if (diff.x > totalTilesToGoal || diff.y > totalTilesToGoal)
+            return true;
+
+        // 2. 결승선에 도착한 경우, 결승 프리펩을 통해 생성
+        if(diff.x == totalTilesToGoal || diff.y == totalTilesToGoal)
+        {
+            // 이미 생성되었다면, 무시
+            if (spawnedTileCoords.Contains(tileLoc))
+                return true;
+
+            // 결승 타일 프리펩 생성
+            Vector3 position = new Vector3(tileLoc.x * tileLength, 0, tileLoc.y * tileLength);
+            GameObject finishTile = ObjectPooler.Instance.SpawnFromPool(finishLinePrefab, position, Quaternion.identity);
+
+            spawnedTileCoords.Add(tileLoc);
+            activeSpreadTiles.Add(tileLoc, finishTile);
+
+            return true;
+        }
+        
+        // 3. 경계선보다 안쪽인 경우에는 일반 타일 생성
+        return false;
     }
 }

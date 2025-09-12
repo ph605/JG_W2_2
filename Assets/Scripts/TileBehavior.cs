@@ -46,7 +46,6 @@ public class TileBehavior : MonoBehaviour
                         finalScale = Vector3.one;
 
                     obstacle.transform.localScale = finalScale;
-                    Debug.Log(finalScale.ToString());
                 }
             }
         }
@@ -59,6 +58,13 @@ public class TileBehavior : MonoBehaviour
         for (int i = transform.childCount - 1; i >= 0; i--)
         {
             GameObject child = transform.GetChild(i).gameObject;
+
+            // 1. 자식 오브젝트에서 PooledObjectInfo 컴포넌트를 찾아봄
+            PooledObjectInfo pooledObj = child.GetComponent<PooledObjectInfo>();
+
+            // 2. 컴포넌트가 존재할 때만 (즉, 풀링으로 생성된 장애물일 때만) 반납 로직을 실행
+            if (pooledObj == null)
+                continue;
 
             // 자식 관계를 먼저 해제
             child.transform.SetParent(null);

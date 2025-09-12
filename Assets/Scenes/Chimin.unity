@@ -347,6 +347,7 @@ GameObject:
   - component: {fileID: 330585545}
   - component: {fileID: 330585544}
   - component: {fileID: 330585547}
+  - component: {fileID: 330585548}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -472,6 +473,50 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!114 &330585548
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3eb23486d541e040802a90cc0c6a44d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerTransform: {fileID: 1268665918}
+  playerController: {fileID: 1268665924}
+  cameraRotationSpeed: 0.05
+  minPitch: -30
+  maxPitch: 60
+  cameraDistance: 10
+  pivotOffset: {x: 0, y: 1.5, z: 0}
+  maxPitchVerticalDisplacement: -0.6
+  minDistanceAtMaxPitch: 6.6
+  maxPitchFov: 30
+  maxDownwardPitchFov: 30
+  cameraCollisionMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  minCameraDistance: 0.3
+  cameraProbeRadius: 8
+  cameraCollisionLerp: 50
+  chargeShakeMax: 0.15
+  chargeShakeFreq: 18
+  speedShakeIntensity: 0.12
+  speedShakeFreq: 22
+  burstShakeIntensity: 0.35
+  burstShakeDecay: 4
+  posJitter: 0.05
+  rotJitter: 1.5
+  launchKickBack: 0.6
+  launchKickTime: 0.15
+  hasteFov: 72
+  fovLerp: 6
+  swingFov: 80
+  swingPivotOffsetXAmount: 2
+  swingPivotOffsetLerp: 6
 --- !u!1 &354897876
 GameObject:
   m_ObjectHideFlags: 0
@@ -1539,10 +1584,11 @@ MonoBehaviour:
   rope: {fileID: 1268665919}
   playerInput: {fileID: 1268665926}
   aim: {fileID: 930633668}
+  cameraController: {fileID: 330585548}
   layerMask:
     serializedVersion: 2
     m_Bits: 192
-  rayDistance: 50
+  rayDistance: 60
   sphereRadius: 3
   springForce: 30
   springDamper: 10
@@ -1556,6 +1602,7 @@ MonoBehaviour:
   pushUpSide: 50
   enableWallPush: 1
   pushSideways: 50
+  playerController: {fileID: 0}
 --- !u!114 &1268665924
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1570,34 +1617,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 10
   rotationSpeed: 0.1
-  cameraRotationSpeed: 0.05
-  minPitch: -30
-  maxPitch: 60
-  cameraDistance: 8
-  cameraCollisionMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  minCameraDistance: 0.3
-  cameraProbeRadius: 0.2
-  cameraCollisionLerp: 20
-  starParticlePrefab: {fileID: 0}
   hasteHoldSeconds: 1.5
   hasteMultiplier: 3
   hasteChargeAction: {fileID: 8671178765093232632, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   hasteFillImage: {fileID: 464147324}
   hasteRemainText: {fileID: 0}
-  chargeShakeMax: 0.15
-  chargeShakeFreq: 18
-  speedShakeIntensity: 0.12
-  speedShakeFreq: 22
-  burstShakeIntensity: 4
-  burstShakeDecay: 4
-  posJitter: 0.05
-  rotJitter: 1.5
-  launchKickBack: 2
-  launchKickTime: 0.15
-  hasteFov: 72
-  fovLerp: 6
   controllerLocked: 0
   onStageClear:
     m_PersistentCalls:
@@ -1608,7 +1632,6 @@ MonoBehaviour:
   onDeathRequested:
     m_PersistentCalls:
       m_Calls: []
-  playerCamera: {fileID: 330585545}
 --- !u!114 &1268665926
 MonoBehaviour:
   m_ObjectHideFlags: 0

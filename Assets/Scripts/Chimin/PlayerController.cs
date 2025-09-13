@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float moveSpeed = 5f;
     [SerializeField] float rotationSpeed = 0.1f;
 
+
     [Header("Haste (Charging)")]
     [SerializeField] float hasteHoldSeconds = 1.5f;
     [SerializeField] float hasteMultiplier = 3f;
@@ -43,7 +44,7 @@ public class PlayerController : MonoBehaviour
     public bool WasHasteActive { get; private set; } = false;
     public bool IsClinging { get; set; }
 
-
+    public bool IsTumbling { get; set; } = false;
 
     Rigidbody rb;
     Vector2 moveInput;
@@ -103,16 +104,24 @@ public class PlayerController : MonoBehaviour
         ProcessMove();
     }
 
-    void ProcessPlayerRotation()
+void ProcessPlayerRotation()
+{
+    if (!canRotate) return;
+
+    float yawDelta = LookInput.x * rotationSpeed;
+
+    if (IsTumbling)
     {
-        // ▼▼▼ 이 if문으로 감싸주세요 ▼▼▼
-        if (canRotate)
-        {
-            // 마우스 좌우 움직임으로 플레이어 전체를 회전
-            float yaw = transform.eulerAngles.y + LookInput.x * rotationSpeed;
-            transform.eulerAngles = new Vector3(0f, yaw, 0f);
-        }
+        // 스핀(X 회전)은 그대로 두고, 월드 Up 기준으로 Yaw만 추가
+        transform.Rotate(Vector3.up, yawDelta, Space.World);
+        return;
     }
+
+    // 평상시 로직 (기존과 동일)
+    float yaw = transform.eulerAngles.y + yawDelta;
+    transform.eulerAngles = new Vector3(0f, yaw, 0f);
+}
+
 
     void ProcessHaste()
     {
@@ -146,6 +155,8 @@ public class PlayerController : MonoBehaviour
 
     void ProcessMove()
     {
+        if (IsTumbling) return; // << 이 줄을 추가하세요
+
         if (IsClinging) return;
 
         if (IsHasteActive)

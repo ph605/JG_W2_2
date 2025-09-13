@@ -1,60 +1,79 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
+using System;
 
 public class PlayerGrapple : MonoBehaviour
 {
     [Header("Refs")]
-    [SerializeField] Camera cam;                  // ·¹ÀÌ ±âÁØ Ä«¸Ş¶ó
-    [SerializeField] LineRenderer rope;           // ·ÎÇÁ ½Ã°¢È­
-    [SerializeField] PlayerInput playerInput;     // PlayerInput (¾øÀ¸¸é µ¿ÀÏ ¿ÀºêÁ§Æ®¿¡¼­ ÀÚµ¿ È¹µæ)
-    [SerializeField] GameObject aim;              // ¿¡ÀÌ¹Ö Ç¥½Ã ¿ÀºêÁ§Æ®(¼±ÅÃ)
-
-    [SerializeField] PlayerCameraController cameraController; // ÀÌ ÁÙÀ» Ãß°¡ÇÏ¼¼¿ä
+    [SerializeField] Camera cam;
+    [SerializeField] LineRenderer rope;
+    [SerializeField] PlayerInput playerInput;
+    [SerializeField] GameObject aim;
+    [SerializeField] PlayerCameraController cameraController;
+    [SerializeField] PlayerController playerController;
+    [SerializeField] RotationTracker rotationTracker;
+    [SerializeField] CameraRigFollow cameraRig; // â† CameraRig ë“œë¡­
 
     [Header("Aim/Raycast")]
-    [SerializeField] LayerMask layerMask = ~0;    // ÈÅ °¡´É Ç¥¸é ·¹ÀÌ¾î(Á¶ÁØ Å½»ö)
-    [SerializeField] float rayDistance = 60f;     // ¿¡ÀÌ¹Ö Å½»ö °Å¸®
-    [SerializeField] float sphereRadius = 3f;     // ½ºÇÇ¾îÄ³½ºÆ® ¹İ°æ(·¹ÀÌ ½ÇÆĞ º¸Á¤)
+    [SerializeField] LayerMask layerMask = ~0;
+    [SerializeField] float rayDistance = 60f;
+    [SerializeField] float sphereRadius = 3f;
 
     [Header("Spring Joint (Swing)")]
-    [SerializeField] float springForce = 35f;     // sj.spring
-    [SerializeField] float springDamper = 4f;     // sj.damper
-    [SerializeField] float springMass = 1f;       // sj.massScale
-    [SerializeField, Range(0.05f, 0.95f)] float minDistFrac = 0.2f; // sj.minDistance = dis * minDistFrac
-    [SerializeField, Range(0.05f, 0.95f)] float maxDistFrac = 0.8f; // sj.maxDistance = dis * maxDistFrac
-    [SerializeField] float maxSwingSpeed = 40f;   // ½ºÀ® Áß ÃÖ´ë ¼±Çü ¼Óµµ Ä¸
+    [SerializeField] float springForce = 35f;
+    [SerializeField] float springDamper = 4f;
+    [SerializeField] float springMass = 1f;
+    [SerializeField, Range(0.05f, 0.95f)] float minDistFrac = 0.2f;
+    [SerializeField, Range(0.05f, 0.95f)] float maxDistFrac = 0.8f;
+    [SerializeField] float maxSwingSpeed = 40f;
 
     [Header("Extra Push (optional)")]
-    [SerializeField] bool enableWPush = true;     // WÅ° °¡¼Ó »ç¿ë ¿©ºÎ
+    [SerializeField] bool enableWPush = true;
     [SerializeField] float pushForwardTop = 10f;
     [SerializeField] float pushForwardSide = 15f;
     [SerializeField] float pushUpSide = 5f;
 
     [Header("Wall Swing (optional)")]
-    [SerializeField] bool enableWallPush = true;    // ¿·º® ½ºÀ® °¡¼Ó »ç¿ë ¿©ºÎ
-    [SerializeField] float pushSideways = 20f;      // ¿·º® ½ºÀ® ½Ã Ãø¸éÀ¸·Î ¹Ì´Â Èû
+    [SerializeField] bool enableWallPush = true;
+    [SerializeField] float pushSideways = 20f;
 
-    // PlayerGrapple ½ºÅ©¸³Æ® »ó´Ü º¯¼ö ¼±¾ğºÎ¿¡ Ãß°¡
-    [Header("Refs")]
-    [SerializeField] PlayerController playerController; // PlayerController ÂüÁ¶ Ãß°¡
+    [Header("Release Physics")]
+    [SerializeField] float releaseSpinMultiplier = 0.5f;
+    [SerializeField] float settleSpeed = 8f;
 
-    // »óÅÂ
+    [Header("Swing Tilting")]
+    [SerializeField] float tiltSpeed = 5f;
+
+    [Header("Spin Correction")]
+    [SerializeField] float almostFullTurnThreshold = 300f; // 270~330
+
+    [Header("Landing")]
+    [SerializeField] bool alwaysAlignOnLanding = true; // â† ì°©ì§€ ì‹œ í•­ìƒ ì¹´ë©”ë¼ ë°©í–¥ìœ¼ë¡œ ë§ì¶”ê¸°
+
+    // ìƒíƒœ
     Rigidbody rb;
     SpringJoint sj;
     bool isSwing = false;
-    Vector3 anchor;                  // ÈÅ ÁöÁ¡
-    RaycastHit lastHit;              // ¸¶Áö¸· À¯È¿ È÷Æ®(¹ı¼±/ÅÂ±× ÂüÁ¶¿ë)
-    int currentLayer = -1;           // ¡ç ·¹ÀÌ¾î ÀúÀå(Ãß°¡)
+    Vector3 anchor;
+    RaycastHit lastHit;
+    int currentLayer = -1;
 
-    // ÀÔ·Â
-    InputAction grappleAction;       // "Grapple"
+    // ì…ë ¥
+    InputAction grappleAction;
     Vector3 lastMousePos;
+
+    // ì½”ë£¨í‹´ ìƒíƒœ
+    private Coroutine tumbleCoroutine;
+    private bool isSettling = false;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        rb.maxAngularVelocity = Mathf.Infinity;
+
         if (!playerInput) playerInput = GetComponent<PlayerInput>();
-        if (!playerController) playerController = GetComponent<PlayerController>(); // ÀÌ ÁÙ Ãß°¡
+        if (!playerController) playerController = GetComponent<PlayerController>();
 
         if (playerInput != null)
         {
@@ -72,6 +91,12 @@ public class PlayerGrapple : MonoBehaviour
             rope.useWorldSpace = true;
             rope.enabled = false;
         }
+
+        if (!rotationTracker)
+        {
+            rotationTracker = GetComponent<RotationTracker>();
+            if (!rotationTracker) rotationTracker = GetComponentInChildren<RotationTracker>(true);
+        }
     }
 
     void OnDestroy()
@@ -85,12 +110,8 @@ public class PlayerGrapple : MonoBehaviour
 
     void Update()
     {
-        // ¿¡ÀÌ¹Ö(ÈÅ Æ÷ÀÎÆ® °»½Å)
         UpdateHookPoint();
-
-        // ½Ã°¢È­
         DrawRope();
-
         lastMousePos = Input.mousePosition;
     }
 
@@ -98,72 +119,69 @@ public class PlayerGrapple : MonoBehaviour
     {
         if (!isSwing) return;
 
-        // ÃÖ´ë ¼Óµµ Ä¸
         if (rb.linearVelocity.sqrMagnitude > maxSwingSpeed * maxSwingSpeed)
             rb.linearVelocity = rb.linearVelocity.normalized * maxSwingSpeed;
 
-        // WÅ° ÃßÁø·Â (·¹ÀÌ¾î ±â¹İ)
         if (enableWPush)
         {
             var kb = Keyboard.current;
             if (kb != null && kb.wKey.isPressed)
             {
                 if (currentLayer == LayerMask.NameToLayer("Left"))
-                {
-                    // ¿ŞÂÊ º®¿¡ ºÙ¾úÀ» ¶§ ÇÃ·¹ÀÌ¾îÀÇ ¿À¸¥ÂÊÀ¸·Î ÈûÀ» ÁÜ
                     rb.AddForce(transform.right * pushSideways, ForceMode.Force);
-                }
                 else if (currentLayer == LayerMask.NameToLayer("Right"))
-                {
-                    // ¿À¸¥ÂÊ º®¿¡ ºÙ¾úÀ» ¶§ ÇÃ·¹ÀÌ¾îÀÇ ¿ŞÂÊÀ¸·Î ÈûÀ» ÁÜ
                     rb.AddForce(-transform.right * pushSideways, ForceMode.Force);
-                }
             }
         }
 
-        // ¿·º® ½ºÀ® ½Ã ÀÚµ¿À¸·Î Ãø¸é Èû Ãß°¡
         if (enableWallPush)
         {
-            // ¡Ú¡Ú¡Ú ¹æÇâ ¼öÁ¤ ¡Ú¡Ú¡Ú
             if (currentLayer == LayerMask.NameToLayer("Left"))
-            {
-                // ¿ŞÂÊ º®¿¡ ºÙ¾úÀ» ¶§ (º® ¹İ´ëÆíÀÎ) ¿À¸¥ÂÊ(+X)À¸·Î ÈûÀ» ÁÜ
                 rb.AddForce(Vector3.right * pushSideways, ForceMode.Force);
-            }
             else if (currentLayer == LayerMask.NameToLayer("Right"))
-            {
-                // ¿À¸¥ÂÊ º®¿¡ ºÙ¾úÀ» ¶§ (º® ¹İ´ëÆíÀÎ) ¿ŞÂÊ(-X)À¸·Î ÈûÀ» ÁÜ
                 rb.AddForce(Vector3.left * pushSideways, ForceMode.Force);
-            }
+        }
+
+        if (rb.linearVelocity.sqrMagnitude > 0.1f)
+        {
+            Vector3 ropeDirection = (anchor - transform.position).normalized;
+            Vector3 playerForward = rb.linearVelocity.normalized;
+            Quaternion targetRotation = Quaternion.LookRotation(playerForward, ropeDirection);
+            rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRotation, Time.fixedDeltaTime * tiltSpeed));
         }
     }
 
-    // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
-    // ÀÔ·Â Äİ¹é
+    // ì…ë ¥
     void OnGrappleStarted(InputAction.CallbackContext ctx)
     {
         TryStartSwing();
         lastMousePos = Input.mousePosition;
     }
+
     void OnGrappleCanceled(InputAction.CallbackContext ctx)
     {
         EndSwing();
     }
 
-    // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
-    // ¿¡ÀÌ¹Ö(·¹ÀÌ + ½ºÇÇ¾îÄ³½ºÆ®) ¡æ lastHit/aim °»½Å
+    // ì—ì´ë°
     void UpdateHookPoint()
     {
         if (!cam) return;
 
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-
         bool got = Physics.Raycast(ray, out RaycastHit hit, rayDistance, layerMask, QueryTriggerInteraction.Collide);
+
         if (!got)
         {
-            // ·¹ÀÌ°¡ ºø³ª°¡¸é ½ºÇÇ¾îÄ³½ºÆ®·Î º¸Á¤
-            got = Physics.SphereCast(cam.transform.position, sphereRadius, cam.transform.forward,
-                                     out hit, rayDistance, layerMask, QueryTriggerInteraction.Collide);
+            got = Physics.SphereCast(
+                cam.transform.position,
+                sphereRadius,
+                cam.transform.forward,
+                out hit,
+                rayDistance,
+                layerMask,
+                QueryTriggerInteraction.Collide
+            );
         }
 
         if (got)
@@ -174,17 +192,40 @@ public class PlayerGrapple : MonoBehaviour
         }
         else
         {
-            lastHit = new RaycastHit(); // ¹«È¿
-            if (aim && aim.activeSelf) aim.SetActive(false); // ¡ç ¼û±è
+            lastHit = new RaycastHit();
+            if (aim && aim.activeSelf) aim.SetActive(false);
         }
     }
 
-    // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
-    // ½ºÀ® ½ÃÀÛ
-    // PlayerGrapple.cs
-
+    // ìŠ¤ìœ™ ì‹œì‘
     void TryStartSwing()
     {
+        if (tumbleCoroutine != null)
+        {
+            StopCoroutine(tumbleCoroutine);
+            isSettling = false;
+            rb.isKinematic = false;
+
+            // (1) íšŒì „ ì¹´ìš´íŠ¸ ì¤‘ë‹¨ (ìŠ¤ìœ™ ì¤‘ í‹¸íŠ¸ê°€ ìŠ¤í•€ìœ¼ë¡œ ì¹´ìš´íŠ¸ë˜ëŠ” ê²ƒ ë°©ì§€)
+            rotationTracker?.StopTracking();
+
+            // (2) ì•„ì§ ì¹´ë©”ë¼ê°€ ê³ ì •ë¼ ìˆì„ ë•Œ í”Œë ˆì´ì–´ Yawë¥¼ 'í˜„ì¬ ì¹´ë©”ë¼ ì‹œì„ 'ìœ¼ë¡œ ìŠ¤ëƒ…
+            SnapPlayerYawToCameraView();
+
+            // (3) ë‚¨ì•„ìˆëŠ” ê°ì†ë„ ì œê±° (ì¬ìŠ¤ìœ™ ì§í›„ í”ë“¤ë¦¼ ë°©ì§€)
+            rb.angularVelocity = Vector3.zero;
+
+            // (4) ì´ì œ ìŠ¤í•€ ì¢…ë£Œ ì²˜ë¦¬
+            if (playerController != null)
+            {
+                playerController.IsTumbling = false;
+                playerController.UnlockController();
+                playerController.UnlockRotation();
+            }
+        }
+
+        rb.constraints = RigidbodyConstraints.FreezeRotation;
+
         if (isSwing) return;
         if (lastHit.point == Vector3.zero) return;
 
@@ -192,19 +233,9 @@ public class PlayerGrapple : MonoBehaviour
         anchor = lastHit.point;
         currentLayer = lastHit.collider ? lastHit.collider.gameObject.layer : -1;
 
-        // 1. ÄÁÆ®·Ñ Àá±İ
-        if (playerController != null)
-            playerController.LockRotation();
+        if (playerController != null) playerController.LockRotation();
+        if (cameraController != null) cameraController.EnterSwingView();
 
-        // 2. Ä«¸Ş¶ó È¿°ú Àû¿ë
-        if (cameraController != null)
-        {
-            cameraController.EnterSwingView();
-
-       
-        }
-
-        // 3. ¶óÀÎ ·»´õ·¯ ÁØºñ
         if (rope)
         {
             rope.enabled = true;
@@ -213,7 +244,6 @@ public class PlayerGrapple : MonoBehaviour
             rope.SetPosition(1, anchor);
         }
 
-        // 4. ½ºÇÁ¸µ Á¶ÀÎÆ®(¹°¸®) »ı¼º
         if (!sj) sj = gameObject.AddComponent<SpringJoint>();
         sj.autoConfigureConnectedAnchor = false;
         sj.connectedAnchor = anchor;
@@ -226,28 +256,25 @@ public class PlayerGrapple : MonoBehaviour
         sj.minDistance = Mathf.Clamp(dis * minDistFrac, 0f, sj.maxDistance);
     }
 
-    // ½ºÀ® Á¾·á
-    // PlayerGrapple.cs
-
+    // ìŠ¤ìœ™ ì¢…ë£Œ
     void EndSwing()
     {
         if (!isSwing) return;
 
         isSwing = false;
+        if (cameraController != null) cameraController.ExitSwingView();
 
-        // 1. ÄÁÆ®·Ñ Àá±İ ÇØÁ¦
-        if (playerController != null)
-            playerController.UnlockRotation();
-        if (cameraController != null)
-            cameraController.ExitSwingView();
+        if (tumbleCoroutine != null) StopCoroutine(tumbleCoroutine);
 
-        // 2. ¹°¸® È¿°ú Á¤¸®
-        rb.linearVelocity *= 0.5f; // ¼Óµµ »ìÂ¦ ÁÙ¿© ¾ÈÁ¤È­
-        if (sj)
-            Destroy(sj);
+        float releaseSpeed = rb.linearVelocity.magnitude;
+        float initialSpin = releaseSpinMultiplier * releaseSpeed;
+        tumbleCoroutine = StartCoroutine(TumbleCoroutine(initialSpin));
+
+        rb.linearVelocity *= 0.5f;
+
+        if (sj) Destroy(sj);
         sj = null;
 
-        // 3. ½Ã°¢ È¿°ú Á¤¸®
         if (rope)
         {
             rope.positionCount = 0;
@@ -255,12 +282,157 @@ public class PlayerGrapple : MonoBehaviour
         }
     }
 
-    // ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡
-    // ·ÎÇÁ ½Ã°¢È­
+    // ë¡œí”„ ì‹œê°í™”
     void DrawRope()
     {
         if (!isSwing || !rope) return;
         rope.SetPosition(0, transform.position);
         rope.SetPosition(1, anchor);
+    }
+
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ì°©ì§€ ì²˜ë¦¬ (ë³µêµ¬ ì½”ë£¨í‹´ ì‹œì‘ íŠ¸ë¦¬ê±°)
+    void HandleLanding(GameObject collidedObject)
+    {
+        if (collidedObject.layer != LayerMask.NameToLayer("Bottom")) return;
+        if (isSettling) return;
+
+        // ìŠ¤í•€ ì¤‘ ì°©ì§€
+        if (tumbleCoroutine != null)
+        {
+            StopCoroutine(tumbleCoroutine);
+            tumbleCoroutine = null;
+            StartCoroutine(SettleRotationCoroutine()); // ì•„ë˜ì—ì„œ ì¹´ë©”ë¼ Yaw ì‚¬ìš©í•˜ë„ë¡ ìˆ˜ì •ë¨
+            return;
+        }
+
+        // ìŠ¤í•€ ì¤‘ì´ ì•„ë‹ˆì–´ë„, ì°©ì§€ ì‹œ ë¬´ì¡°ê±´ ì¹´ë©”ë¼ ë°©í–¥ìœ¼ë¡œ ë§ì¶”ê¸°
+        if (alwaysAlignOnLanding)
+            StartCoroutine(AlignToCameraYawOnLanding());
+    }
+
+    void OnCollisionEnter(Collision collision) => HandleLanding(collision.gameObject);
+    void OnCollisionStay(Collision collision) => HandleLanding(collision.gameObject);
+
+    // ê³µì¤‘ íšŒì „ ì½”ë£¨í‹´
+    private IEnumerator TumbleCoroutine(float initialSpinForce)
+    {
+        isSettling = false;
+        if (playerController != null) playerController.IsTumbling = true;
+
+        rb.constraints = RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
+        rb.AddRelativeTorque(Vector3.right * initialSpinForce, ForceMode.Impulse);
+        Debug.Log($"[Grapple] Tumble start, spinForce={initialSpinForce:F2}");
+
+        rotationTracker?.StartTracking();
+
+        while (true) yield return null;
+    }
+
+    // ì°©ì§€ í›„ ìì„¸ ë³µêµ¬(ì¹´ë©”ë¼ Yawì— ì •ë ¬)
+    private IEnumerator SettleRotationCoroutine()
+    {
+        isSettling = true;
+        Debug.Log("[Grapple] Landing: settle start");
+
+        rotationTracker?.StopTracking();
+
+        if (rotationTracker != null && rotationTracker.PendingAbsDegrees >= almostFullTurnThreshold)
+        {
+            RotationTracker.RaiseManualSpin();
+            Debug.Log($"[Grapple] Almost full turn: +1 (pending={rotationTracker.PendingAbsDegrees:F1})");
+        }
+
+        if (playerController != null) playerController.LockController();
+
+        rb.isKinematic = true;
+
+        // â˜… í†µì¼: ì–´ë–¤ ê²½ìš°ë“  ì¹´ë©”ë¼ê°€ ë³´ê³  ìˆëŠ” ìˆ˜í‰ Yawë¡œ ì •ë ¬
+        float targetYaw = CalcCameraYaw();
+        Quaternion targetRotation = Quaternion.Euler(0f, targetYaw, 0f);
+
+        while (Quaternion.Angle(transform.rotation, targetRotation) > 1f)
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * settleSpeed);
+            yield return null;
+        }
+
+        transform.rotation = targetRotation;
+        rb.constraints = RigidbodyConstraints.FreezeRotation;
+        rb.isKinematic = false;
+
+        if (playerController != null)
+        {
+            playerController.IsTumbling = false;
+            playerController.UnlockRotation();
+            playerController.UnlockController();
+        }
+
+        Debug.Log("[Grapple] Landing: settle end");
+        isSettling = false;
+    }
+
+    float GetFlatYaw(Quaternion rot)
+    {
+        Vector3 fwd = rot * Vector3.forward;
+        fwd.y = 0f;
+        if (fwd.sqrMagnitude < 1e-6f) return transform.eulerAngles.y;
+        return Mathf.Atan2(fwd.x, fwd.z) * Mathf.Rad2Deg;
+    }
+
+    // ìŠ¤í•€ ì¤‘ì—” freezeëœ CameraRig(ê³ ì •ëœ ì‹œì„ )ê°€ ë” ì•ˆì •ì , ê·¸ ì™¸ì—” ì‹¤ì œ ì¹´ë©”ë¼ ì‹œì„ 
+    // ê¸°ì¡´: ìŠ¤í•€ ì¤‘ì—” cameraRig(ê³ ì •ëœ íšŒì „) ìš°ì„ 
+    float CalcCameraYaw()
+    {
+        // âœ… í•­ìƒ "í˜„ì¬ ì¹´ë©”ë¼"ì˜ ì‹œì ì„ ê¸°ì¤€ìœ¼ë¡œ Yaw ê³„ì‚°
+        if (cameraController != null) return GetFlatYaw(cameraController.transform.rotation);
+
+        // ë°±ì—…: í˜¹ì‹œ ì¹´ë©”ë¼ ì»¨íŠ¸ë¡¤ëŸ¬ê°€ ì—†ì„ ë•Œë§Œ ë¦¬ê·¸ ì‚¬ìš©
+        if (cameraRig != null) return GetFlatYaw(cameraRig.transform.rotation);
+
+        return transform.eulerAngles.y;
+    }
+
+    void SnapPlayerYawToCameraRig()
+    {
+        if (cameraRig == null) return;
+        float yaw = GetFlatYaw(cameraRig.transform.rotation);
+        transform.rotation = Quaternion.Euler(0f, yaw, 0f);
+    }
+
+    void SnapPlayerYawToCameraView()
+    {
+        if (cameraController == null) return;
+        float yaw = GetFlatYaw(cameraController.transform.rotation);
+        transform.rotation = Quaternion.Euler(0f, yaw, 0f);
+    }
+
+    IEnumerator AlignToCameraYawOnLanding()
+    {
+        isSettling = true;
+        if (playerController != null) playerController.LockController();
+        rb.isKinematic = true;
+
+        float targetYaw = CalcCameraYaw();
+        Quaternion targetRot = Quaternion.Euler(0f, targetYaw, 0f);
+
+        while (Quaternion.Angle(transform.rotation, targetRot) > 1f)
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * settleSpeed);
+            yield return null;
+        }
+
+        transform.rotation = targetRot;
+        rb.constraints = RigidbodyConstraints.FreezeRotation;
+        rb.isKinematic = false;
+
+        if (playerController != null)
+        {
+            playerController.IsTumbling = false;
+            playerController.UnlockRotation();
+            playerController.UnlockController();
+        }
+
+        isSettling = false;
     }
 }

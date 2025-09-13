@@ -1,18 +1,13 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerCameraController : MonoBehaviour
 {
-    // =================================================================
-    // Target & References
-    // =================================================================
     [Header("Target & References")]
-    [SerializeField] Transform playerTransform;
+    [Tooltip("ì¹´ë©”ë¼ê°€ ë”°ë¼ê°ˆ ëª©í‘œì…ë‹ˆë‹¤. í”Œë ˆì´ì–´ ë³¸ì²´ê°€ ì•„ë‹Œ, íšŒì „í•˜ì§€ ì•ŠëŠ” ìì‹ ì˜¤ë¸Œì íŠ¸(CameraTarget)ë¥¼ í• ë‹¹í•´ì•¼ í•©ë‹ˆë‹¤.")]
+    [SerializeField] Transform cameraTarget; // ë³€ìˆ˜ëª…ì„ playerTransformì—ì„œ cameraTargetìœ¼ë¡œ ë³€ê²½í–ˆìŠµë‹ˆë‹¤.
     [SerializeField] PlayerController playerController;
 
-    // =================================================================
-    // Camera Control
-    // =================================================================
     [Header("Camera Control")]
     [SerializeField] float cameraRotationSpeed = 0.05f;
     [SerializeField] float minPitch = -20f;
@@ -20,22 +15,12 @@ public class PlayerCameraController : MonoBehaviour
     [SerializeField] float cameraDistance = 10f;
     [SerializeField] Vector3 pivotOffset = new Vector3(0, 1.5f, 0);
 
-    // =================================================================
-    // Dynamic Adjustments (ÀÎ½ºÆåÅÍ ½ºÅ©¸°¼¦ ±âÁØ)
-    // =================================================================
     [Header("Dynamic Adjustments")]
-    [Tooltip("Ä«¸Ş¶ó°¡ ÃÖ´ë °¢µµ·Î 'À§'¸¦ º¼ ¶§, Áß½ÉÃà(Pivot)ÀÌ ¾ó¸¶³ª '¾Æ·¡·Î' ³»·Á°¥Áö ¼³Á¤ÇÕ´Ï´Ù.")]
     [SerializeField] float maxPitchVerticalDisplacement = -0.6f;
-    [Tooltip("Ä«¸Ş¶ó°¡ ÃÖ´ë °¢µµ·Î 'À§'¸¦ º¼ ¶§, ÇÃ·¹ÀÌ¾î¿ÍÀÇ ÃÖ¼Ò °Å¸®¸¦ ¼³Á¤ÇÕ´Ï´Ù.")]
     [SerializeField] float minDistanceAtMaxPitch = 6.6f;
-    [Tooltip("Ä«¸Ş¶ó°¡ ÃÖ´ë °¢µµ·Î 'À§'¸¦ º¼ ¶§, ½Ã¾ß°¢(FOV)À» ¾ó¸¶³ª ³ĞÈúÁö ¼³Á¤ÇÕ´Ï´Ù.")]
     [SerializeField] float maxPitchFov = 30f;
-    [Tooltip("Ä«¸Ş¶ó°¡ ÃÖ´ë °¢µµ·Î '¾Æ·¡'¸¦ º¼ ¶§, ½Ã¾ß°¢(FOV)À» ¾ó¸¶³ª ³ĞÈúÁö ¼³Á¤ÇÕ´Ï´Ù. (Ãß°¡µÈ ±â´É)")]
     [SerializeField] float maxDownwardPitchFov = 85f;
 
-    // =================================================================
-    // Camera Collision
-    // =================================================================
     [Header("Camera Collision")]
     [SerializeField] LayerMask cameraCollisionMask = ~0;
     [SerializeField] float minCameraDistance = 0.3f;
@@ -43,9 +28,6 @@ public class PlayerCameraController : MonoBehaviour
     [SerializeField] float cameraCollisionLerp = 50f;
     float currentCamDist;
 
-    // =================================================================
-    // Camera FX
-    // =================================================================
     [Header("Camera FX")]
     [SerializeField] float chargeShakeMax = 0.15f;
     [SerializeField] float chargeShakeFreq = 18f;
@@ -60,23 +42,14 @@ public class PlayerCameraController : MonoBehaviour
     [SerializeField] float hasteFov = 72f;
     [SerializeField] float fovLerp = 6f;
 
-    // =================================================================
-    // Swing Settings (»õ·Î Ãß°¡)
-    // =================================================================
     [Header("Swing Settings")]
     [SerializeField] float swingFov = 90f;
-
-    [Tooltip("½ºÀ® ½Ã ÇÃ·¹ÀÌ¾î¸¦ È­¸é ÁÂ/¿ì·Î ¾ó¸¶³ª Ä¡¿ìÄ¡°Ô ÇÒÁö °áÁ¤ÇÕ´Ï´Ù.")]
     [SerializeField] float swingPivotOffsetXAmount = 2.5f;
-    [Tooltip("ÇÇº¿ ¿ÀÇÁ¼ÂÀÌ Àû¿ëµÇ°í µ¹¾Æ¿À´Â ¼ÓµµÀÔ´Ï´Ù.")]
     [SerializeField] float swingPivotOffsetLerp = 8f;
 
+    [Header("Tumble Orbit")]
+    [SerializeField] bool freeOrbitWhileTumbling = true;
 
-
-
-    // =================================================================
-    // Private Variables
-    // =================================================================
     private Camera mainCamera;
     private float cameraPitch = 0f;
     private float yaw = 0f;
@@ -85,26 +58,18 @@ public class PlayerCameraController : MonoBehaviour
     private float baseFov;
     private float perlinSeed;
     private float currentUpwardPitchT = 0f;
-    private float currentDownwardPitchT = 0f;  
-    // ½ºÀ® »óÅÂ °ü¸®¸¦ À§ÇÑ º¯¼ö
+    private float currentDownwardPitchT = 0f;
     private bool isSwinging = false;
+    private float currentSwingPivotOffsetX = 0f;
+    private float targetSwingPivotOffsetX = 0f;
 
-
-    // private float swingPivotOffsetX = 0f; // ÀÌ ÁÙÀ» ¾Æ·¡ µÎ ÁÙ·Î ³ª´²¼­ °ü¸®ÇÕ´Ï´Ù.
-    // ¡å¡å¡å ¾Æ·¡ 2ÁÙ·Î ±³Ã¼ ¡å¡å¡å
-    private float currentSwingPivotOffsetX = 0f; // ½ÇÁ¦ Àû¿ëµÉ ÇöÀç ÇÇº¿ ¿ÀÇÁ¼Â
-    private float targetSwingPivotOffsetX = 0f;  // µµ´ŞÇØ¾ß ÇÒ ¸ñÇ¥ ÇÇº¿ ¿ÀÇÁ¼Â
-
-    // =================================================================
-    // Unity Methods
-    // =================================================================
     void Awake()
     {
         mainCamera = GetComponent<Camera>();
-        if (playerTransform == null)
-            Debug.LogError("Player TransformÀÌ PlayerCameraController¿¡ ÇÒ´çµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
+        if (cameraTarget == null)
+            Debug.LogError("Camera Targetì´ PlayerCameraControllerì— í• ë‹¹ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
         if (playerController == null)
-            Debug.LogError("PlayerController°¡ PlayerCameraController¿¡ ÇÒ´çµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
+            Debug.LogError("PlayerControllerê°€ PlayerCameraControllerì— í• ë‹¹ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
     }
 
     void Start()
@@ -112,14 +77,12 @@ public class PlayerCameraController : MonoBehaviour
         currentCamDist = cameraDistance;
         baseFov = mainCamera ? mainCamera.fieldOfView : 60f;
         perlinSeed = Random.value * 1000f;
-
-        if (playerTransform)
-            yaw = playerTransform.eulerAngles.y;
+        if (cameraTarget) yaw = cameraTarget.eulerAngles.y;
     }
 
     void LateUpdate()
     {
-        if (playerTransform == null || playerController == null) return;
+        if (cameraTarget == null || playerController == null) return;
         if (playerController.IsClinging) return;
 
         if (!playerController.WasHasteActive && playerController.IsHasteActive)
@@ -131,87 +94,79 @@ public class PlayerCameraController : MonoBehaviour
         ProcessLook();
     }
 
-
-
-    /// <summary>
-    /// ½ºÀ® Ä«¸Ş¶ó ¸ğµå¸¦ ½ÃÀÛÇÕ´Ï´Ù.
-    /// </summary>
     public void EnterSwingView()
     {
         isSwinging = true;
     }
 
-    /// <summary>
-    /// ½ºÀ® Ä«¸Ş¶ó ¸ğµå¸¦ Á¾·áÇÕ´Ï´Ù.
-    /// </summary>
     public void ExitSwingView()
     {
         isSwinging = false;
-        // swingPivotOffsetX = 0f; // ÀÌ ÁÙÀ» ¾Æ·¡ ÁÙ·Î ±³Ã¼ÇÕ´Ï´Ù.
-        targetSwingPivotOffsetX = 0f; // ½ºÀ®ÀÌ ³¡³ª¸é ¸ñÇ¥ ÁöÁ¡À» ´Ù½Ã 0À¸·Î ¼³Á¤ÇÕ´Ï´Ù.
+        targetSwingPivotOffsetX = 0f;
     }
 
-    // =================================================================
-    // Core Logic
-    // =================================================================
     void ProcessLook()
     {
-        // ½ºÀ® ÁßÀÏ ¶§ A/D Å° ÀÔ·ÂÀ» È®ÀÎÇÕ´Ï´Ù.
+        bool tumbling = playerController != null && playerController.IsTumbling;
+
+        // ìŠ¤ìœ™ ì¤‘ ì¢Œ/ìš° í”¼ë²— ì˜¤í”„ì…‹ ì²˜ë¦¬ (ê¸°ì¡´ ê·¸ëŒ€ë¡œ)
         if (isSwinging)
         {
             var kb = Keyboard.current;
-            if (kb != null)
-            {
-                if (kb.aKey.isPressed)
-                {
-                    // AÅ°¸¦ ´©¸£¸é Ä«¸Ş¶ó¸¦ ¿ŞÂÊÀ¸·Î ÀÌµ¿
-                    targetSwingPivotOffsetX = -swingPivotOffsetXAmount;
-                }
-                else if (kb.dKey.isPressed)
-                {
-                    // DÅ°¸¦ ´©¸£¸é Ä«¸Ş¶ó¸¦ ¿À¸¥ÂÊÀ¸·Î ÀÌµ¿
-                    targetSwingPivotOffsetX = swingPivotOffsetXAmount;
-                }
-                else
-                {
-                    // ¾Æ¹« Å°µµ ´©¸£Áö ¾ÊÀ¸¸é Áß¾ÓÀ¸·Î º¹±Í
-                    targetSwingPivotOffsetX = 0f;
-                }
-            }
+            var gp = Gamepad.current;
+            float stickX = gp != null ? gp.leftStick.x.ReadValue() : 0f;
+
+            if ((kb != null && kb.aKey.isPressed) || stickX < -0.5f)
+                targetSwingPivotOffsetX = -swingPivotOffsetXAmount;
+            else if ((kb != null && kb.dKey.isPressed) || stickX > 0.5f)
+                targetSwingPivotOffsetX = swingPivotOffsetXAmount;
+            else
+                targetSwingPivotOffsetX = 0f;
         }
 
-        // 'ÇöÀç°ª'ÀÌ '¸ñÇ¥°ª'À» ÇâÇØ ºÎµå·´°Ô µû¶ó°©´Ï´Ù.
-        currentSwingPivotOffsetX = Mathf.Lerp(currentSwingPivotOffsetX, targetSwingPivotOffsetX, Time.deltaTime * swingPivotOffsetLerp);
+        currentSwingPivotOffsetX = Mathf.Lerp(
+            currentSwingPivotOffsetX,
+            targetSwingPivotOffsetX,
+            Time.deltaTime * swingPivotOffsetLerp
+        );
 
-        yaw = playerTransform.eulerAngles.y;
-
-        // ½ºÀ® ÁßÀÌ ¾Æ´Ò ¶§¸¸ ¸¶¿ì½º ÀÔ·ÂÀ» ¹Ş½À´Ï´Ù.
-        if (!isSwinging)
+        // â˜… í•µì‹¬ ë³€ê²½: ìŠ¤í•€ ì¤‘ì—ëŠ” yaw/pitchë¥¼ ë§ˆìš°ìŠ¤ë¡œ 'ëˆ„ì ' í•´ì„œ ììœ  ì˜¤ë¹—
+        if (freeOrbitWhileTumbling && tumbling)
         {
+            yaw += playerController.LookInput.x * cameraRotationSpeed;
             cameraPitch -= playerController.LookInput.y * cameraRotationSpeed;
             cameraPitch = Mathf.Clamp(cameraPitch, minPitch, maxPitch);
         }
+        else
+        {
+            // í‰ì†Œ/ìŠ¤ìœ™ ì•„ë‹˜: íƒ€ê²Ÿì˜ yawë¥¼ ë”°ë¥´ê³ , pitchë§Œ ë§ˆìš°ìŠ¤ë¡œ ì¡°ì ˆ(ê¸°ì¡´ ë™ì‘)
+            yaw = cameraTarget.eulerAngles.y;
+            if (!isSwinging)
+            {
+                cameraPitch -= playerController.LookInput.y * cameraRotationSpeed;
+                cameraPitch = Mathf.Clamp(cameraPitch, minPitch, maxPitch);
+            }
+        }
 
+        // ì´í•˜ ê¸°ì¡´ ê·¸ëŒ€ë¡œ
         currentUpwardPitchT = 0f;
         currentDownwardPitchT = 0f;
 
-        if (cameraPitch < 0) // À§¸¦ º¼ ¶§
-        {
+        if (cameraPitch < 0)
             currentUpwardPitchT = Mathf.InverseLerp(0f, minPitch, cameraPitch);
-        }
-        else if (cameraPitch > 0) // ¾Æ·¡¸¦ º¼ ¶§
-        {
+        else if (cameraPitch > 0)
             currentDownwardPitchT = Mathf.InverseLerp(0f, maxPitch, cameraPitch);
-        }
 
         float dynamicHeight = Mathf.Lerp(0, maxPitchVerticalDisplacement, currentUpwardPitchT);
-        Vector3 horizontalOffset = playerTransform.right * currentSwingPivotOffsetX;
-        Vector3 adjustedPivot = playerTransform.position + pivotOffset - new Vector3(0, dynamicHeight, 0) + horizontalOffset;
+        Vector3 horizontalOffset = cameraTarget.right * currentSwingPivotOffsetX;
+        Vector3 adjustedPivot = cameraTarget.position + pivotOffset - new Vector3(0, dynamicHeight, 0) + horizontalOffset;
+
         float dynamicDistance = Mathf.Lerp(cameraDistance, minDistanceAtMaxPitch, currentUpwardPitchT);
         Quaternion camRot = Quaternion.Euler(cameraPitch, yaw, 0f);
 
         HandleCameraCollisionAndPositioning(adjustedPivot, camRot, dynamicDistance);
         transform.LookAt(adjustedPivot);
+
         ApplyFovEffect();
         ApplyCameraShake();
     }
@@ -222,8 +177,13 @@ public class PlayerCameraController : MonoBehaviour
         float targetDist = desiredDist;
 
         if (Physics.SphereCast(
-            pivot, cameraProbeRadius, desiredDir, out RaycastHit hit,
-            desiredDist, cameraCollisionMask, QueryTriggerInteraction.Ignore))
+                pivot,
+                cameraProbeRadius,
+                desiredDir,
+                out RaycastHit hit,
+                desiredDist,
+                cameraCollisionMask,
+                QueryTriggerInteraction.Ignore))
         {
             targetDist = Mathf.Max(minCameraDistance, hit.distance - cameraProbeRadius);
         }
@@ -231,34 +191,34 @@ public class PlayerCameraController : MonoBehaviour
         ApplyLaunchKick(ref targetDist);
 
         currentCamDist = Mathf.Lerp(
-            currentCamDist, targetDist, 1f - Mathf.Exp(-cameraCollisionLerp * Time.deltaTime));
+            currentCamDist,
+            targetDist,
+            1f - Mathf.Exp(-cameraCollisionLerp * Time.deltaTime)
+        );
 
         transform.position = pivot + desiredDir * currentCamDist;
     }
 
-    // =================================================================
-    // Camera Effects
-    // =================================================================
     void ApplyFovEffect()
     {
-        // 1. ±âº» ¸ñÇ¥ FOV °è»ê (ÁúÁÖ, »óÇÏ ½ÃÁ¡)
         float hasteTargetFov = playerController.IsHasteActive ? hasteFov : baseFov;
         float upwardPitchTargetFov = Mathf.Lerp(baseFov, maxPitchFov, currentUpwardPitchT);
         float downwardPitchTargetFov = Mathf.Lerp(baseFov, maxDownwardPitchFov, currentDownwardPitchT);
 
         float defaultTargetFov = Mathf.Max(hasteTargetFov, upwardPitchTargetFov, downwardPitchTargetFov);
-
-        // 2. ½ºÀ® ÁßÀÎÁö È®ÀÎÇÏ¿© ÃÖÁ¾ ¸ñÇ¥ FOV °áÁ¤
         float finalTargetFov = isSwinging ? swingFov : defaultTargetFov;
 
-        // 3. ÃÖÁ¾ ¸ñÇ¥ FOV·Î ºÎµå·´°Ô º¯°æ
         mainCamera.fieldOfView = Mathf.Lerp(
-            mainCamera.fieldOfView, finalTargetFov, 1f - Mathf.Exp(-fovLerp * Time.deltaTime));
+            mainCamera.fieldOfView,
+            finalTargetFov,
+            1f - Mathf.Exp(-fovLerp * Time.deltaTime)
+        );
     }
 
     void ApplyLaunchKick(ref float targetDist)
     {
         if (launchKickTimer <= 0f) return;
+
         float k = Mathf.Clamp01(launchKickTimer / launchKickTime);
         targetDist += launchKickBack * k;
         launchKickTimer = Mathf.Max(0f, launchKickTimer - Time.deltaTime);

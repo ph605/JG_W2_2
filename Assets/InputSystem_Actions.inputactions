@@ -505,6 +505,17 @@
                 },
                 {
                     "name": "",
+                    "id": "0af34de8-7b44-4b03-83fd-082dd89454de",
+                    "path": "<Gamepad>/rightTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Grapple",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "9f75edca-4595-4f59-995c-78350470297e",
                     "path": "<Keyboard>/capsLock",
                     "interactions": "",

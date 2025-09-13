@@ -289,6 +289,10 @@ MonoBehaviour:
     prefab: {fileID: 4689319079934906193, guid: 0c562d8f6d086464db209151dbaf1ca8, type: 3}
   - type: 1
     prefab: {fileID: 4187761927622459232, guid: c314e7d0555bc2b409e07c5e75bd56f8, type: 3}
+  - type: 2
+    prefab: {fileID: 4689319079934906193, guid: 1e0bba2d4c3a85e438a5993b98099f52, type: 3}
+  - type: 3
+    prefab: {fileID: 4689319079934906193, guid: 03008d8da24612d42b1ede7e705bcaba, type: 3}
   Floor: {fileID: 6121209193491249099}
   patternNameText: {fileID: 6746564250932736752}
 --- !u!1 &6121209193491249099

@@ -35,13 +35,17 @@ public class GraplingHook : MonoBehaviour
     public float dragTime;
     public float dragSpeed;
     private float TempTime = 0;
+    [Header("Gravity")]
+    private bool isShowTime = false;
+    public float showTime;
+    private float showTempTime = 0;
 
     // --- 지민 ---
     [Header("Refs")]
     [SerializeField] PlayerController playerController;
     [SerializeField] PlayerCameraController cameraController;
-
     Vector3 lastMousePos;
+    
     void Start()
     {
         lr = GetComponent<LineRenderer>();
@@ -53,6 +57,19 @@ public class GraplingHook : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.G))
         {
             JumpStart();
+        }
+        if (isShowTime)
+        {
+            showTempTime += Time.deltaTime;
+            if (showTempTime >= showTime)
+            {
+                showTempTime = 0;
+                isShowTime = false;
+            }
+        }
+        else
+        {
+            rb.AddForce(Vector3.down * 8f, ForceMode.Acceleration);
         }
         if (isDragging)
         {
@@ -86,24 +103,39 @@ public class GraplingHook : MonoBehaviour
             aim.transform.position = ray.GetPoint(maxDistance);
             rb.maxLinearVelocity = 40f;
         }
-        if (Input.GetMouseButtonDown(0) && !isSwing)
+
+        //마우스
+        if (Input.GetMouseButtonDown(0))
         {
-            HookPoint();
-            StartSwing();
-            MouseDown();
-            lastMousePos = Input.mousePosition; // 드래그 시작 위치
-        }
-        else if (Input.GetMouseButton(0) && isSwing)
-        {
-            if (isDragging)
+            if (isSwing)
             {
-                MouseDrag();
+
+            }
+            else
+            {
+                HookPoint();
+                StartSwing();
+                MouseDown();
+                lastMousePos = Input.mousePosition; // 드래그 시작 위치
             }
         }
-        else if (Input.GetMouseButtonUp(0) && isSwing)
+        else if (Input.GetMouseButton(0))
         {
-            EndSwing();
-            isDragging = false;
+            if (isSwing)
+            {
+                if (isDragging)
+                {
+                MouseDrag();
+                }
+            }
+        }
+        else if (Input.GetMouseButtonUp(0))
+        {
+            if (isSwing)
+            {
+                EndSwing();
+                isDragging = false;
+            }
         }
         DrawRope();
         lastMousePos = Input.mousePosition; // 매 프레임 갱신
@@ -117,11 +149,11 @@ public class GraplingHook : MonoBehaviour
             aim.transform.position = hit.point;
         }
     }
-
     void StartSwing()
     {
         if (hit.point == Vector3.zero) return;
         isSwing = true;
+        isShowTime = true;
         spot = hit.point;   // 로프를 연결할 지점 설정
         try
         {
@@ -132,9 +164,6 @@ public class GraplingHook : MonoBehaviour
         {
             
         }
-        // --- 지민 ---
-        
-        // -------------------
         lr.positionCount = 2;                   // 라인 렌더러의 점 개수 설정
         lr.SetPosition(0, transform.position);  // 첫 번째 점을 플레이어 위치로 설정
         lr.SetPosition(1, hit.point);           // 두 번째 점을 레이캐스트 위치로 설정
@@ -180,7 +209,6 @@ public class GraplingHook : MonoBehaviour
         {
             
         }
-        
         currentHangTime = 0f;
         lr.startWidth = 0.1f;
         rb.linearVelocity = new Vector3(rb.linearVelocity.x * 0.3f,
@@ -210,13 +238,10 @@ public class GraplingHook : MonoBehaviour
         if (dragDir.x < -0.2)
         {
             Debug.Log("좌");
-            // rb.AddForce(Vector3.forward * dragSpeed/2, ForceMode.Impulse);
             rb.AddForce(Vector3.left * dragSpeed, ForceMode.Impulse);
         }
         if (dragDir.x > 0.2)
         {
-            Debug.Log("우");
-            // rb.AddForce(Vector3.forward * dragSpeed/2, ForceMode.Impulse);
             rb.AddForce(Vector3.right * dragSpeed, ForceMode.Impulse);
         }
         if (dragDir.y < 0)
@@ -229,15 +254,13 @@ public class GraplingHook : MonoBehaviour
             Debug.Log("뒤");
             rb.AddForce(Vector3.back * dragSpeed/3, ForceMode.Impulse);
         }
-        dragStartPos = currentPos; // 기준점 갱신 (연속 드래그 반영)
+        dragStartPos = currentPos; 
     }
-
     void JumpStart()
     {
         rb.AddForce(Vector3.forward * 5f, ForceMode.Impulse);
         rb.AddForce(Vector3.up * 5f, ForceMode.Impulse);
     }
-    
     // Scene 뷰에서 범위를 표시
     void OnDrawGizmos()
     {

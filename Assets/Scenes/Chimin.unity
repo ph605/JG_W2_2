@@ -1660,30 +1660,26 @@ MonoBehaviour:
   aim: {fileID: 930633668}
   cameraController: {fileID: 330585548}
   playerController: {fileID: 1268665924}
-  rotationTracker: {fileID: 357037543}
-  cameraRig: {fileID: 1272867937}
+  rotationTracker: {fileID: 0}
+  cameraRig: {fileID: 0}
   layerMask:
     serializedVersion: 2
     m_Bits: 192
   rayDistance: 60
   sphereRadius: 3
-  springForce: 30
-  springDamper: 10
-  springMass: 1
-  minDistFrac: 0.05
-  maxDistFrac: 0.4
-  maxSwingSpeed: 25
-  enableWPush: 1
-  pushForwardTop: 50
-  pushForwardSide: 50
-  pushUpSide: 50
-  enableWallPush: 1
-  pushSideways: 50
+  minRopeDistance: 5
+  hangingTime: 5
+  swingGravityBoost: 5
+  dragSpeed: 50
+  dragTime: 1
+  enableWPush: 0
+  pushSideways: 20
   releaseSpinMultiplier: 0.3
   settleSpeed: 20
-  tiltSpeed: 1
+  alwaysAlignOnLanding: 0
+  tiltSpeed: 0
+  maxSwingSpeed: 25
   almostFullTurnThreshold: 100
-  alwaysAlignOnLanding: 1
 --- !u!114 &1268665924
 MonoBehaviour:
   m_ObjectHideFlags: 0

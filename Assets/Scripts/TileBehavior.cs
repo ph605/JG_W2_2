@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class TileBehavior : MonoBehaviour
 {
@@ -12,6 +13,10 @@ public class TileBehavior : MonoBehaviour
     }
 
     public List<ObstaclePrefabMapping> obstaclePrefabs;
+
+    [Header("테스트 모드")]
+    public GameObject Floor;
+    public TextMeshProUGUI patternNameText;
 
     // ObstacleType을 키로 사용하여 빠르게 프리팹을 찾기 위한 딕셔너리
     private Dictionary<ObstacleType, GameObject> obstaclePrefabDict;
@@ -27,7 +32,7 @@ public class TileBehavior : MonoBehaviour
     }
 
     // MapGenerator가 호출할 함수. 패턴 데이터를 받아 장애물을 생성
-    public void GenerateObstacles(TilePattern pattern)
+    public void GenerateObstacles(TilePattern pattern, bool isTestMode)
     {
         foreach (var obstacleData in pattern.obstacleLayout)
         {
@@ -36,6 +41,13 @@ public class TileBehavior : MonoBehaviour
                 // Instantiate 대신 ObjectPooler 사용 (태그는 프리팹 이름 등으로 미리 약속)
                 Quaternion rotation = Quaternion.Euler(obstacleData.eulerAngles);
                 GameObject obstacle = ObjectPooler.Instance.SpawnFromPool(prefab, transform.position + obstacleData.position, rotation);
+                
+                if(isTestMode)
+                {
+                    patternNameText.text = pattern.name;
+                    patternNameText.gameObject.SetActive(true);
+                    Floor.gameObject.SetActive(true);
+                }
 
                 if (obstacle != null)
                 {

@@ -51,6 +51,8 @@ MonoBehaviour:
     prefab: {fileID: 4689319079934906193, guid: 0c562d8f6d086464db209151dbaf1ca8, type: 3}
   - type: 1
     prefab: {fileID: 4187761927622459232, guid: c314e7d0555bc2b409e07c5e75bd56f8, type: 3}
+  Floor: {fileID: 6121209193491249099}
+  patternNameText: {fileID: 0}
 --- !u!1 &6011799570586759399
 GameObject:
   m_ObjectHideFlags: 0
@@ -79,8 +81,8 @@ Transform:
   m_GameObject: {fileID: 6011799570586759399}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.03, z: -41.95}
-  m_LocalScale: {x: 30, y: 1, z: 15.877}
+  m_LocalPosition: {x: 0, y: 1.3, z: 0}
+  m_LocalScale: {x: 30, y: 1, z: 30}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 276221742813653111}
@@ -177,7 +179,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2164191194513518642
 Transform:
   m_ObjectHideFlags: 0
@@ -188,7 +190,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 30, y: 1, z: 100}
+  m_LocalScale: {x: 30, y: 1, z: 30}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 276221742813653111}

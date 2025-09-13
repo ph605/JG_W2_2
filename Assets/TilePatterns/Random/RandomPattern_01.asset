@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7004a039280e0647b913480dfd08ad7, type: 3}
+  m_Name: RandomPattern_01
+  m_EditorClassIdentifier: 
+  obstacleLayout:
+  - type: 2
+    position: {x: 9.382153, y: 9.92556, z: 6.287187}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 0.8839311, y: 0.8839311, z: 0.8839311}
+  - type: 3
+    position: {x: -0.75603294, y: 4.89153, z: 8.093224}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1, y: 1, z: 1}
+  - type: 0
+    position: {x: 1.483038, y: 1.6050937, z: -12.704674}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 3, y: 0.1, z: 3}
+  - type: 1
+    position: {x: 13.987835, y: 5.5347075, z: 12.427494}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 0.99266547, y: 0.99266547, z: 0.99266547}
+  - type: 2
+    position: {x: 6.6000004, y: 1.1010882, z: 14.555143}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1.5094044, y: 1.5094044, z: 1.5094044}
+  - type: 3
+    position: {x: -2.4872417, y: 7.736825, z: 10.212481}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1, y: 1, z: 1}
+  - type: 3
+    position: {x: 12.864115, y: 9.393647, z: 3.7398977}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1, y: 1, z: 1}
+  - type: 3
+    position: {x: -6.9600596, y: 6.191637, z: -6.9288826}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1, y: 1, z: 1}
+  - type: 3
+    position: {x: -0.36653805, y: 9.99184, z: -3.3655019}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1, y: 1, z: 1}
+  - type: 3
+    position: {x: -0.6453428, y: 5.7164536, z: 4.8373504}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1, y: 1, z: 1}

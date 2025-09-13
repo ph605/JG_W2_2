@@ -2,23 +2,38 @@ using UnityEngine;
 
 public class CursorController : MonoBehaviour
 {
+    public Canvas canvas;              // í¬ë¡œìŠ¤í—¤ì–´ê°€ ì†í•œ ìº”ë²„ìŠ¤
+    public RectTransform crosshairUI;  // í¬ë¡œìŠ¤í—¤ì–´ UI (Image ë“±)
     private void Start()
     {
-        // °ÔÀÓ ½ÃÀÛ ½Ã ¸¶¿ì½º Ä¿¼­ ¼û±â±â
-        LockCursor();
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ì½º Ä¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
+        // LockCursor();
+    }
+    void Update()
+    {
+        Vector2 localPoint;
+        // ë§ˆìš°ìŠ¤ ìŠ¤í¬ë¦° ì¢Œí‘œë¥¼ ìº”ë²„ìŠ¤ ë¡œì»¬ ì¢Œí‘œë¡œ ë³€í™˜
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvas.transform as RectTransform,
+            Input.mousePosition,
+            canvas.worldCamera,
+            out localPoint
+        );
+        // í¬ë¡œìŠ¤í—¤ì–´ ìœ„ì¹˜ë¥¼ ë§ˆìš°ìŠ¤ ìœ„ì¹˜ë¡œ ì—…ë°ì´íŠ¸
+        crosshairUI.localPosition = localPoint;
     }
 
-    // ¸¶¿ì½º Ä¿¼­ ¼û±â±â
+    // ï¿½ï¿½ï¿½ì½º Ä¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
     public void LockCursor()
     {
-        Cursor.lockState = CursorLockMode.Locked; // Ä¿¼­ Àá±İ
-        Cursor.visible = false;                   // Ä¿¼­ ¼û±è
+        Cursor.lockState = CursorLockMode.Locked; // Ä¿ï¿½ï¿½ ï¿½ï¿½ï¿½
+        Cursor.visible = false;                   // Ä¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     }
 
-    // ¸¶¿ì½º Ä¿¼­ º¸ÀÌ°Ô ÇÏ±â
+    // ï¿½ï¿½ï¿½ì½º Ä¿ï¿½ï¿½ ï¿½ï¿½ï¿½Ì°ï¿½ ï¿½Ï±ï¿½
     public void UnlockCursor()
     {
-        Cursor.lockState = CursorLockMode.None;   // Ä¿¼­ Àá±İ ÇØÁ¦
-        Cursor.visible = true;                    // Ä¿¼­ Ç¥½Ã
+        Cursor.lockState = CursorLockMode.None;   // Ä¿ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        Cursor.visible = true;                    // Ä¿ï¿½ï¿½ Ç¥ï¿½ï¿½
     }
 }

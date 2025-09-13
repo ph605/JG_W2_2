@@ -11,23 +11,19 @@ using UnityEngine.InputSystem;
 public class GraplingHook : MonoBehaviour
 {
     public LayerMask layerMask;
-    
     LineRenderer lr;
-    SpringJoint sj;
     ConfigurableJoint cj;
     Rigidbody rb;
     public GameObject aim;
-
-    
-    float dis;
-   
     bool isSwing;
-
     [Header("Raycast")]
     public Camera cam;
     public float maxDistance;
+    public float maxRopeDistance;
     public float minDistance;
     Vector3 spot;
+    [Header("SphereCast Settings")]
+    public float radius;      // 구체 반지름
     RaycastHit hit;
     [Header("Hang")]
     public float hangingTime;
@@ -37,8 +33,8 @@ public class GraplingHook : MonoBehaviour
     private Vector3 dragStartPos;
     private bool isDragging;
     public float dragTime;
-    [SerializeField]
-    private float TempTime;
+    public float dragSpeed;
+    private float TempTime = 0;
 
     // --- 지민 ---
     [Header("Refs")]
@@ -54,6 +50,10 @@ public class GraplingHook : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            JumpStart();
+        }
         if (isDragging)
         {
             TempTime += Time.deltaTime;
@@ -65,6 +65,7 @@ public class GraplingHook : MonoBehaviour
         }
         if (isSwing)
         {
+            rb.AddForce(Vector3.down * 5f, ForceMode.Acceleration);
             currentHangTime += Time.deltaTime;
             float t = currentHangTime / hangingTime;
             float currentWidth = Mathf.Lerp(0.1f, 0f, t);
@@ -80,16 +81,19 @@ public class GraplingHook : MonoBehaviour
         }
         else
         {
-            HookPoint();
+            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+            Physics.Raycast(ray, out hit, maxDistance, layerMask);
+            aim.transform.position = ray.GetPoint(maxDistance);
             rb.maxLinearVelocity = 40f;
         }
         if (Input.GetMouseButtonDown(0) && !isSwing)
         {
+            HookPoint();
             StartSwing();
             MouseDown();
             lastMousePos = Input.mousePosition; // 드래그 시작 위치
         }
-        else if (Input.GetMouseButton(0)&& isSwing)
+        else if (Input.GetMouseButton(0) && isSwing)
         {
             if (isDragging)
             {
@@ -104,13 +108,14 @@ public class GraplingHook : MonoBehaviour
         DrawRope();
         lastMousePos = Input.mousePosition; // 매 프레임 갱신
     }
-
-
     void HookPoint()
     {
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-        Physics.Raycast(ray, out hit, maxDistance, layerMask);
-        aim.transform.position = hit.point;
+        // SphereCast로 충돌체 검사
+        if (Physics.SphereCast(ray, radius, out hit, maxDistance, layerMask))
+        {
+            aim.transform.position = hit.point;
+        }
     }
 
     void StartSwing()
@@ -118,9 +123,17 @@ public class GraplingHook : MonoBehaviour
         if (hit.point == Vector3.zero) return;
         isSwing = true;
         spot = hit.point;   // 로프를 연결할 지점 설정
+        try
+        {
+            playerController.LockRotation();
+            cameraController.EnterSwingView();
+        }
+        catch
+        {
+            
+        }
         // --- 지민 ---
-        playerController.LockRotation();
-        cameraController.EnterSwingView();
+        
         // -------------------
         lr.positionCount = 2;                   // 라인 렌더러의 점 개수 설정
         lr.SetPosition(0, transform.position);  // 첫 번째 점을 플레이어 위치로 설정
@@ -158,13 +171,21 @@ public class GraplingHook : MonoBehaviour
     }
     void EndSwing()
     {
-        playerController.UnlockRotation();
-        cameraController.ExitSwingView();
+        try
+        {
+            playerController.UnlockRotation();
+            cameraController.ExitSwingView();
+        }
+        catch
+        {
+            
+        }
+        
         currentHangTime = 0f;
         lr.startWidth = 0.1f;
         rb.linearVelocity = new Vector3(rb.linearVelocity.x * 0.3f,
-        rb.linearVelocity.y * 0.5f,
-        rb.linearVelocity.z * 0.5f);
+        rb.linearVelocity.y,
+        rb.linearVelocity.z);
         isSwing = false;
         lr.positionCount = 0;   // 라인 렌더러의 점 개수를 0으로 설정하여 선을 지움
         Destroy(cj);
@@ -186,28 +207,59 @@ public class GraplingHook : MonoBehaviour
     {
         Vector3 currentPos = Input.mousePosition;
         Vector3 dragDir = (currentPos - dragStartPos).normalized; // 방향
-        if (dragDir.x < -0.1)
+        if (dragDir.x < -0.2)
         {
             Debug.Log("좌");
-            rb.AddForce(Vector3.forward * 4f, ForceMode.Acceleration);
-            rb.AddForce(Vector3.left * 6f, ForceMode.Acceleration);
+            // rb.AddForce(Vector3.forward * dragSpeed/2, ForceMode.Impulse);
+            rb.AddForce(Vector3.left * dragSpeed, ForceMode.Impulse);
         }
-        if (dragDir.x > 0.1)
+        if (dragDir.x > 0.2)
         {
             Debug.Log("우");
-            rb.AddForce(Vector3.forward * 4f, ForceMode.Acceleration);
-            rb.AddForce(Vector3.right * 6f, ForceMode.Acceleration);
+            // rb.AddForce(Vector3.forward * dragSpeed/2, ForceMode.Impulse);
+            rb.AddForce(Vector3.right * dragSpeed, ForceMode.Impulse);
         }
         if (dragDir.y < 0)
         {
             Debug.Log("앞");
-            rb.AddForce(Vector3.forward * 300f, ForceMode.Acceleration);
+            rb.AddForce(Vector3.forward * dragSpeed, ForceMode.Impulse);
         }
         if (dragDir.y > 0)
         {
             Debug.Log("뒤");
-            rb.AddForce(Vector3.back * 5f, ForceMode.Acceleration);
+            rb.AddForce(Vector3.back * dragSpeed/3, ForceMode.Impulse);
         }
         dragStartPos = currentPos; // 기준점 갱신 (연속 드래그 반영)
-    } 
+    }
+
+    void JumpStart()
+    {
+        rb.AddForce(Vector3.forward * 5f, ForceMode.Impulse);
+        rb.AddForce(Vector3.up * 5f, ForceMode.Impulse);
+    }
+    
+    // Scene 뷰에서 범위를 표시
+    void OnDrawGizmos()
+    {
+        if (cam == null) return;
+
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+
+        // 구체 시작 지점
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(ray.origin, radius);
+
+        // 맞은 경우 충돌 지점
+        if (hit.collider != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(hit.point, radius);
+        }
+        else
+        {
+            // 맞지 않았을 경우 끝 지점
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(ray.GetPoint(maxDistance), radius);
+        }
+    }
 }

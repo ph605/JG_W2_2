@@ -1,0 +1,95 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7004a039280e0647b913480dfd08ad7, type: 3}
+  m_Name: RandomPattern_01
+  m_EditorClassIdentifier: 
+  obstacleLayout:
+  - type: 0
+    position: {x: 7.125392, y: 4.389636, z: 9.811016}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1.672658, y: 1.672658, z: 1.672658}
+  - type: 2
+    position: {x: 7.4895964, y: 1.153655, z: 14.668011}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1.3239692, y: 1.3239692, z: 1.3239692}
+  - type: 1
+    position: {x: 1.3081684, y: 7.4431667, z: -11.040499}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1.0248336, y: 1.0248336, z: 1.0248336}
+  - type: 0
+    position: {x: -9.528629, y: 2.595251, z: 10.675034}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1.2314756, y: 1.2314756, z: 1.2314756}
+  - type: 2
+    position: {x: -3.0246577, y: 1.4434397, z: -1.3818831}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1.4058449, y: 1.4058449, z: 1.4058449}
+  - type: 0
+    position: {x: 13.128, y: 7.466433, z: -4.2797666}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1.4742014, y: 1.4742014, z: 1.4742014}
+  - type: 1
+    position: {x: -11.537516, y: 1.9842577, z: 9.227053}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 0.9348311, y: 0.9348311, z: 0.9348311}
+  - type: 2
+    position: {x: 12.303675, y: 6.063506, z: -4.926437}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1.6682124, y: 1.6682124, z: 1.6682124}
+  - type: 2
+    position: {x: -6.3371854, y: 5.8863525, z: 3.4482923}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1.7726773, y: 1.7726773, z: 1.7726773}
+  - type: 0
+    position: {x: -14.815252, y: 1.1517501, z: 5.35169}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1.7683423, y: 1.7683423, z: 1.7683423}
+  - type: 0
+    position: {x: 2.601315, y: 9.332914, z: -0.0024337769}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 0.95687413, y: 0.95687413, z: 0.95687413}
+  - type: 1
+    position: {x: 11.295221, y: 5.3673167, z: -6.051176}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1.22644, y: 1.22644, z: 1.22644}
+  - type: 2
+    position: {x: 3.8588977, y: 6.2964287, z: 9.528494}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1.3113527, y: 1.3113527, z: 1.3113527}
+  - type: 0
+    position: {x: 8.187285, y: 6.3382363, z: -14.248177}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1.2542958, y: 1.2542958, z: 1.2542958}
+  - type: 0
+    position: {x: -11.922211, y: 0.5217719, z: -1.7679029}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 0.94948554, y: 0.94948554, z: 0.94948554}
+  - type: 1
+    position: {x: -13.571205, y: 6.455586, z: 8.8707695}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 0.8323563, y: 0.8323563, z: 0.8323563}
+  - type: 2
+    position: {x: 12.852104, y: 7.176918, z: -7.5414486}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1.3946491, y: 1.3946491, z: 1.3946491}
+  - type: 1
+    position: {x: 3.1771393, y: 9.344272, z: 12.211521}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1.5187287, y: 1.5187287, z: 1.5187287}
+  - type: 0
+    position: {x: -5.214552, y: 1.6873801, z: 14.68733}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 0.8047733, y: 0.8047733, z: 0.8047733}
+  - type: 0
+    position: {x: -12.065714, y: 8.97421, z: 2.7976956}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1.5208169, y: 1.5208169, z: 1.5208169}

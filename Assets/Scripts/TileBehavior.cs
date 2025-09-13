@@ -13,6 +13,9 @@ public class TileBehavior : MonoBehaviour
     }
 
     public List<ObstaclePrefabMapping> obstaclePrefabs;
+
+    [Header("테스트 모드")]
+    public GameObject Floor;
     public TextMeshProUGUI patternNameText;
 
     // ObstacleType을 키로 사용하여 빠르게 프리팹을 찾기 위한 딕셔너리
@@ -43,6 +46,7 @@ public class TileBehavior : MonoBehaviour
                 {
                     patternNameText.text = pattern.name;
                     patternNameText.gameObject.SetActive(true);
+                    Floor.gameObject.SetActive(true);
                 }
 
                 if (obstacle != null)

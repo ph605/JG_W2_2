@@ -183,7 +183,7 @@ public class MapGenerator : MonoBehaviour
         if (isTestMode == false)
             return;
 
-        float space = tileLength * 1.2f;
+        float space = tileLength * 1.4f;
         for (int i = 0; i < tilePatterns.Count; i++)
         {
             int row = i / testModeTilesPerRow;

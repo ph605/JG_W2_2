@@ -10,14 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b7004a039280e0647b913480dfd08ad7, type: 3}
-  m_Name: TestTilePattern2
+  m_Name: TestTilePattern3
   m_EditorClassIdentifier: 
   obstacleLayout:
   - type: 0
-    position: {x: 0, y: 5, z: 0}
+    position: {x: 8.5, y: 1, z: 8.5}
     eulerAngles: {x: 0, y: 0, z: 0}
-    scale: {x: 5, y: 5, z: 5}
+    scale: {x: 1, y: 1, z: 1}
   - type: 1
-    position: {x: 10, y: 2, z: 15}
+    position: {x: 5, y: 1, z: -5}
     eulerAngles: {x: 0, y: 0, z: 0}
-    scale: {x: 2, y: 2, z: 2}
+    scale: {x: 1, y: 1, z: 1}
+  - type: 1
+    position: {x: -10, y: 1, z: 10}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1, y: 1, z: 1}
+  - type: 0
+    position: {x: -3.2, y: 1, z: 1.6}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1, y: 1, z: 1}

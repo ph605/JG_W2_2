@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
+[DefaultExecutionOrder(100)]
 public class PlayerCameraController : MonoBehaviour
 {
     [Header("Target & References")]
@@ -66,10 +67,8 @@ public class PlayerCameraController : MonoBehaviour
     void Awake()
     {
         mainCamera = GetComponent<Camera>();
-        if (cameraTarget == null)
-            Debug.LogError("Camera Target이 PlayerCameraController에 할당되지 않았습니다.");
-        if (playerController == null)
-            Debug.LogError("PlayerController가 PlayerCameraController에 할당되지 않았습니다.");
+        if (cameraTarget == null) Debug.LogError("Camera Target이 PlayerCameraController에 할당되지 않았습니다.");
+        if (playerController == null) Debug.LogError("PlayerController가 PlayerCameraController에 할당되지 않았습니다.");
     }
 
     void Start()
@@ -141,6 +140,7 @@ public class PlayerCameraController : MonoBehaviour
         {
             // 평소/스윙 아님: 타겟의 yaw를 따르고, pitch만 마우스로 조절(기존 동작)
             yaw = cameraTarget.eulerAngles.y;
+
             if (!isSwinging)
             {
                 cameraPitch -= playerController.LookInput.y * cameraRotationSpeed;
@@ -152,10 +152,8 @@ public class PlayerCameraController : MonoBehaviour
         currentUpwardPitchT = 0f;
         currentDownwardPitchT = 0f;
 
-        if (cameraPitch < 0)
-            currentUpwardPitchT = Mathf.InverseLerp(0f, minPitch, cameraPitch);
-        else if (cameraPitch > 0)
-            currentDownwardPitchT = Mathf.InverseLerp(0f, maxPitch, cameraPitch);
+        if (cameraPitch < 0) currentUpwardPitchT = Mathf.InverseLerp(0f, minPitch, cameraPitch);
+        else if (cameraPitch > 0) currentDownwardPitchT = Mathf.InverseLerp(0f, maxPitch, cameraPitch);
 
         float dynamicHeight = Mathf.Lerp(0, maxPitchVerticalDisplacement, currentUpwardPitchT);
         Vector3 horizontalOffset = cameraTarget.right * currentSwingPivotOffsetX;

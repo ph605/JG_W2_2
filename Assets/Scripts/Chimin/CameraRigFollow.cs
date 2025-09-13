@@ -9,14 +9,13 @@ public class CameraRigFollow : MonoBehaviour
     [Header("Tumble Cam Options")]
     [Tooltip("Tumbling 중일 때 카메라 회전을 고정할지 여부")]
     [SerializeField] private bool freezeRotationWhileTumbling = true;
-
     [Tooltip("Tumbling 해제 후 플레이어 회전에 부드럽게 재동기화할 속도(0이면 즉시 스냅)")]
     [SerializeField] private float unfreezeLerpSpeed = 10f;
 
     private bool wasTumbling = false;
     private Quaternion frozenRotation; // Tumbling 시작 시점의 카메라 회전
 
-    void LateUpdate()
+    void Update()
     {
         if (playerTransform == null || playerController == null) return;
 

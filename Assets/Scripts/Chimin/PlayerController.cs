@@ -10,7 +10,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float moveSpeed = 5f;
     [SerializeField] float rotationSpeed = 0.1f;
 
-
     [Header("Haste (Charging)")]
     [SerializeField] float hasteHoldSeconds = 1.5f;
     [SerializeField] float hasteMultiplier = 3f;
@@ -31,7 +30,6 @@ public class PlayerController : MonoBehaviour
     public UnityEvent onDeathRequested;
 
     private bool canRotate = true; // 회전 가능 여부를 나타내는 플래그
-
     // ... (다른 함수들 아래에 이 두 함수를 추가)
     public void LockRotation() => canRotate = false;
     public void UnlockRotation() => canRotate = true;
@@ -43,11 +41,11 @@ public class PlayerController : MonoBehaviour
     public float HasteHoldDuration => hasteHoldSeconds;
     public bool WasHasteActive { get; private set; } = false;
     public bool IsClinging { get; set; }
-
     public bool IsTumbling { get; set; } = false;
 
     Rigidbody rb;
     Vector2 moveInput;
+
     // 마우스 입력을 다른 스크립트에서 읽을 수 있도록 public 속성으로 변경
     public Vector2 LookInput { get; private set; }
 
@@ -104,24 +102,23 @@ public class PlayerController : MonoBehaviour
         ProcessMove();
     }
 
-void ProcessPlayerRotation()
-{
-    if (!canRotate) return;
-
-    float yawDelta = LookInput.x * rotationSpeed;
-
-    if (IsTumbling)
+    void ProcessPlayerRotation()
     {
-        // 스핀(X 회전)은 그대로 두고, 월드 Up 기준으로 Yaw만 추가
-        transform.Rotate(Vector3.up, yawDelta, Space.World);
-        return;
+        if (!canRotate) return;
+
+        float yawDelta = LookInput.x * rotationSpeed;
+
+        if (IsTumbling)
+        {
+            // 스핀(X 회전)은 그대로 두고, 월드 Up 기준으로 Yaw만 추가
+            transform.Rotate(Vector3.up, yawDelta, Space.World);
+            return;
+        }
+
+        // 평상시 로직 (기존과 동일)
+        float yaw = transform.eulerAngles.y + yawDelta;
+        transform.eulerAngles = new Vector3(0f, yaw, 0f);
     }
-
-    // 평상시 로직 (기존과 동일)
-    float yaw = transform.eulerAngles.y + yawDelta;
-    transform.eulerAngles = new Vector3(0f, yaw, 0f);
-}
-
 
     void ProcessHaste()
     {
@@ -136,6 +133,7 @@ void ProcessPlayerRotation()
         else
         {
             bool holding = IsHasteHolding();
+
             if (holding)
             {
                 HasteHoldTimer = Mathf.Min(HasteHoldTimer + Time.deltaTime, hasteHoldSeconds);
@@ -149,6 +147,7 @@ void ProcessPlayerRotation()
                 HasteHoldTimer = 0f;
                 IsHasteReady = false;
             }
+
             UpdateHasteUI(holding);
         }
     }
@@ -156,7 +155,6 @@ void ProcessPlayerRotation()
     void ProcessMove()
     {
         if (IsTumbling) return; // << 이 줄을 추가하세요
-
         if (IsClinging) return;
 
         if (IsHasteActive)
@@ -180,10 +178,8 @@ void ProcessPlayerRotation()
     {
         Vector3 forward = transform.forward;
         Vector3 right = transform.right;
-
         forward.y = 0;
         right.y = 0;
-
         return right.normalized * moveInput.x + forward.normalized * moveInput.y;
     }
 
@@ -194,6 +190,7 @@ void ProcessPlayerRotation()
             float t = 0f;
             if (IsHasteActive) t = 1f;
             else if (holding) t = Mathf.Clamp01(HasteHoldTimer / hasteHoldSeconds);
+
             hasteFillImage.fillAmount = t;
         }
 

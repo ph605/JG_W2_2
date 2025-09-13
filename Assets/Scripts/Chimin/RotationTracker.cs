@@ -18,15 +18,13 @@ public class RotationTracker : MonoBehaviour
     [SerializeField] float logEveryDegrees = 45f;
 
     bool isTracking = false;
-    float totalRotation = 0f;   // 누적 회전량(±deg)
+    float totalRotation = 0f; // 누적 회전량(±deg)
     int lastLogStep = 0;
-    Quaternion lastRot;          // 이전 프레임의 월드 회전
+    Quaternion lastRot; // 이전 프레임의 월드 회전
 
     Transform T => target != null ? target : transform;
 
-    public float RemainingAbsDegrees => Mathf.Abs(totalRotation);
-
-    // 1) 미완 회전량(절대값) 공개
+    public float RemainingAbsDegrees => Mathf.Abs(totalRotation); // 1) 미완 회전량(절대값) 공개
     public float PendingAbsDegrees => Mathf.Abs(totalRotation);
 
     public static void RaiseManualSpin()
@@ -38,14 +36,16 @@ public class RotationTracker : MonoBehaviour
     {
         totalRotation = 0f;
         lastLogStep = 0;
-        lastRot = T.rotation;   // 월드 회전 저장
+        lastRot = T.rotation; // 월드 회전 저장
         isTracking = true;
+
         if (debugLog) Debug.Log("[Tracker] Start");
     }
 
     public void StopTracking()
     {
         isTracking = false;
+
         if (debugLog) Debug.Log("[Tracker] Stop");
     }
 
@@ -61,7 +61,6 @@ public class RotationTracker : MonoBehaviour
         // AngleAxis는 angle ∈ [0, 180]. 축 방향 부호로 signed 처리
         float sign = Mathf.Sign(Vector3.Dot(axisWorld, T.TransformDirection(localAxis)));
         float signedDelta = angleDeg * sign;
-
         totalRotation += signedDelta;
 
         // 디버그(지정 각도마다 1회)

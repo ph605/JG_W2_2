@@ -500,7 +500,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   minCameraDistance: 0.3
-  cameraProbeRadius: 8
+  cameraProbeRadius: 3
   cameraCollisionLerp: 50
   chargeShakeMax: 0.15
   chargeShakeFreq: 18
@@ -668,7 +668,7 @@ MonoBehaviour:
   target: {fileID: 1268665918}
   degreesPerRevolution: 360
   localAxis: {x: 1, y: 0, z: 0}
-  debugLog: 1
+  debugLog: 0
   logEveryDegrees: 30
 --- !u!1 &410087039
 GameObject:
@@ -1639,7 +1639,7 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 112
   m_CollisionDetection: 1
 --- !u!114 &1268665923
@@ -2393,7 +2393,7 @@ GameObject:
   - component: {fileID: 1734937219}
   - component: {fileID: 1734937218}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: SpinCounterText (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

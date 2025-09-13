@@ -170,7 +170,6 @@ public class PlayerGrapple : MonoBehaviour
 
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         bool got = Physics.Raycast(ray, out RaycastHit hit, rayDistance, layerMask, QueryTriggerInteraction.Collide);
-
         if (!got)
         {
             got = Physics.SphereCast(
@@ -262,6 +261,7 @@ public class PlayerGrapple : MonoBehaviour
         if (!isSwing) return;
 
         isSwing = false;
+
         if (cameraController != null) cameraController.ExitSwingView();
 
         if (tumbleCoroutine != null) StopCoroutine(tumbleCoroutine);
@@ -318,15 +318,18 @@ public class PlayerGrapple : MonoBehaviour
     private IEnumerator TumbleCoroutine(float initialSpinForce)
     {
         isSettling = false;
+
         if (playerController != null) playerController.IsTumbling = true;
 
         rb.constraints = RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
         rb.AddRelativeTorque(Vector3.right * initialSpinForce, ForceMode.Impulse);
+
         Debug.Log($"[Grapple] Tumble start, spinForce={initialSpinForce:F2}");
 
         rotationTracker?.StartTracking();
 
-        while (true) yield return null;
+        while (true)
+            yield return null;
     }
 
     // 착지 후 자세 복구(카메라 Yaw에 정렬)
@@ -358,6 +361,7 @@ public class PlayerGrapple : MonoBehaviour
         }
 
         transform.rotation = targetRotation;
+
         rb.constraints = RigidbodyConstraints.FreezeRotation;
         rb.isKinematic = false;
 
@@ -369,6 +373,7 @@ public class PlayerGrapple : MonoBehaviour
         }
 
         Debug.Log("[Grapple] Landing: settle end");
+
         isSettling = false;
     }
 
@@ -376,7 +381,9 @@ public class PlayerGrapple : MonoBehaviour
     {
         Vector3 fwd = rot * Vector3.forward;
         fwd.y = 0f;
-        if (fwd.sqrMagnitude < 1e-6f) return transform.eulerAngles.y;
+        if (fwd.sqrMagnitude < 1e-6f)
+            return transform.eulerAngles.y;
+
         return Mathf.Atan2(fwd.x, fwd.z) * Mathf.Rad2Deg;
     }
 
@@ -385,10 +392,12 @@ public class PlayerGrapple : MonoBehaviour
     float CalcCameraYaw()
     {
         // ✅ 항상 "현재 카메라"의 시점을 기준으로 Yaw 계산
-        if (cameraController != null) return GetFlatYaw(cameraController.transform.rotation);
+        if (cameraController != null)
+            return GetFlatYaw(cameraController.transform.rotation);
 
         // 백업: 혹시 카메라 컨트롤러가 없을 때만 리그 사용
-        if (cameraRig != null) return GetFlatYaw(cameraRig.transform.rotation);
+        if (cameraRig != null)
+            return GetFlatYaw(cameraRig.transform.rotation);
 
         return transform.eulerAngles.y;
     }
@@ -410,7 +419,9 @@ public class PlayerGrapple : MonoBehaviour
     IEnumerator AlignToCameraYawOnLanding()
     {
         isSettling = true;
+
         if (playerController != null) playerController.LockController();
+
         rb.isKinematic = true;
 
         float targetYaw = CalcCameraYaw();
@@ -423,6 +434,7 @@ public class PlayerGrapple : MonoBehaviour
         }
 
         transform.rotation = targetRot;
+
         rb.constraints = RigidbodyConstraints.FreezeRotation;
         rb.isKinematic = false;
 

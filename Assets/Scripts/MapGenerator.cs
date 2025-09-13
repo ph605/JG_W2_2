@@ -13,6 +13,12 @@ public class MapGenerator : MonoBehaviour
     [Tooltip("현재 스테이지에 생성할 맵의 타입")]
     public MapType mapType;
 
+    [Header("테스트 모드 설정")]
+    [Tooltip("활성화하면 모든 패턴을 씬에 생성하고 동적 생성을 멈춥니다.")]
+    public bool isTestMode = false;
+    [Tooltip("테스트 모드에서 한 줄에 몇 개의 타일을 배치할지 결정합니다.")]
+    public int testModeTilesPerRow = 5;
+
     [Header("오브젝트 연결")]
     public Transform playerTransform;
     [Tooltip("장애물이 없는 비어있는 기본 타일 프리팹")]
@@ -57,6 +63,7 @@ public class MapGenerator : MonoBehaviour
     void Start()
     {
         DecideStartSpawnTile();
+        SpawnAllPatternsInTestMode();
 
         GameObject prefabInPooler = ObjectPooler.Instance.pools[0].prefab;
         // MapGenerator 자신에게 등록된 프리팹
@@ -75,6 +82,9 @@ public class MapGenerator : MonoBehaviour
     // 시작할 때, 생성될 타일의 기준이 담겨 있는 함수
     private void DecideStartSpawnTile()
     {
+        if (isTestMode)
+            return;
+
         switch (mapType)
         {
             case MapType.Line:
@@ -99,6 +109,9 @@ public class MapGenerator : MonoBehaviour
     // 다음에 생성될 타일의 기준이 담겨있는 함수
     private void DecideUpdateSpawnTile()
     {
+        if (isTestMode)
+            return;
+
         switch (mapType)
         {
             case MapType.Line:
@@ -161,6 +174,34 @@ public class MapGenerator : MonoBehaviour
     }
 
     // ================================================
+    //              테스트 모드의 맵 관리
+    // ================================================
+
+    // 모든 패턴을 출력
+    private void SpawnAllPatternsInTestMode()
+    {
+        if (isTestMode == false)
+            return;
+
+        float space = tileLength * 1.2f;
+        for (int i = 0; i < tilePatterns.Count; i++)
+        {
+            int row = i / testModeTilesPerRow;
+            int col = i % testModeTilesPerRow;
+            Vector3 spawnPosition = new Vector3(col * space, 0, row * space);
+
+            GameObject newTile = ObjectPooler.Instance.SpawnFromPool(emptyTilePrefab, spawnPosition, Quaternion.identity);
+
+            if (newTile == null)
+                continue;
+           
+            TilePattern selectedPattern = tilePatterns[i];
+            newTile.GetComponent<TileBehavior>().GenerateObstacles(selectedPattern, true);
+            
+        }
+    }
+
+    // ================================================
     //              직선형 타입의 맵 관리
     // ================================================
 
@@ -194,7 +235,7 @@ public class MapGenerator : MonoBehaviour
         }
         ++tilesSpawnedCount;
         // 3. 타일에 붙어있는 TileBehavior 스크립트에게 선택된 패턴으로 장애물을 생성하라고 명령
-        newTile.GetComponent<TileBehavior>().GenerateObstacles(selectedPattern);
+        newTile.GetComponent<TileBehavior>().GenerateObstacles(selectedPattern, false);
     }
 
     // 직선형 결승 타일 생성
@@ -289,7 +330,7 @@ public class MapGenerator : MonoBehaviour
             tileDataHistory.Add(tileLoc, selectedPattern);
         }
         
-        newTile.GetComponent<TileBehavior>().GenerateObstacles(selectedPattern);
+        newTile.GetComponent<TileBehavior>().GenerateObstacles(selectedPattern, false);
     }
 
     // 플레이어로부터 너무 멀리 떨어진 타일을 제거

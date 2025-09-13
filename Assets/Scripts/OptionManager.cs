@@ -20,17 +20,6 @@ public class OptionManager : MonoBehaviour
 
     void Awake()
     {
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
-
         // 슬라이더 값이 변경될 때마다 OnSensitivityChanged 함수를 호출하도록 리스너 등록
         mouseSensitivitySlider.onValueChanged.AddListener(OnSensitivityChanged);
         buttonESC.onClick.AddListener(() => CloseConfiguration());

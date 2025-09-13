@@ -10,10 +10,6 @@ using UnityEngine.InputSystem;
 
 public class GraplingHook : MonoBehaviour
 {
-    // --- 지민 ---
-    [Header("Refs")]
-    [SerializeField] PlayerController playerController;
-    [SerializeField] PlayerCameraController cameraController;
     public LayerMask layerMask;
     LineRenderer lr;
     ConfigurableJoint cj;
@@ -27,37 +23,63 @@ public class GraplingHook : MonoBehaviour
     public float minDistance;
     Vector3 spot;
     [Header("SphereCast Settings")]
-    public float radius;
+    public float radius;      // 구체 반지름
     RaycastHit hit;
     [Header("Hang")]
     public float hangingTime;
     private float currentHangTime = 0;
+
     [Header("Drag")]
     private Vector3 dragStartPos;
     private bool isDragging;
     public float dragTime;
     public float dragSpeed;
     private float TempTime = 0;
-    Vector3 lastMousePos;
-    [Header("ShowTime")]
+    [Header("Gravity")]
     private bool isShowTime = false;
     public float showTime;
     private float showTempTime = 0;
 
+    // --- 지민 ---
+    [Header("Refs")]
+    [SerializeField] PlayerController playerController;
+    [SerializeField] PlayerCameraController cameraController;
+    Vector3 lastMousePos;
+    
     void Start()
     {
         lr = GetComponent<LineRenderer>();
         rb = GetComponent<Rigidbody>();
     }
+
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.G))
         {
             JumpStart();
         }
-        ShowTimeStart();
-        DraggingChk();
-        //스윙 체크 부분
+        if (isShowTime)
+        {
+            showTempTime += Time.deltaTime;
+            if (showTempTime >= showTime)
+            {
+                showTempTime = 0;
+                isShowTime = false;
+            }
+        }
+        else
+        {
+            rb.AddForce(Vector3.down * 8f, ForceMode.Acceleration);
+        }
+        if (isDragging)
+        {
+            TempTime += Time.deltaTime;
+            if (TempTime >= dragTime)
+            {
+                TempTime = 0f;
+                isDragging = false;
+            }
+        }
         if (isSwing)
         {
             rb.AddForce(Vector3.down * 5f, ForceMode.Acceleration);
@@ -76,14 +98,13 @@ public class GraplingHook : MonoBehaviour
         }
         else
         {
-            //스윙 중이 아니면 항시 에임 찾기
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
             Physics.Raycast(ray, out hit, maxDistance, layerMask);
             aim.transform.position = ray.GetPoint(maxDistance);
             rb.maxLinearVelocity = 40f;
         }
 
-        //마우스 클릭 감지
+        //마우스
         if (Input.GetMouseButtonDown(0))
         {
             if (isSwing)
@@ -190,7 +211,6 @@ public class GraplingHook : MonoBehaviour
         }
         currentHangTime = 0f;
         lr.startWidth = 0.1f;
-        //놓을 시 속력 감소
         rb.linearVelocity = new Vector3(rb.linearVelocity.x * 0.3f,
         rb.linearVelocity.y,
         rb.linearVelocity.z);
@@ -211,68 +231,35 @@ public class GraplingHook : MonoBehaviour
         isDragging = true;
         dragStartPos = Input.mousePosition;
     }
-    //마우스 드래그 방향 감지 및 힘 전달
     void MouseDrag()
     {
         Vector3 currentPos = Input.mousePosition;
         Vector3 dragDir = (currentPos - dragStartPos).normalized; // 방향
-        //좌
         if (dragDir.x < -0.2)
         {
+            Debug.Log("좌");
             rb.AddForce(Vector3.left * dragSpeed, ForceMode.Impulse);
         }
-        //우
         if (dragDir.x > 0.2)
         {
             rb.AddForce(Vector3.right * dragSpeed, ForceMode.Impulse);
         }
-        //전방
         if (dragDir.y < 0)
         {
+            Debug.Log("앞");
             rb.AddForce(Vector3.forward * dragSpeed, ForceMode.Impulse);
         }
-        //후방
         if (dragDir.y > 0)
         {
-            rb.AddForce(Vector3.back * dragSpeed / 3, ForceMode.Impulse);
+            Debug.Log("뒤");
+            rb.AddForce(Vector3.back * dragSpeed/3, ForceMode.Impulse);
         }
         dragStartPos = currentPos; 
     }
-    #if UNITY_EDITOR
     void JumpStart()
     {
         rb.AddForce(Vector3.forward * 5f, ForceMode.Impulse);
         rb.AddForce(Vector3.up * 5f, ForceMode.Impulse);
-    }
-#endif
-    void DraggingChk()
-    {
-        if (isDragging)
-        {
-            TempTime += Time.deltaTime;
-            if (TempTime >= dragTime)
-            {
-                TempTime = 0f;
-                isDragging = false;
-            }
-        }
-    }
-    //스윙 끝나고 showTime만큼 중력이 작아지는 함수
-    void ShowTimeStart()
-    {
-        if (isShowTime)
-        {
-            showTempTime += Time.deltaTime;
-            if (showTempTime >= showTime)
-            {
-                showTempTime = 0;
-                isShowTime = false;
-            }
-        }
-        else
-        {
-            rb.AddForce(Vector3.down * 8f, ForceMode.Acceleration);
-        }
     }
     // Scene 뷰에서 범위를 표시
     void OnDrawGizmos()

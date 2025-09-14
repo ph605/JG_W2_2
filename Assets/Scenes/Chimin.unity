@@ -518,6 +518,8 @@ MonoBehaviour:
   swingPivotOffsetXAmount: 2
   swingPivotOffsetLerp: 6
   freeOrbitWhileTumbling: 1
+  keepFreeOrbitAfterClingRelease: 1
+  releaseOrbitDuration: 0.5
 --- !u!1 &354897876
 GameObject:
   m_ObjectHideFlags: 0
@@ -1075,7 +1077,7 @@ GameObject:
   - component: {fileID: 817985199}
   - component: {fileID: 817985198}
   - component: {fileID: 817985197}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: Top (11)
   m_TagString: Right
   m_Icon: {fileID: 0}
@@ -1233,7 +1235,7 @@ GameObject:
   - component: {fileID: 897839833}
   - component: {fileID: 897839832}
   - component: {fileID: 897839831}
-  m_Layer: 9
+  m_Layer: 10
   m_Name: Cube (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1311,7 +1313,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 62b0afc6f88aae94f80f5f465b4f48a6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1350,8 +1352,8 @@ Transform:
   m_GameObject: {fileID: 897839830}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.07, y: -16.5, z: -17.08}
-  m_LocalScale: {x: 18.975, y: 1, z: 12.071}
+  m_LocalPosition: {x: 0.07, y: -19.0828, z: -17.08}
+  m_LocalScale: {x: 18.975, y: 5.6698356, z: 12.071}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1921,14 +1923,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cam: {fileID: 330585545}
   playerController: {fileID: 1268665924}
+  aim: {fileID: 930633668}
   holdingLayerName: Holding
-  rayDistance: 80
-  clingOffset: 0.12
-  alignToSurface: 1
-  parentWhileHolding: 1
-  zeroVelocityOnBegin: 1
+  rayDistance: 30
+  clingOffset: 0.5
+  alignToSurface: 0
+  parentWhileHolding: 0
+  zeroVelocityOnBegin: 0
   preserveHorizontalVelocityOnRelease: 0
-  releaseUpBoost: 0
+  releaseUpBoost: 20
+  pushOutSkin: 0.05
+  pushOutMaxIterations: 3
+  continuousPushOut: 1
+  minOutwardSpeedOnRelease: 0.2
+  releaseCCDMode: 2
+  launchTowardsCamera: 1
+  cameraLaunchSpeed: 30
+  flattenCameraForward: 1
+  alignYawToCameraOnRelease: 1
+  smoothAlignYawOnRelease: 1
+  alignYawDuration: 0.25
+  lockRotationDuringAlign: 1
 --- !u!1 &1272867936
 GameObject:
   m_ObjectHideFlags: 0

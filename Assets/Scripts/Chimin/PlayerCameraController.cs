@@ -6,7 +6,7 @@ public class PlayerCameraController : MonoBehaviour
 {
     [Header("Target & References")]
     [Tooltip("카메라가 따라갈 목표입니다. 플레이어 본체가 아닌, 회전하지 않는 자식 오브젝트(CameraTarget)를 할당해야 합니다.")]
-    [SerializeField] Transform cameraTarget; // 변수명을 playerTransform에서 cameraTarget으로 변경했습니다.
+    [SerializeField] Transform cameraTarget;
     [SerializeField] PlayerController playerController;
 
     [Header("Camera Control")]
@@ -51,6 +51,15 @@ public class PlayerCameraController : MonoBehaviour
     [Header("Tumble Orbit")]
     [SerializeField] bool freeOrbitWhileTumbling = true;
 
+    [Header("Release Orbit Continuity")]
+    [Tooltip("홀딩을 떼는 직후 카메라가 계속 현재 시점을 유지(자유 오빗)할지")]
+    [SerializeField] bool keepFreeOrbitAfterClingRelease = true;
+    [Tooltip("홀딩 해제 후 자유 오빗을 유지할 시간(초)")]
+    [SerializeField] float releaseOrbitDuration = 0.5f;
+
+    float releaseOrbitTimer = 0f;
+    bool wasClinging = false;
+
     private Camera mainCamera;
     private float cameraPitch = 0f;
     private float yaw = 0f;
@@ -82,7 +91,11 @@ public class PlayerCameraController : MonoBehaviour
     void LateUpdate()
     {
         if (cameraTarget == null || playerController == null) return;
-        if (playerController.IsClinging) return;
+
+        // 홀딩 → 해제되는 프레임을 감지해서 타이머 시작
+        bool justReleasedCling = wasClinging && !playerController.IsClinging;
+        if (justReleasedCling && keepFreeOrbitAfterClingRelease)
+            releaseOrbitTimer = releaseOrbitDuration;
 
         if (!playerController.WasHasteActive && playerController.IsHasteActive)
         {
@@ -91,24 +104,22 @@ public class PlayerCameraController : MonoBehaviour
         }
 
         ProcessLook();
+
+        // 타이머 감소 및 상태 갱신
+        if (releaseOrbitTimer > 0f) releaseOrbitTimer -= Time.deltaTime;
+        wasClinging = playerController.IsClinging;
     }
 
-    public void EnterSwingView()
-    {
-        isSwinging = true;
-    }
 
-    public void ExitSwingView()
-    {
-        isSwinging = false;
-        targetSwingPivotOffsetX = 0f;
-    }
+    public void EnterSwingView() => isSwinging = true;
+    public void ExitSwingView() { isSwinging = false; targetSwingPivotOffsetX = 0f; }
 
     void ProcessLook()
     {
         bool tumbling = playerController != null && playerController.IsTumbling;
+        bool clinging = playerController != null && playerController.IsClinging;
 
-        // 스윙 중 좌/우 피벗 오프셋 처리 (기존 그대로)
+        // 스윙 좌/우 피벗 오프셋 처리 (기존 그대로)
         if (isSwinging)
         {
             var kb = Keyboard.current;
@@ -129,8 +140,14 @@ public class PlayerCameraController : MonoBehaviour
             Time.deltaTime * swingPivotOffsetLerp
         );
 
-        // ★ 변경: 스핀 중이거나 스윙 중이면 마우스로 yaw/pitch를 '누적'해서 자유 오빗
-        if ((freeOrbitWhileTumbling && tumbling) || isSwinging)
+        // ✅ 자유 오빗 조건에 "해제 직후 타이머"를 추가
+        bool freeOrbit =
+            (freeOrbitWhileTumbling && tumbling) ||
+            isSwinging ||
+            clinging ||
+            (releaseOrbitTimer > 0f);
+
+        if (freeOrbit)
         {
             yaw += playerController.LookInput.x * cameraRotationSpeed;
             cameraPitch -= playerController.LookInput.y * cameraRotationSpeed;
@@ -138,12 +155,11 @@ public class PlayerCameraController : MonoBehaviour
         }
         else
         {
-            // 평소: 타겟의 yaw를 따르고, pitch만 마우스로 조절
+            // 평상시엔 타겟 yaw에 동기화
             yaw = cameraTarget.eulerAngles.y;
             cameraPitch -= playerController.LookInput.y * cameraRotationSpeed;
             cameraPitch = Mathf.Clamp(cameraPitch, minPitch, maxPitch);
         }
-
 
         // 이하 기존 그대로
         currentUpwardPitchT = 0f;

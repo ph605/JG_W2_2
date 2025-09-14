@@ -6,8 +6,6 @@ using UnityEngine.Events;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField]
-    Transform target;
     [Header("Movement")]
     [SerializeField] float moveSpeed = 5f;
     [SerializeField] float rotationSpeed = 0.1f;
@@ -24,8 +22,8 @@ public class PlayerController : MonoBehaviour
 
     [Header("Control Lock")]
     [SerializeField] bool controllerLocked = false;
-    // public void LockController() => controllerLocked = true;
-    // public void UnlockController() => controllerLocked = false;
+    public void LockController() => controllerLocked = true;
+    public void UnlockController() => controllerLocked = false;
 
     [Header("Events")]
     public UnityEvent onStageClear;
@@ -35,8 +33,8 @@ public class PlayerController : MonoBehaviour
     private bool canRotate = true; // 회전 가능 여부를 나타내는 플래그
 
     // ... (다른 함수들 아래에 이 두 함수를 추가)
-    // public void LockRotation() => canRotate = false;
-    // public void UnlockRotation() => canRotate = true;
+    public void LockRotation() => canRotate = false;
+    public void UnlockRotation() => canRotate = true;
 
     // CameraController가 참조할 플레이어 상태
     public bool IsHasteActive { get; private set; } = false;
@@ -89,23 +87,21 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        // if (controllerLocked)
-        // {
-        //     ResetHasteState();
-        //     UpdateHasteUI(false);
-        //     return;
-        // }
+        if (controllerLocked)
+        {
+            ResetHasteState();
+            UpdateHasteUI(false);
+            return;
+        }
 
-        // ProcessHaste();
-        // ProcessPlayerRotation();
-        Quaternion targetRot = Quaternion.Euler(0f, target.rotation.eulerAngles.y, 0f);   
-        transform.rotation = targetRot;
+        ProcessHaste();
+        ProcessPlayerRotation();
     }
 
     void FixedUpdate()
     {
         if (controllerLocked) return;
-        // ProcessMove();
+        ProcessMove();
     }
 
 void ProcessPlayerRotation()

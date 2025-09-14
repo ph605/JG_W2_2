@@ -7,20 +7,20 @@ public class CursorController : MonoBehaviour
     private void Start()
     {
         // ���� ���� �� ���콺 Ŀ�� �����
-        LockCursor();
+        // LockCursor();
     }
     void Update()
     {
-        // Vector2 localPoint;
-        // // 마우스 스크린 좌표를 캔버스 로컬 좌표로 변환
-        // RectTransformUtility.ScreenPointToLocalPointInRectangle(
-        //     canvas.transform as RectTransform,
-        //     Input.mousePosition,
-        //     canvas.worldCamera,
-        //     out localPoint
-        // );
-        // // 크로스헤어 위치를 마우스 위치로 업데이트
-        // crosshairUI.localPosition = localPoint;
+        Vector2 localPoint;
+        // 마우스 스크린 좌표를 캔버스 로컬 좌표로 변환
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvas.transform as RectTransform,
+            Input.mousePosition,
+            canvas.worldCamera,
+            out localPoint
+        );
+        // 크로스헤어 위치를 마우스 위치로 업데이트
+        crosshairUI.localPosition = localPoint;
     }
 
     // ���콺 Ŀ�� �����

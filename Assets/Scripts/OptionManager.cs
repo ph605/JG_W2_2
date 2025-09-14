@@ -4,8 +4,6 @@ using UnityEngine.UI;
 
 public class OptionManager : MonoBehaviour
 {
-    public static OptionManager instance;
-
     // 인스펙터에서 연결할 UI 요소들
     public Slider mouseSensitivitySlider;
     public TextMeshProUGUI sensitivityValueText;

@@ -19,6 +19,8 @@ public struct WeightedObstacleType
     public Vector2 xBounds;
     public Vector2 yBounds;
     public Vector2 zBounds;
+
+    public bool isActive;
 }
 
 public class TilePatternGenerator : MonoBehaviour
@@ -117,7 +119,7 @@ public class TilePatternGenerator : MonoBehaviour
                 }
 
                 // 생성된 무작위 데이터로 ObstacleData 구조체 채우기
-                obstacleLayout.Add(new ObstacleData(randomObstacleData.type, randomPosition, randomRotation, finalScale));
+                obstacleLayout.Add(new ObstacleData(0, randomObstacleData.type, randomPosition, randomRotation, finalScale, randomObstacleData.isActive));
             }
             // 유효한 위치를 찾지 못했을 때, 경고 메시지 출력
             else

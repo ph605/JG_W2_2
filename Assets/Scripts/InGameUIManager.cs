@@ -1,4 +1,4 @@
-using System.Threading;
+ï»¿using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -57,7 +57,7 @@ public class InGameUIManager : MonoBehaviour
             SetActiveConfiguration();
     }
 
-    // ESC Å°¸¦ ´©¸¦ ¶§, ¿É¼Ç UI Ãâ·Â/¼û±è
+    // ESC í‚¤ë¥¼ ëˆ„ë¥¼ ë•Œ, ì˜µì…˜ UI ì¶œë ¥/ìˆ¨ê¹€
     private void SetActiveConfiguration()
     {
         if (configurationUI.gameObject.activeSelf)
@@ -72,7 +72,7 @@ public class InGameUIManager : MonoBehaviour
         }
     }
 
-// Å¸ÀÌ¸Ó ½Ã°£ °è»ê ¹× Ãâ·Â
+// íƒ€ì´ë¨¸ ì‹œê°„ ê³„ì‚° ë° ì¶œë ¥
 private void timeCalculate()
     {
         time += Time.deltaTime;
@@ -81,14 +81,14 @@ private void timeCalculate()
         timer.text = string.Format("Timer : {0:00}:{1:00}", min, sec);
     }
 
-    // Á¡¼ö Áõ°¡ ¹× Ãâ·Â
+    // ì ìˆ˜ ì¦ê°€ ë° ì¶œë ¥
     public void AddScore(int addValue)
     {
         scoreValue += addValue;
         score.text = string.Format("Score : {0}", scoreValue);
     }
 
-    // ¸¶¿ì½º Àá±İ/ÇØÁ¦ ¼³Á¤
+    // ë§ˆìš°ìŠ¤ ì ê¸ˆ/í•´ì œ ì„¤ì •
     public void MouseLock(bool isLock)
     {
         if (isLock)
@@ -103,7 +103,7 @@ private void timeCalculate()
         }
     }
 
-    // Å¬¸®¾î UI Ãâ·Â
+    // í´ë¦¬ì–´ UI ì¶œë ¥
     public void ClearUI(bool isClear)
     {
         Time.timeScale = 0;

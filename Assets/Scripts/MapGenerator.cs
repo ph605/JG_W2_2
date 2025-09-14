@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System.ComponentModel;
 
 public enum MapType
 {
@@ -8,8 +9,10 @@ public enum MapType
     Spread
 };
 
-public class MapGenerator : MonoBehaviour
+public class MapGenerator : ObjectNumberGenerator
 {
+    public static MapGenerator instance;
+
     [Tooltip("현재 스테이지에 생성할 맵의 타입")]
     public MapType mapType;
 
@@ -51,14 +54,23 @@ public class MapGenerator : MonoBehaviour
     private HashSet<Vector2Int> spawnedTileCoords = new HashSet<Vector2Int>();
     // 활성화된 타일을 타일 그리드 좌표와 함께 관리
     private Dictionary<Vector2Int, GameObject> activeSpreadTiles = new Dictionary<Vector2Int, GameObject>();
+
     // 각 좌표에 어떤 타일 패턴이 사용되었는지 영구적으로 기록하는 딕셔너리
     private Dictionary<Vector2Int, TilePattern> tileDataHistory = new Dictionary<Vector2Int, TilePattern>();
+
+    // 모든 데이터
+    
 
     // 플레이어의 이전 그리드 좌표를 저장
     private Vector2Int lastPlayerCoord;
     // 플레이어의 시작 그리드 좌표를 저장
     private Vector2Int startPlayerCoord;
 
+    private void Awake()
+    {
+        if(instance == null)
+            instance = this;
+    }
 
     void Start()
     {
@@ -172,6 +184,30 @@ public class MapGenerator : MonoBehaviour
                 break;
         }
     }
+    // 원본 패턴 템플릿을 기반으로, 모든 장애물에 새로운 고유 ID가 부여된 런타임용 패턴 인스턴스를 생성합니다.
+    private TilePattern CreatePatternInstanceWithNewIDs(TilePattern templatePattern)
+    {
+        // 1. 새로운 TilePattern 인스턴스(메모리상의 복사본)를 생성
+        TilePattern newInstance = ScriptableObject.CreateInstance<TilePattern>();
+
+        // 2. 원본 패턴의 장애물 레이아웃을 복사할 새 배열 생성
+        ObstacleData[] newLayout = new ObstacleData[templatePattern.obstacleLayout.Length];
+
+        // 3. 원본 레이아웃의 모든 장애물을 순회하며 데이터 복사 및 ID 재할당
+        for (int i = 0; i < templatePattern.obstacleLayout.Length; i++)
+        {
+            // 원본 데이터 복사
+            newLayout[i] = templatePattern.obstacleLayout[i];
+
+            // 복사된 데이터에 새로운 전역 고유 ID를 부여
+            newLayout[i].id = UseUniqueID();
+        }
+
+        // 4. ID가 새로 부여된 배열을 새 인스턴스에 할당
+        newInstance.obstacleLayout = newLayout;
+
+        return newInstance;
+    }
 
     // ================================================
     //              테스트 모드의 맵 관리
@@ -231,7 +267,9 @@ public class MapGenerator : MonoBehaviour
         // 나중에는 무작위 패턴 선택
         else
         {
-            selectedPattern = tilePatterns[Random.Range(0, tilePatterns.Count)];
+            TilePattern templatePattern = tilePatterns[Random.Range(0, tilePatterns.Count)];
+            selectedPattern = CreatePatternInstanceWithNewIDs(templatePattern);
+            //tileDataHistory.Add(tileLoc, patternForThisTile);
         }
         ++tilesSpawnedCount;
         // 3. 타일에 붙어있는 TileBehavior 스크립트에게 선택된 패턴으로 장애물을 생성하라고 명령
@@ -326,10 +364,16 @@ public class MapGenerator : MonoBehaviour
         }
         else
         {
-            selectedPattern = tilePatterns[Random.Range(0, tilePatterns.Count)];
+            // a. 리스트에서 사용할 원본 '템플릿'을 무작위로 선택
+            TilePattern template = tilePatterns[Random.Range(0, tilePatterns.Count)];
+
+            // b. 템플릿을 기반으로, 모든 장애물에 새로운 고유 ID가 부여된 '런타임용 복사본'을 생성
+            selectedPattern = CreatePatternInstanceWithNewIDs(template);
+
+            // c. 고유 ID가 부여된 새 패턴을 기록에 남김
             tileDataHistory.Add(tileLoc, selectedPattern);
         }
-        
+
         newTile.GetComponent<TileBehavior>().GenerateObstacles(selectedPattern, false);
     }
 
@@ -382,6 +426,32 @@ public class MapGenerator : MonoBehaviour
         }
         
         // 3. 경계선보다 안쪽인 경우에는 일반 타일 생성
+        return false;
+    }
+
+    // ================================================
+    //                    아이템 관리
+    // ================================================
+
+    // 활성화 여부를 설정할 아이템을 고유 번호로 찾고, 활성화 여부를 설정
+    public bool ItemSetActive(int itemId, bool setActive)
+    {
+        Vector2Int currentPlayerCoord = GetPlayerTileLoc();
+
+        TilePattern tilePattern = tileDataHistory[currentPlayerCoord];
+        // 해당 아이템을 찾기
+        for(int i = 0; i < tilePattern.obstacleLayout.Count(); i++)
+        {
+            ObstacleData obstacleData = tilePattern.obstacleLayout[i];
+
+            if(obstacleData.id == itemId)
+            {
+                tilePattern.obstacleLayout[i].isActive = setActive;
+                Debug.Log("Find");
+                return true;
+            }
+        }
+        Debug.Log("Not Found");
         return false;
     }
 }

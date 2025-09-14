@@ -94,68 +94,35 @@ public class PlayerCameraController : MonoBehaviour
         ProcessLook();
     }
 
-    public void EnterSwingView()
-    {
-        isSwinging = true;
-    }
+    // public void EnterSwingView()
+    // {
+    //     isSwinging = true;
+    // }
 
-    public void ExitSwingView()
-    {
-        isSwinging = false;
-        targetSwingPivotOffsetX = 0f;
-    }
+    // public void ExitSwingView()
+    // {
+    //     isSwinging = false;
+    //     targetSwingPivotOffsetX = 0f;
+    // }
 
     void ProcessLook()
     {
-        bool tumbling = playerController != null && playerController.IsTumbling;
+        // 마우스 입력으로 yaw/pitch 누적 (항상 자유 시점)
+        yaw += playerController.LookInput.x * cameraRotationSpeed;
+        cameraPitch -= playerController.LookInput.y * cameraRotationSpeed;
 
-        // 스윙 중 좌/우 피벗 오프셋 처리 (기존 그대로)
-        if (isSwinging)
-        {
-            var kb = Keyboard.current;
-            var gp = Gamepad.current;
-            float stickX = gp != null ? gp.leftStick.x.ReadValue() : 0f;
+        // 필요시 pitch 제한 (아래/위로 무한 회전 원하면 Clamp 제거)
+        cameraPitch = Mathf.Clamp(cameraPitch, -89f, 89f);
 
-            if ((kb != null && kb.aKey.isPressed) || stickX < -0.5f)
-                targetSwingPivotOffsetX = -swingPivotOffsetXAmount;
-            else if ((kb != null && kb.dKey.isPressed) || stickX > 0.5f)
-                targetSwingPivotOffsetX = swingPivotOffsetXAmount;
-            else
-                targetSwingPivotOffsetX = 0f;
-        }
-
+        // 피벗 오프셋 등 기존 계산 유지
         currentSwingPivotOffsetX = Mathf.Lerp(
             currentSwingPivotOffsetX,
             targetSwingPivotOffsetX,
             Time.deltaTime * swingPivotOffsetLerp
         );
 
-        // ★ 핵심 변경: 스핀 중에는 yaw/pitch를 마우스로 '누적' 해서 자유 오빗
-        if (freeOrbitWhileTumbling && tumbling)
-        {
-            yaw += playerController.LookInput.x * cameraRotationSpeed;
-            cameraPitch -= playerController.LookInput.y * cameraRotationSpeed;
-            cameraPitch = Mathf.Clamp(cameraPitch, minPitch, maxPitch);
-        }
-        else
-        {
-            // 평소/스윙 아님: 타겟의 yaw를 따르고, pitch만 마우스로 조절(기존 동작)
-            yaw = cameraTarget.eulerAngles.y;
-            if (!isSwinging)
-            {
-                cameraPitch -= playerController.LookInput.y * cameraRotationSpeed;
-                cameraPitch = Mathf.Clamp(cameraPitch, minPitch, maxPitch);
-            }
-        }
-
-        // 이하 기존 그대로
-        currentUpwardPitchT = 0f;
-        currentDownwardPitchT = 0f;
-
-        if (cameraPitch < 0)
-            currentUpwardPitchT = Mathf.InverseLerp(0f, minPitch, cameraPitch);
-        else if (cameraPitch > 0)
-            currentDownwardPitchT = Mathf.InverseLerp(0f, maxPitch, cameraPitch);
+        currentUpwardPitchT = cameraPitch < 0f ? Mathf.InverseLerp(0f, -90f, cameraPitch) : 0f;
+        currentDownwardPitchT = cameraPitch > 0f ? Mathf.InverseLerp(0f, 90f, cameraPitch) : 0f;
 
         float dynamicHeight = Mathf.Lerp(0, maxPitchVerticalDisplacement, currentUpwardPitchT);
         Vector3 horizontalOffset = cameraTarget.right * currentSwingPivotOffsetX;
@@ -165,7 +132,7 @@ public class PlayerCameraController : MonoBehaviour
         Quaternion camRot = Quaternion.Euler(cameraPitch, yaw, 0f);
 
         HandleCameraCollisionAndPositioning(adjustedPivot, camRot, dynamicDistance);
-        transform.LookAt(adjustedPivot);
+        transform.rotation = camRot; // LookAt 대신 직접 회전 적용
 
         ApplyFovEffect();
         ApplyCameraShake();

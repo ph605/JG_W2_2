@@ -22,9 +22,7 @@ public class CameraRigFollow : MonoBehaviour
 
         // 위치는 항상 플레이어를 따라감
         transform.position = playerTransform.position;
-
         bool tumbling = playerController.IsTumbling;
-
         if (freezeRotationWhileTumbling && tumbling)
         {
             // Tumbling 진입 프레임에 현재 회전을 저장
@@ -54,7 +52,6 @@ public class CameraRigFollow : MonoBehaviour
                 );
             }
         }
-
         wasTumbling = tumbling;
     }
 }

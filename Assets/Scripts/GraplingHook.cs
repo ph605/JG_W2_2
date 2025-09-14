@@ -58,19 +58,19 @@ public class GraplingHook : MonoBehaviour
         {
             JumpStart();
         }
-        if (isShowTime)
-        {
-            showTempTime += Time.deltaTime;
-            if (showTempTime >= showTime)
-            {
-                showTempTime = 0;
-                isShowTime = false;
-            }
-        }
-        else
-        {
-            rb.AddForce(Vector3.down * 8f, ForceMode.Acceleration);
-        }
+        // if (isShowTime)
+        // {
+        //     showTempTime += Time.deltaTime;
+        //     if (showTempTime >= showTime)
+        //     {
+        //         showTempTime = 0;
+        //         isShowTime = false;
+        //     }
+        // }
+        // else
+        // {
+        //     rb.AddForce(Vector3.down * 8f, ForceMode.Acceleration);
+        // }
         if (isDragging)
         {
             TempTime += Time.deltaTime;
@@ -153,12 +153,11 @@ public class GraplingHook : MonoBehaviour
     {
         if (hit.point == Vector3.zero) return;
         isSwing = true;
-        isShowTime = true;
         spot = hit.point;   // 로프를 연결할 지점 설정
         try
         {
-            playerController.LockRotation();
-            cameraController.EnterSwingView();
+            // playerController.LockRotation();
+            // cameraController.EnterSwingView();
         }
         catch
         {
@@ -166,7 +165,7 @@ public class GraplingHook : MonoBehaviour
         }
         lr.positionCount = 2;                   // 라인 렌더러의 점 개수 설정
         lr.SetPosition(0, transform.position);  // 첫 번째 점을 플레이어 위치로 설정
-        lr.SetPosition(1, hit.point);           // 두 번째 점을 레이캐스트 위치로 설정
+        lr.SetPosition(1, spot);           // 두 번째 점을 레이캐스트 위치로 설정
 
         cj = gameObject.AddComponent<ConfigurableJoint>();
         cj.connectedAnchor = spot; // 줄이 고정된 지점
@@ -202,8 +201,8 @@ public class GraplingHook : MonoBehaviour
     {
         try
         {
-            playerController.UnlockRotation();
-            cameraController.ExitSwingView();
+            // playerController.UnlockRotation();
+            // cameraController.ExitSwingView();
         }
         catch
         {
@@ -242,6 +241,7 @@ public class GraplingHook : MonoBehaviour
         }
         if (dragDir.x > 0.2)
         {
+            Debug.Log("우");
             rb.AddForce(Vector3.right * dragSpeed, ForceMode.Impulse);
         }
         if (dragDir.y < 0)

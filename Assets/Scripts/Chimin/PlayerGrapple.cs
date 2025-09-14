@@ -13,66 +13,62 @@ public class PlayerGrapple : MonoBehaviour
     [SerializeField] PlayerCameraController cameraController;
     [SerializeField] PlayerController playerController;
     [SerializeField] RotationTracker rotationTracker;
-    [SerializeField] CameraRigFollow cameraRig;
+    [SerializeField] CameraRigFollow cameraRig; // ← CameraRig 드롭
 
-    [Header("Aim/Raycast")]
+    [Header("Aim/Raycast")]
     [SerializeField] LayerMask layerMask = ~0;
     [SerializeField] float rayDistance = 60f;
     [SerializeField] float sphereRadius = 3f;
 
-    // --- (수정) SpringJoint 관련 설정이 ConfigurableJoint 설정으로 변경되었습니다 ---
-    [Header("Rope (Configurable Joint)")]
-    [SerializeField] float minRopeDistance = 5f;
-    [SerializeField] float hangingTime = 10f; // 매달리기 최대 시간
-    [SerializeField] float swingGravityBoost = 5f; // 스윙 시 추가할 중력
+    [Header("Spring Joint (Swing)")]
+    [SerializeField] float springForce = 35f;
+    [SerializeField] float springDamper = 4f;
+    [SerializeField] float springMass = 1f;
+    [SerializeField, Range(0.05f, 0.95f)] float minDistFrac = 0.2f;
+    [SerializeField, Range(0.05f, 0.95f)] float maxDistFrac = 0.8f;
+    [SerializeField] float maxSwingSpeed = 40f;
 
-    // --- (추가) 드래그 컨트롤 설정이 추가되었습니다 ---
-    [Header("Drag Controls")]
-    [SerializeField] float dragSpeed = 80f;
-    [SerializeField] float dragTime = 1f;
-
-    // --- 기존 기능 설정들은 모두 보존됩니다 ---
     [Header("Extra Push (optional)")]
     [SerializeField] bool enableWPush = true;
-    [SerializeField] float pushSideways = 20f; // Wall Swing과 W Push가 사용하는 힘
+    [SerializeField] float pushForwardTop = 10f;
+    [SerializeField] float pushForwardSide = 15f;
+    [SerializeField] float pushUpSide = 5f;
 
-    [Header("Release Physics & Landing")]
+    [Header("Wall Swing (optional)")]
+    [SerializeField] bool enableWallPush = true;
+    [SerializeField] float pushSideways = 20f;
+
+    [Header("Release Physics")]
     [SerializeField] float releaseSpinMultiplier = 0.5f;
     [SerializeField] float settleSpeed = 8f;
-    [SerializeField] bool alwaysAlignOnLanding = true;
 
     [Header("Swing Tilting")]
     [SerializeField] float tiltSpeed = 5f;
-    [SerializeField] float maxSwingSpeed = 40f;
 
     [Header("Spin Correction")]
-    [SerializeField] float almostFullTurnThreshold = 300f;
+    [SerializeField] float almostFullTurnThreshold = 300f; // 270~330
 
+    [Header("Landing")]
+    [SerializeField] bool alwaysAlignOnLanding = true; // ← 착지 시 항상 카메라 방향으로 맞추기
 
-    // --- 상태 변수 ---
-    Rigidbody rb;
-    // SpringJoint sj; // (수정) SpringJoint 대신 ConfigurableJoint 사용
-    ConfigurableJoint cj;
+    // 상태
+    Rigidbody rb;
+    SpringJoint sj;
     bool isSwing = false;
     Vector3 anchor;
     RaycastHit lastHit;
     int currentLayer = -1;
 
-    InputAction grappleAction;
+    // 입력
+    InputAction grappleAction;
     Vector3 lastMousePos;
 
-    Coroutine tumbleCoroutine;
+    // 코루틴 상태
+    private Coroutine tumbleCoroutine;
     private bool isSettling = false;
-
-    // --- (추가) 드래그 및 타이머 상태 변수 ---
-    private float currentHangTime = 0f;
-    private float dragTimer = 0f;
-    private bool isDragging = false;
-
 
     void Awake()
     {
-        // Awake 로직은 기존과 동일합니다.
         rb = GetComponent<Rigidbody>();
         rb.maxAngularVelocity = Mathf.Infinity;
 
@@ -105,7 +101,6 @@ public class PlayerGrapple : MonoBehaviour
 
     void OnDestroy()
     {
-        // OnDestroy 로직은 기존과 동일합니다.
         if (grappleAction != null)
         {
             grappleAction.started -= OnGrappleStarted;
@@ -115,30 +110,7 @@ public class PlayerGrapple : MonoBehaviour
 
     void Update()
     {
-        if (!isSwing)
-        {
-            UpdateHookPoint();
-        }
-        else
-        {
-            // --- (추가) 스윙 중일 때 타이머 로직 처리 ---
-            currentHangTime += Time.deltaTime;
-            if (currentHangTime >= hangingTime)
-            {
-                EndSwing(); // 시간이 다 되면 스윙 강제 종료
-                return;
-            }
-
-            if (isDragging)
-            {
-                dragTimer += Time.deltaTime;
-                if (dragTimer >= dragTime)
-                {
-                    isDragging = false; // 드래그 가능 시간 종료
-                }
-            }
-        }
-
+        UpdateHookPoint();
         DrawRope();
         lastMousePos = Input.mousePosition;
     }
@@ -147,7 +119,6 @@ public class PlayerGrapple : MonoBehaviour
     {
         if (!isSwing) return;
 
-        // 기존의 모든 FixedUpdate 로직을 보존합니다.
         if (rb.linearVelocity.sqrMagnitude > maxSwingSpeed * maxSwingSpeed)
             rb.linearVelocity = rb.linearVelocity.normalized * maxSwingSpeed;
 
@@ -163,7 +134,13 @@ public class PlayerGrapple : MonoBehaviour
             }
         }
 
-        // (기존 Wall Push는 W Push와 합쳐져 있으므로 별도 로직 불필요)
+        if (enableWallPush)
+        {
+            if (currentLayer == LayerMask.NameToLayer("Left"))
+                rb.AddForce(Vector3.right * pushSideways, ForceMode.Force);
+            else if (currentLayer == LayerMask.NameToLayer("Right"))
+                rb.AddForce(Vector3.left * pushSideways, ForceMode.Force);
+        }
 
         if (rb.linearVelocity.sqrMagnitude > 0.1f)
         {
@@ -172,22 +149,13 @@ public class PlayerGrapple : MonoBehaviour
             Quaternion targetRotation = Quaternion.LookRotation(playerForward, ropeDirection);
             rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRotation, Time.fixedDeltaTime * tiltSpeed));
         }
-
-        // --- (추가) 새로운 물리 효과 및 드래그 힘 적용 ---
-        rb.AddForce(Vector3.down * swingGravityBoost, ForceMode.Acceleration); // 추가 중력
-
-        if (isDragging)
-        {
-            MouseDrag(); // 드래그 힘 적용
-        }
     }
 
-    void OnGrappleStarted(InputAction.CallbackContext ctx)
+    // 입력
+    void OnGrappleStarted(InputAction.CallbackContext ctx)
     {
         TryStartSwing();
-        // (수정) 드래그 상태 초기화 추가
-        isDragging = true;
-        dragTimer = 0f;
+        lastMousePos = Input.mousePosition;
     }
 
     void OnGrappleCanceled(InputAction.CallbackContext ctx)
@@ -195,15 +163,24 @@ public class PlayerGrapple : MonoBehaviour
         EndSwing();
     }
 
-    void UpdateHookPoint()
+    // 에이밍
+    void UpdateHookPoint()
     {
-        // 기존 Aiming 로직은 그대로 사용합니다.
         if (!cam) return;
+
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         bool got = Physics.Raycast(ray, out RaycastHit hit, rayDistance, layerMask, QueryTriggerInteraction.Collide);
         if (!got)
         {
-            got = Physics.SphereCast(cam.transform.position, sphereRadius, cam.transform.forward, out hit, rayDistance, layerMask, QueryTriggerInteraction.Collide);
+            got = Physics.SphereCast(
+              cam.transform.position,
+              sphereRadius,
+              cam.transform.forward,
+              out hit,
+              rayDistance,
+              layerMask,
+              QueryTriggerInteraction.Collide
+            );
         }
 
         if (got)
@@ -219,18 +196,26 @@ public class PlayerGrapple : MonoBehaviour
         }
     }
 
-    void TryStartSwing()
+    // 스윙 시작
+    void TryStartSwing()
     {
-        // 기존의 재스윙 시 자세 보정 로직은 모두 보존합니다.
         if (tumbleCoroutine != null)
         {
             StopCoroutine(tumbleCoroutine);
             isSettling = false;
             rb.isKinematic = false;
-            rotationTracker?.StopTracking();
-            SnapPlayerYawToCameraView();
-            rb.angularVelocity = Vector3.zero;
-            if (playerController != null)
+
+            // (1) 회전 카운트 중단 (스윙 중 틸트가 스핀으로 카운트되는 것 방지)
+            rotationTracker?.StopTracking();
+
+            // (2) 아직 카메라가 고정돼 있을 때 플레이어 Yaw를 '현재 카메라 시선'으로 스냅
+            SnapPlayerYawToCameraView();
+
+            // (3) 남아있는 각속도 제거 (재스윙 직후 흔들림 방지)
+            rb.angularVelocity = Vector3.zero;
+
+            // (4) 이제 스핀 종료 처리
+            if (playerController != null)
             {
                 playerController.IsTumbling = false;
                 playerController.UnlockController();
@@ -239,13 +224,13 @@ public class PlayerGrapple : MonoBehaviour
         }
 
         rb.constraints = RigidbodyConstraints.FreezeRotation;
+
         if (isSwing) return;
         if (lastHit.point == Vector3.zero) return;
 
         isSwing = true;
         anchor = lastHit.point;
         currentLayer = lastHit.collider ? lastHit.collider.gameObject.layer : -1;
-        currentHangTime = 0f; // 타이머 초기화
 
         if (playerController != null) playerController.LockRotation();
         if (cameraController != null) cameraController.EnterSwingView();
@@ -258,44 +243,37 @@ public class PlayerGrapple : MonoBehaviour
             rope.SetPosition(1, anchor);
         }
 
-        // --- (수정) SpringJoint를 ConfigurableJoint로 교체하는 로직 ---
-        cj = gameObject.AddComponent<ConfigurableJoint>();
-        cj.autoConfigureConnectedAnchor = false;
-        cj.connectedAnchor = anchor;
-        cj.xMotion = ConfigurableJointMotion.Limited;
-        cj.yMotion = ConfigurableJointMotion.Limited;
-        cj.zMotion = ConfigurableJointMotion.Limited;
-        cj.angularXMotion = ConfigurableJointMotion.Free;
-        cj.angularYMotion = ConfigurableJointMotion.Free;
-        cj.angularZMotion = ConfigurableJointMotion.Free;
+        if (!sj) sj = gameObject.AddComponent<SpringJoint>();
+        sj.autoConfigureConnectedAnchor = false;
+        sj.connectedAnchor = anchor;
+        sj.spring = springForce;
+        sj.damper = springDamper;
+        sj.massScale = springMass;
 
-        SoftJointLimit limit = new SoftJointLimit();
-        float distance = Vector3.Distance(transform.position, anchor);
-        limit.limit = Mathf.Max(distance, minRopeDistance);
-        cj.linearLimit = limit;
-        // --- 여기까지 수정 ---
+        float dis = Vector3.Distance(transform.position, anchor);
+        sj.maxDistance = Mathf.Max(0.01f, dis * maxDistFrac);
+        sj.minDistance = Mathf.Clamp(dis * minDistFrac, 0f, sj.maxDistance);
     }
 
-    void EndSwing()
+    // 스윙 종료
+    void EndSwing()
     {
         if (!isSwing) return;
+
         isSwing = false;
-        isDragging = false; // 드래그 상태 해제
 
         if (cameraController != null) cameraController.ExitSwingView();
 
-        // 기존의 Tumble(공중 회전) 시작 로직은 모두 보존합니다.
         if (tumbleCoroutine != null) StopCoroutine(tumbleCoroutine);
+
         float releaseSpeed = rb.linearVelocity.magnitude;
         float initialSpin = releaseSpinMultiplier * releaseSpeed;
         tumbleCoroutine = StartCoroutine(TumbleCoroutine(initialSpin));
 
-        // 기존의 속도 감쇠 로직도 보존합니다.
         rb.linearVelocity *= 0.5f;
 
-        // --- (수정) SpringJoint 대신 ConfigurableJoint 제거 ---
-        if (cj) Destroy(cj);
-        cj = null;
+        if (sj) Destroy(sj);
+        sj = null;
 
         if (rope)
         {
@@ -304,73 +282,58 @@ public class PlayerGrapple : MonoBehaviour
         }
     }
 
-    // --- (추가) 마우스 드래그 기능 함수 ---
-    void MouseDrag()
-    {
-        Vector3 currentMousePos = Input.mousePosition;
-        Vector3 dragDelta = currentMousePos - lastMousePos;
-        if (dragDelta.magnitude < 1f) return;
-
-        Vector3 dragDir = dragDelta.normalized;
-
-        if (dragDir.x < -0.2f) rb.AddForce(-cam.transform.right * dragSpeed, ForceMode.Impulse);
-        if (dragDir.x > 0.2f) rb.AddForce(cam.transform.right * dragSpeed, ForceMode.Impulse);
-        if (dragDir.y > 0.2f)
-        {
-            Vector3 pullDirection = (anchor - transform.position).normalized;
-            rb.AddForce(pullDirection * dragSpeed, ForceMode.Impulse);
-        }
-        if (dragDir.y < -0.2f)
-        {
-            Vector3 pushDirection = (transform.position - anchor).normalized;
-            rb.AddForce(pushDirection * dragSpeed, ForceMode.Impulse);
-        }
-    }
-
-    void DrawRope()
+    // 로프 시각화
+    void DrawRope()
     {
         if (!isSwing || !rope) return;
         rope.SetPosition(0, transform.position);
         rope.SetPosition(1, anchor);
     }
 
-    // -------------------------------------------------------------------
-    // 아래의 모든 착지 및 회전 관련 코드는 기존과 동일하게 완벽히 보존됩니다.
-    // -------------------------------------------------------------------
-
-    void HandleLanding(GameObject collidedObject)
+    // ─────────────────────────────────────────────
+    // 착지 처리 (복구 코루틴 시작 트리거)
+    void HandleLanding(GameObject collidedObject)
     {
         if (collidedObject.layer != LayerMask.NameToLayer("Bottom")) return;
         if (isSettling) return;
 
-        if (tumbleCoroutine != null)
+        // 스핀 중 착지
+        if (tumbleCoroutine != null)
         {
             StopCoroutine(tumbleCoroutine);
             tumbleCoroutine = null;
-            StartCoroutine(SettleRotationCoroutine());
-            return;
+            StartCoroutine(SettleRotationCoroutine()); // 아래에서 카메라 Yaw 사용하도록 수정됨
+            return;
         }
 
-        if (alwaysAlignOnLanding)
+        // 스핀 중이 아니어도, 착지 시 무조건 카메라 방향으로 맞추기
+        if (alwaysAlignOnLanding)
             StartCoroutine(AlignToCameraYawOnLanding());
     }
 
     void OnCollisionEnter(Collision collision) => HandleLanding(collision.gameObject);
     void OnCollisionStay(Collision collision) => HandleLanding(collision.gameObject);
 
-    private IEnumerator TumbleCoroutine(float initialSpinForce)
+    // 공중 회전 코루틴
+    private IEnumerator TumbleCoroutine(float initialSpinForce)
     {
         isSettling = false;
+
         if (playerController != null) playerController.IsTumbling = true;
+
         rb.constraints = RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
         rb.AddRelativeTorque(Vector3.right * initialSpinForce, ForceMode.Impulse);
+
         Debug.Log($"[Grapple] Tumble start, spinForce={initialSpinForce:F2}");
+
         rotationTracker?.StartTracking();
+
         while (true)
             yield return null;
     }
 
-    private IEnumerator SettleRotationCoroutine()
+    // 착지 후 자세 복구(카메라 Yaw에 정렬)
+    private IEnumerator SettleRotationCoroutine()
     {
         isSettling = true;
         Debug.Log("[Grapple] Landing: settle start");
@@ -384,9 +347,11 @@ public class PlayerGrapple : MonoBehaviour
         }
 
         if (playerController != null) playerController.LockController();
+
         rb.isKinematic = true;
 
-        float targetYaw = CalcCameraYaw();
+        // ★ 통일: 어떤 경우든 카메라가 보고 있는 수평 Yaw로 정렬
+        float targetYaw = CalcCameraYaw();
         Quaternion targetRotation = Quaternion.Euler(0f, targetYaw, 0f);
 
         while (Quaternion.Angle(transform.rotation, targetRotation) > 1f)
@@ -396,6 +361,7 @@ public class PlayerGrapple : MonoBehaviour
         }
 
         transform.rotation = targetRotation;
+
         rb.constraints = RigidbodyConstraints.FreezeRotation;
         rb.isKinematic = false;
 
@@ -405,7 +371,9 @@ public class PlayerGrapple : MonoBehaviour
             playerController.UnlockRotation();
             playerController.UnlockController();
         }
+
         Debug.Log("[Grapple] Landing: settle end");
+
         isSettling = false;
     }
 
@@ -415,16 +383,30 @@ public class PlayerGrapple : MonoBehaviour
         fwd.y = 0f;
         if (fwd.sqrMagnitude < 1e-6f)
             return transform.eulerAngles.y;
+
         return Mathf.Atan2(fwd.x, fwd.z) * Mathf.Rad2Deg;
     }
 
-    float CalcCameraYaw()
+    // 스핀 중엔 freeze된 CameraRig(고정된 시선)가 더 안정적, 그 외엔 실제 카메라 시선
+    // 기존: 스핀 중엔 cameraRig(고정된 회전) 우선
+    float CalcCameraYaw()
     {
-        if (cameraController != null)
+        // ✅ 항상 "현재 카메라"의 시점을 기준으로 Yaw 계산
+        if (cameraController != null)
             return GetFlatYaw(cameraController.transform.rotation);
-        if (cameraRig != null)
+
+        // 백업: 혹시 카메라 컨트롤러가 없을 때만 리그 사용
+        if (cameraRig != null)
             return GetFlatYaw(cameraRig.transform.rotation);
+
         return transform.eulerAngles.y;
+    }
+
+    void SnapPlayerYawToCameraRig()
+    {
+        if (cameraRig == null) return;
+        float yaw = GetFlatYaw(cameraRig.transform.rotation);
+        transform.rotation = Quaternion.Euler(0f, yaw, 0f);
     }
 
     void SnapPlayerYawToCameraView()
@@ -437,24 +419,33 @@ public class PlayerGrapple : MonoBehaviour
     IEnumerator AlignToCameraYawOnLanding()
     {
         isSettling = true;
+
         if (playerController != null) playerController.LockController();
+
         rb.isKinematic = true;
+
         float targetYaw = CalcCameraYaw();
         Quaternion targetRot = Quaternion.Euler(0f, targetYaw, 0f);
+
         while (Quaternion.Angle(transform.rotation, targetRot) > 1f)
         {
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * settleSpeed);
             yield return null;
         }
+
         transform.rotation = targetRot;
+
         rb.constraints = RigidbodyConstraints.FreezeRotation;
         rb.isKinematic = false;
+
         if (playerController != null)
         {
             playerController.IsTumbling = false;
             playerController.UnlockRotation();
             playerController.UnlockController();
         }
+
         isSettling = false;
     }
 }
+

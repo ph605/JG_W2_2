@@ -29,6 +29,16 @@ public class PlayerController : MonoBehaviour
     public UnityEvent<GameObject> onCollectStar;
     public UnityEvent onDeathRequested;
 
+    // PlayerController 클래스 상단 필드들 사이에 추가
+    [Header("Super Jump")]
+    [SerializeField] string superJumpLayerName = "SuperJump";
+    [SerializeField] float superJumpUpVelocity = 18f;      // 위로 줄 목표 속도
+    [SerializeField] float superJumpForwardBoost = 0f;     // 앞방향 추가 가속(원하면 사용)
+    [SerializeField] bool cancelTumbleOnSuperJump = true;  // 점프 시 스핀 해제 여부
+
+    int superJumpLayer;
+
+
     private bool canRotate = true; // 회전 가능 여부를 나타내는 플래그
     // ... (다른 함수들 아래에 이 두 함수를 추가)
     public void LockRotation() => canRotate = false;
@@ -52,6 +62,7 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        superJumpLayer = LayerMask.NameToLayer(superJumpLayerName);
     }
 
     void OnEnable()
@@ -213,9 +224,38 @@ public class PlayerController : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
+        
         if (collision.gameObject.layer == LayerMask.NameToLayer("Clear"))
         {
             onStageClear?.Invoke();
         }
+
+        // ↓ 추가: SuperJump 레이어 밟으면 위로 튀기
+        if (collision.gameObject.layer == superJumpLayer)
+        {
+            DoSuperJump();
+        }
     }
+
+    void DoSuperJump()
+    {
+        // 위쪽 속도를 최소 superJumpUpVelocity 이상으로 설정
+        var v = rb.linearVelocity;
+        v.y = Mathf.Max(v.y, superJumpUpVelocity);
+
+        // 앞으로 살짝 밀고 싶으면 옵션 사용
+        if (superJumpForwardBoost > 0f)
+            v += transform.forward * superJumpForwardBoost;
+
+        rb.linearVelocity = v;
+
+        // 스핀/조작 상태 정리(원하면)
+        if (cancelTumbleOnSuperJump)
+            IsTumbling = false;
+
+        // 필요하면 여기서 추가 이펙트/사운드 트리거 가능
+        // Debug.Log("[Player] SuperJump triggered");
+    }
+
+
 }

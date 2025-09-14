@@ -129,8 +129,8 @@ public class PlayerCameraController : MonoBehaviour
             Time.deltaTime * swingPivotOffsetLerp
         );
 
-        // ★ 핵심 변경: 스핀 중에는 yaw/pitch를 마우스로 '누적' 해서 자유 오빗
-        if (freeOrbitWhileTumbling && tumbling)
+        // ★ 변경: 스핀 중이거나 스윙 중이면 마우스로 yaw/pitch를 '누적'해서 자유 오빗
+        if ((freeOrbitWhileTumbling && tumbling) || isSwinging)
         {
             yaw += playerController.LookInput.x * cameraRotationSpeed;
             cameraPitch -= playerController.LookInput.y * cameraRotationSpeed;
@@ -138,15 +138,12 @@ public class PlayerCameraController : MonoBehaviour
         }
         else
         {
-            // 평소/스윙 아님: 타겟의 yaw를 따르고, pitch만 마우스로 조절(기존 동작)
+            // 평소: 타겟의 yaw를 따르고, pitch만 마우스로 조절
             yaw = cameraTarget.eulerAngles.y;
-
-            if (!isSwinging)
-            {
-                cameraPitch -= playerController.LookInput.y * cameraRotationSpeed;
-                cameraPitch = Mathf.Clamp(cameraPitch, minPitch, maxPitch);
-            }
+            cameraPitch -= playerController.LookInput.y * cameraRotationSpeed;
+            cameraPitch = Mathf.Clamp(cameraPitch, minPitch, maxPitch);
         }
+
 
         // 이하 기존 그대로
         currentUpwardPitchT = 0f;

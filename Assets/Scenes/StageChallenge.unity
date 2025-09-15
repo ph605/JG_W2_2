@@ -960,8 +960,44 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1928488674}
     - target: {fileID: 3530417025400114408, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
+      propertyPath: goalValue.Array.size
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3530417025400114408, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
+      propertyPath: goalValue.Array.data[1].time
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3530417025400114408, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
+      propertyPath: goalValue.Array.data[3].time
+      value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 3530417025400114408, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
       propertyPath: goalValue.Array.data[4].time
+      value: 360
+      objectReference: {fileID: 0}
+    - target: {fileID: 3530417025400114408, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
+      propertyPath: goalValue.Array.data[5].time
       value: 600
+      objectReference: {fileID: 0}
+    - target: {fileID: 3530417025400114408, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
+      propertyPath: goalValue.Array.data[2].score
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3530417025400114408, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
+      propertyPath: goalValue.Array.data[3].score
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 3530417025400114408, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
+      propertyPath: goalValue.Array.data[4].score
+      value: 1500
+      objectReference: {fileID: 0}
+    - target: {fileID: 3530417025400114408, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
+      propertyPath: goalValue.Array.data[5].score
+      value: 3500
+      objectReference: {fileID: 0}
+    - target: {fileID: 3530417025400114408, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
+      propertyPath: goalValue.Array.data[1].isTutorial
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5256768980223783185, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
       propertyPath: m_Name

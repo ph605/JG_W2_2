@@ -862,6 +862,7 @@ MonoBehaviour:
   visibleTilesOnScreen: 1
   totalTilesToGoal: 5
   finishLinePrefab: {fileID: 5653160895305078999, guid: 02be3f10e82aad44e803dc666a85ce0d, type: 3}
+  nonSpawnLocs: []
 --- !u!1 &1916097043 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8256604671371122669, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}

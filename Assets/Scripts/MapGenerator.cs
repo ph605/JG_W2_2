@@ -58,7 +58,9 @@ public class MapGenerator : ObjectNumberGenerator
     // 각 좌표에 어떤 타일 패턴이 사용되었는지 영구적으로 기록하는 딕셔너리
     private Dictionary<Vector2Int, TilePattern> tileDataHistory = new Dictionary<Vector2Int, TilePattern>();
 
-    // 모든 데이터
+    // 생성하지 않을 좌표
+    [Tooltip("생성 하지 않을 좌표")]
+    public List<Vector2Int> nonSpawnLocs = new List<Vector2Int>();
     
 
     // 플레이어의 이전 그리드 좌표를 저장
@@ -74,6 +76,7 @@ public class MapGenerator : ObjectNumberGenerator
 
     void Start()
     {
+        SetNonSpawnLocs();
         DecideStartSpawnTile();
         SpawnAllPatternsInTestMode();
 
@@ -207,6 +210,18 @@ public class MapGenerator : ObjectNumberGenerator
         newInstance.obstacleLayout = newLayout;
 
         return newInstance;
+    }
+
+    // 구역을 생성하지 않을 지점들의 데이터를 미리 입력
+    private void SetNonSpawnLocs()
+    {
+        foreach(var loc in nonSpawnLocs)
+        {
+            Debug.Log(loc.ToString());
+            TilePattern tempPattern = ScriptableObject.CreateInstance<TilePattern>();
+            tempPattern.obstacleLayout = new ObstacleData[0];
+            tileDataHistory.Add(loc, tempPattern);
+        }
     }
 
     // ================================================

@@ -171,7 +171,7 @@ MonoBehaviour:
   - type: 5
     weight: 7
     isRandomScale: 0
-    fixedScale: {x: 5, y: 5, z: 5}
+    fixedScale: {x: 3.5, y: 3.5, z: 3.5}
     xBounds: {x: -25, y: 25}
     yBounds: {x: -5, y: 15}
     zBounds: {x: -25, y: 25}
@@ -179,7 +179,7 @@ MonoBehaviour:
   - type: 6
     weight: 5
     isRandomScale: 0
-    fixedScale: {x: 5, y: 5, z: 5}
+    fixedScale: {x: 5, y: 0.1, z: 5}
     xBounds: {x: -25, y: 25}
     yBounds: {x: -5, y: 15}
     zBounds: {x: -25, y: 25}
@@ -2787,26 +2787,26 @@ MonoBehaviour:
   playerTransform: {fileID: 897350363}
   emptyTilePrefab: {fileID: 5653160895305078999, guid: 38b9b4cca4c6a754cb7c180dffe0dcd3, type: 3}
   tilePatterns:
-  - {fileID: 11400000, guid: 15a6020b7cf6dd8439c9389f07aea59d, type: 2}
-  - {fileID: 11400000, guid: 0ab67acdb22967a48abfe1b7a651e774, type: 2}
-  - {fileID: 11400000, guid: ae90c0e9bc30c444c825b35eb78e154e, type: 2}
-  - {fileID: 11400000, guid: 591282e2e0260344688bbecbeeb870be, type: 2}
-  - {fileID: 11400000, guid: 3d6153d9b2051d84bafd06d246cadd6e, type: 2}
-  - {fileID: 11400000, guid: 573d7b589469c2e4981729bb76dfced5, type: 2}
-  - {fileID: 11400000, guid: d3ec694e26d3b9c499a4ee97860b5226, type: 2}
-  - {fileID: 11400000, guid: ab0f343c0e3bab64c8b2608567041746, type: 2}
-  - {fileID: 11400000, guid: a11e29e7d32582042ac0681d0918d22d, type: 2}
-  - {fileID: 11400000, guid: 270fc4768bcb03746a663d9e557dc15d, type: 2}
-  - {fileID: 11400000, guid: 6de419747a0430c48902647350dd3c42, type: 2}
-  - {fileID: 11400000, guid: 3bdccb073f141a145b46543c6cc55aba, type: 2}
-  - {fileID: 11400000, guid: e2aa21e4cb732024c975775946edf7a4, type: 2}
-  - {fileID: 11400000, guid: 2cc3ccb5ee19ee34a9faea4835360278, type: 2}
-  - {fileID: 11400000, guid: 9ee3002950dec1240a42f01591abff1d, type: 2}
-  - {fileID: 11400000, guid: ccfa6ad22803edc42a19ec7465e15a1c, type: 2}
-  - {fileID: 11400000, guid: 358e1d43e5c8a6c4bad0a9c4fa09b98f, type: 2}
-  - {fileID: 11400000, guid: d9c81c23337522b40b78dd3240d93ac0, type: 2}
-  - {fileID: 11400000, guid: ae61327181af7804fa601b7c79eef9c5, type: 2}
-  - {fileID: 11400000, guid: a992040af06c2374ea0254dd2aeae804, type: 2}
+  - {fileID: 11400000, guid: 6ba2bb55d5bcb694e83dacc596f8894f, type: 2}
+  - {fileID: 11400000, guid: a2ab98d45622c4e499a0f7d8d804c72d, type: 2}
+  - {fileID: 11400000, guid: 6818a3803f431f64baa2effce0f652ba, type: 2}
+  - {fileID: 11400000, guid: 9d525e80354e88a428e321493f04ed03, type: 2}
+  - {fileID: 11400000, guid: 508a300120ffcf843b3ae42441bd4200, type: 2}
+  - {fileID: 11400000, guid: c6e87671d43ab65439718e6352f763ce, type: 2}
+  - {fileID: 11400000, guid: 95f13d98386befd4f9a00220c52d58f3, type: 2}
+  - {fileID: 11400000, guid: 46fef9f0c4e95ac42bfdc238ca777ccb, type: 2}
+  - {fileID: 11400000, guid: 3c3960fda3453aa439af503094886128, type: 2}
+  - {fileID: 11400000, guid: b8796c5162958014ab308e4e8fe6ac24, type: 2}
+  - {fileID: 11400000, guid: f68bac1b44303f547a1035d5bf51ed9a, type: 2}
+  - {fileID: 11400000, guid: ecc3dd20b8868404fbf30a9b2f621998, type: 2}
+  - {fileID: 11400000, guid: 2730aa16d946bc948bb67157a4e137dc, type: 2}
+  - {fileID: 11400000, guid: 0879e72e1de763b41ad818c4291c790e, type: 2}
+  - {fileID: 11400000, guid: bbcb3fec0d351cc4b94d5789d233b384, type: 2}
+  - {fileID: 11400000, guid: 33e30ed4fe31e3547b079d8b27432aa2, type: 2}
+  - {fileID: 11400000, guid: ce11ae239d56e0d498b94b79df11ddbe, type: 2}
+  - {fileID: 11400000, guid: 502cb2a438ba04a44a8d678907771409, type: 2}
+  - {fileID: 11400000, guid: 361bf07d1e46cfc4ebd965a8ed009692, type: 2}
+  - {fileID: 11400000, guid: 84083756461271c429b5acfd398f402a, type: 2}
   tileLength: 50
   visibleTilesOnScreen: 2
   totalTilesToGoal: 10

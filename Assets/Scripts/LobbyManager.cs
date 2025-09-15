@@ -7,7 +7,9 @@ public class LobbyManager : MonoBehaviour
     public Button buttonStage1;
     public Button buttonStage2;
     public Button buttonStage3;
-    public Button buttonStageChallenge;
+    public Button buttonStageChallenge1;
+    public Button buttonStageChallenge2;
+    public Button buttonStageChallenge3;
 
     void Awake()
     {
@@ -26,8 +28,14 @@ public class LobbyManager : MonoBehaviour
         // 3스테이지 버튼 클릭 시 Stage3 씬 로드
         buttonStage3.onClick.AddListener(() => LoadScene(SceneType.Stage3));
 
-        // 챌린지 버튼 클릭 시 StageChallenge 씬 로드
-        buttonStageChallenge.onClick.AddListener(() => LoadScene(SceneType.StageChallenge));
+        // 챌린지1 버튼 클릭 시 StageChallenge 씬 로드
+        buttonStageChallenge1.onClick.AddListener(() => LoadScene(SceneType.StageChallenge1));
+
+        // 챌린지2 버튼 클릭 시 StageChallenge 씬 로드
+        buttonStageChallenge2.onClick.AddListener(() => LoadScene(SceneType.StageChallenge1));
+
+        // 챌린지3 버튼 클릭 시 StageChallenge 씬 로드
+        buttonStageChallenge3.onClick.AddListener(() => LoadScene(SceneType.StageChallenge1));
     }
 
     // 3. 씬을 실제로 로드하는 함수입니다.

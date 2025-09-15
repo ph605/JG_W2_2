@@ -9,7 +9,9 @@ public enum SceneType
     Stage1,
     Stage2,
     Stage3,
-    StageChallenge
+    StageChallenge1,
+    StageChallenge2, 
+    StageChallenge3,
 };
 
 

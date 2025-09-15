@@ -135,19 +135,7 @@ public class PlayerGrapple : MonoBehaviour
         UpdateHookPoint();
         DrawRope();
         lastMousePos = Input.mousePosition;
-        if (isAir)
-        {
-            airTempTime += Time.deltaTime;
-            if (airTempTime >= airTime)
-            {
-                airTempTime = 0f;
-                isAir = false;
-            }
-            else
-            {
-                rb.AddForce(Vector3.up * airGravity, ForceMode.Force);
-            }
-        }
+        
         if (isSwing)
         {
             if (currentRopeDistance > maxRopeDistance)
@@ -177,6 +165,19 @@ public class PlayerGrapple : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (isAir)
+        {
+            airTempTime += Time.deltaTime;
+            if (airTempTime >= airTime)
+            {
+                airTempTime = 0f;
+                isAir = false;
+            }
+            else
+            {
+                rb.AddForce(Vector3.up * airGravity, ForceMode.Force);
+            }
+        }
         if (!isSwing) return;
 
         if (rb.linearVelocity.sqrMagnitude > maxSwingSpeed * maxSwingSpeed)

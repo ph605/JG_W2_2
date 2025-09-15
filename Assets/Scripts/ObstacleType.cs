@@ -5,6 +5,8 @@ public enum ObstacleType
     CapsuleObstacle,
     BoxObstacle,
     SphereCanGrab,
-    ItemCoin
+    ItemCoin,
+    HoldingObject,
+    SuperJump
     // 필요에 따라 계속 추가...
 }

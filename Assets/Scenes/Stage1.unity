@@ -7170,6 +7170,10 @@ MonoBehaviour:
     size: 50
   - prefab: {fileID: 4928771417078097448, guid: 616457ea40b794740877a33d625dbbde, type: 3}
     size: 50
+  - prefab: {fileID: 9137036492595202612, guid: c45433e55cde3ad4d910d4d9c4465980, type: 3}
+    size: 50
+  - prefab: {fileID: 5308205827703454776, guid: 0bff279deb4aea640a16c5463284b7b9, type: 3}
+    size: 50
 --- !u!1 &759130858
 GameObject:
   m_ObjectHideFlags: 0
@@ -7987,12 +7991,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3e77b6a1ffaa484d8bb4fb53bfa5d3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fileName: PatternStage1_15
+  fileName: PatternStage1_20
   savePath: TilePatterns/Stage1
   obstacleCount: 5
   weightedObstacleTypes:
   - type: 3
-    weight: 30
+    weight: 60
     isRandomScale: 0
     fixedScale: {x: 2, y: 2, z: 2}
     xBounds: {x: -25, y: 25}
@@ -8000,7 +8004,23 @@ MonoBehaviour:
     zBounds: {x: -25, y: 25}
     isActive: 1
   - type: 4
-    weight: 5
+    weight: 10
+    isRandomScale: 0
+    fixedScale: {x: 5, y: 5, z: 5}
+    xBounds: {x: -25, y: 25}
+    yBounds: {x: -5, y: 15}
+    zBounds: {x: -25, y: 25}
+    isActive: 1
+  - type: 5
+    weight: 20
+    isRandomScale: 0
+    fixedScale: {x: 5, y: 5, z: 5}
+    xBounds: {x: -25, y: 25}
+    yBounds: {x: -5, y: 15}
+    zBounds: {x: -25, y: 25}
+    isActive: 1
+  - type: 6
+    weight: 10
     isRandomScale: 0
     fixedScale: {x: 5, y: 5, z: 5}
     xBounds: {x: -25, y: 25}
@@ -12887,6 +12907,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e2aa21e4cb732024c975775946edf7a4, type: 2}
   - {fileID: 11400000, guid: 2cc3ccb5ee19ee34a9faea4835360278, type: 2}
   - {fileID: 11400000, guid: 9ee3002950dec1240a42f01591abff1d, type: 2}
+  - {fileID: 11400000, guid: ccfa6ad22803edc42a19ec7465e15a1c, type: 2}
+  - {fileID: 11400000, guid: 358e1d43e5c8a6c4bad0a9c4fa09b98f, type: 2}
+  - {fileID: 11400000, guid: d9c81c23337522b40b78dd3240d93ac0, type: 2}
+  - {fileID: 11400000, guid: ae61327181af7804fa601b7c79eef9c5, type: 2}
+  - {fileID: 11400000, guid: a992040af06c2374ea0254dd2aeae804, type: 2}
   tileLength: 50
   visibleTilesOnScreen: 2
   totalTilesToGoal: 10

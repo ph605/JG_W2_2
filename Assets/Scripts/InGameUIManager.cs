@@ -78,6 +78,17 @@ public class InGameUIManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Escape))
             SetActiveConfiguration();
+
+        CheckChallengeModeClear();
+    }
+
+    private void CheckChallengeModeClear()
+    {
+        int targetValue = currentGoalValue.score;
+
+        if (targetValue > 3000 && scoreValue >= targetValue)
+            ClearUI(true);
+
     }
 
     // ESC 키를 누를 때, 옵션 UI 출력/숨김
@@ -114,7 +125,7 @@ private void timeCalculate()
         int targetScore = currentGoalValue.score;
 
         if(targetScore != 0)
-            score.text = string.Format("Score : {0}/{0}", scoreValue, targetScore);
+            score.text = string.Format("Score : {0}/{1}", scoreValue, targetScore);
         else
             score.text = string.Format("Score : {0}", scoreValue);
     }
@@ -145,7 +156,7 @@ private void timeCalculate()
         }
 
         // 목표 점수에 도달했으면, 바로 통과
-        if(currentGoalValue.score == 0 || currentGoalValue.score >= scoreValue)
+        if(currentGoalValue.score == 0 || currentGoalValue.score <= scoreValue)
             ClearUI(true);
 
         // 목표 점수에 도달하지 못하면, 계속 플레이

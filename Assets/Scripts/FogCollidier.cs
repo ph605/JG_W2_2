@@ -16,9 +16,11 @@ public class FogCollidier : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.CompareTag("Player"))
+        if (collision.gameObject.CompareTag("Player"))
         {
-            collision.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+            collision.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+            collision.transform.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+            collision.transform.SetPositionAndRotation(Vector3.zero, Quaternion.Euler(0,0,0));
         }
     }
 }

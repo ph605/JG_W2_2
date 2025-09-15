@@ -4780,6 +4780,10 @@ PrefabInstance:
       propertyPath: configurationUI
       value: 
       objectReference: {fileID: 1157015201}
+    - target: {fileID: 3530417025400114408, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
+      propertyPath: goalValue.Array.data[4].time
+      value: 600
+      objectReference: {fileID: 0}
     - target: {fileID: 5256768980223783185, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
       propertyPath: m_Name
       value: Canvas
@@ -6294,6 +6298,10 @@ MonoBehaviour:
   - prefab: {fileID: 4689319079934906193, guid: 03008d8da24612d42b1ede7e705bcaba, type: 3}
     size: 50
   - prefab: {fileID: 4928771417078097448, guid: 616457ea40b794740877a33d625dbbde, type: 3}
+    size: 50
+  - prefab: {fileID: 9137036492595202612, guid: c45433e55cde3ad4d910d4d9c4465980, type: 3}
+    size: 50
+  - prefab: {fileID: 5308205827703454776, guid: 0bff279deb4aea640a16c5463284b7b9, type: 3}
     size: 50
 --- !u!1 &1985445269
 GameObject:

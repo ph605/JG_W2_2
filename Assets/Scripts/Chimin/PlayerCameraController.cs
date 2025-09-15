@@ -57,6 +57,13 @@ public class PlayerCameraController : MonoBehaviour
     [Tooltip("홀딩 해제 후 자유 오빗을 유지할 시간(초)")]
     [SerializeField] float releaseOrbitDuration = 0.5f;
 
+    [Header("SuperJump Blend")]
+    [SerializeField] float superJumpFreeOrbitHold = 0.25f; // 슈점 정렬 동안 자유 오빗 유지
+    [SerializeField] float superJumpResyncTime = 0.35f;    // 정렬 직후 타겟 Yaw로 서서히 붙는 시간
+    [SerializeField] float superJumpResyncLerp = 8f;       // 붙는 속도(클수록 빠름)
+
+    float superJumpResyncTimer = 0f;                       // 내부 타이머
+
     float releaseOrbitTimer = 0f;
     bool wasClinging = false;
 
@@ -155,11 +162,24 @@ public class PlayerCameraController : MonoBehaviour
         }
         else
         {
-            // 평상시엔 타겟 yaw에 동기화
-            yaw = cameraTarget.eulerAngles.y;
+            // 평소엔 타겟 yaw에 동기화하되, 슈퍼점프 직후엔 부드럽게 따라가도록 보간
+            float targetYaw = cameraTarget.eulerAngles.y;
+
+            if (superJumpResyncTimer > 0f)
+            {
+                float k = 1f - Mathf.Exp(-superJumpResyncLerp * Time.deltaTime); // 지수 감쇠 보간
+                yaw = Mathf.LerpAngle(yaw, targetYaw, k);
+                superJumpResyncTimer -= Time.deltaTime;
+            }
+            else
+            {
+                yaw = targetYaw; // 평소처럼 즉시 동기화
+            }
+
             cameraPitch -= playerController.LookInput.y * cameraRotationSpeed;
             cameraPitch = Mathf.Clamp(cameraPitch, minPitch, maxPitch);
         }
+
 
         // 이하 기존 그대로
         currentUpwardPitchT = 0f;
@@ -273,4 +293,24 @@ public class PlayerCameraController : MonoBehaviour
     {
         return !playerController.IsHasteActive && playerController.HasteHoldTimer > 0;
     }
+
+    public void HoldFreeOrbit(float duration)
+    {
+        // 기존 releaseOrbitTimer를 재활용해 "자유 오빗" 상태를 강제로 유지
+        releaseOrbitTimer = Mathf.Max(releaseOrbitTimer, duration);
+    }
+
+    // 슈퍼점프 정렬이 시작됐을 때 카메라 쪽 블렌드를 지시
+    public void OnSuperJumpAlignStarted(float holdDuration = -1f, float resyncDuration = -1f)
+    {
+        if (holdDuration < 0f) holdDuration = superJumpFreeOrbitHold;
+        if (resyncDuration < 0f) resyncDuration = superJumpResyncTime;
+
+        // 잠깐 자유 오빗 유지(스냅 방지) — 기존 releaseOrbitTimer 재사용
+        releaseOrbitTimer = Mathf.Max(releaseOrbitTimer, holdDuration);
+
+        // 그 다음 일정 시간 동안은 타겟 Yaw로 서서히 보간
+        superJumpResyncTimer = Mathf.Max(superJumpResyncTimer, resyncDuration);
+    }
+
 }

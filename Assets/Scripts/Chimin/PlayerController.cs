@@ -46,6 +46,9 @@ public class PlayerController : MonoBehaviour
     [Header("View / Camera")]
     [SerializeField] Transform viewYawSource;   // 카메라 Transform 드롭(없으면 자동 할당)
 
+    [Header("Super Jump Tuning")]
+    [SerializeField, Range(5f, 60f)] float superJumpUprightLerpSpeed = 25f;
+
 
     int superJumpLayer;
 
@@ -267,7 +270,7 @@ public class PlayerController : MonoBehaviour
             // ★ 스핀 강제 종료 + 카메라 Yaw로 자연스럽게 세우기
             var grapple = GetComponent<PlayerGrapple>();
             if (grapple != null)
-                grapple.StopTumbleForSuperJump(viewYawSource, 20f); // 속도는 취향대로
+                grapple.StopTumbleForSuperJump(viewYawSource, superJumpUprightLerpSpeed); // 속도는 취향대로
 
             DoSuperJump(); // 그 다음 위로 튕기기
         }

@@ -59,7 +59,7 @@ public class SpinManager : MonoBehaviour
     {
         if (totalRotationText != null)
         {
-            totalRotationText.text = "Total Rotations: " + totalRotations;
+            totalRotationText.text = "½ºÇÉ È½¼ö : " + totalRotations;
         }
     }
 

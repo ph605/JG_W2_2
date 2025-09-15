@@ -443,7 +443,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   line: {fileID: 4046966097992044161}
   keepLineWhileHolding: 1
-  lineWidth: 0.1
+  lineWidth: 0.4
 --- !u!114 &3955647184880842887
 MonoBehaviour:
   m_ObjectHideFlags: 0

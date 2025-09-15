@@ -116,7 +116,7 @@ private void timeCalculate()
         time -= Time.deltaTime;
         int min = Mathf.FloorToInt(time / 60f);
         int sec = Mathf.FloorToInt(time % 60f);
-        timer.text = string.Format("Timer : {0:00}:{1:00}", min, sec);
+        timer.text = string.Format("시간 : {0:00}:{1:00}", min, sec);
 
         if (time < 0f)
             ClearUI(false);
@@ -129,9 +129,9 @@ private void timeCalculate()
         int targetScore = currentGoalValue.score;
 
         if(targetScore != 0)
-            score.text = string.Format("Score : {0}/{1}", scoreValue, targetScore);
+            score.text = string.Format("점수 : {0}/{1}", scoreValue, targetScore);
         else
-            score.text = string.Format("Score : {0}", scoreValue);
+            score.text = string.Format("점수 : {0}", scoreValue);
     }
 
     // 마우스 잠금/해제 설정

@@ -1167,7 +1167,7 @@ Transform:
   m_GameObject: {fileID: 817985196}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 15, y: -9.4, z: 38.7}
+  m_LocalPosition: {x: 26.3, y: -9.4, z: 38.7}
   m_LocalScale: {x: 30, y: 1, z: 43.491245}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1352,8 +1352,8 @@ Transform:
   m_GameObject: {fileID: 897839830}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.07, y: -19.0828, z: -13.77}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -21.4, y: -19.0828, z: 32.3}
+  m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1826,9 +1826,9 @@ MonoBehaviour:
   airGravity: 10
   airTime: 1
   airTempTime: 0
-  xOffset: 1
+  xOffset: 0
   yOffset: 1.5
-  zOffset: 1
+  zOffset: 1.5
   releaseSpinMultiplier: 0.2
   settleSpeed: 20
   tiltSpeed: 2
@@ -1836,6 +1836,10 @@ MonoBehaviour:
   alwaysAlignOnLanding: 0
   hangingTime: 5
   currentHangTime: 0
+  restrictClickWhileTumbling: 1
+  breakTumbleLayers:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!114 &1268665924
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1868,7 +1872,11 @@ MonoBehaviour:
   superJumpLayerName: SuperJump
   superJumpUpVelocity: 40
   superJumpForwardBoost: 0
-  cancelTumbleOnSuperJump: 1
+  cancelTumbleOnSuperJump: 0
+  enableTumbleAirControl: 1
+  tumbleAirAccel: 70
+  tumbleAirMaxSpeed: 30
+  viewYawSource: {fileID: 330585546}
 --- !u!114 &1268665926
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2595,7 +2603,7 @@ Transform:
   m_GameObject: {fileID: 1562387628}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -24.99, y: -16.5, z: 0}
+  m_LocalPosition: {x: -0.4, y: -28.2, z: 46.6}
   m_LocalScale: {x: 18.975, y: 1, z: 12.071}
   m_ConstrainProportionsScale: 0
   m_Children: []

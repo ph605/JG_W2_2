@@ -159,17 +159,6 @@ public class PlayerGrapple : MonoBehaviour
             {
                 currentRopeDistance = minRopeDistance;
             }
-            if (transform.position.y > anchor.y)
-            {
-                Vector3 dir = (anchor - transform.position).normalized;
-                rb.AddForce(-dir * 10f, ForceMode.Force);
-                Debug.Log("Too High");
-                enableWPush = false;
-            }
-            else
-            {
-                enableWPush = true;
-            }
             SoftJointLimit limit = new SoftJointLimit();
             limit.limit = currentRopeDistance;
             cj.linearLimit = limit;
@@ -203,6 +192,7 @@ public class PlayerGrapple : MonoBehaviour
             }
         }
         if (!isSwing) return;
+
         if (rb.linearVelocity.sqrMagnitude > maxSwingSpeed * maxSwingSpeed)
             rb.linearVelocity = rb.linearVelocity.normalized * maxSwingSpeed;
 

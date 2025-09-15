@@ -1341,12 +1341,21 @@ MonoBehaviour:
   playerTransform: {fileID: 267448455}
   emptyTilePrefab: {fileID: 5653160895305078999, guid: 38b9b4cca4c6a754cb7c180dffe0dcd3, type: 3}
   tilePatterns:
-  - {fileID: 11400000, guid: b76f08c60469e894d82ade21f8743792, type: 2}
-  - {fileID: 11400000, guid: 088e1c00ff141814e959baca39722953, type: 2}
-  - {fileID: 11400000, guid: 4b187f6600646654a80983e3dd6453dd, type: 2}
-  - {fileID: 11400000, guid: 13a61a98d85c641428b3a54ca327d968, type: 2}
-  - {fileID: 11400000, guid: 8335fca6339c93b43996b2cf29b736a7, type: 2}
-  - {fileID: 11400000, guid: f936d9e29ef42784ebe20c2055dc6b05, type: 2}
+  - {fileID: 11400000, guid: 15a6020b7cf6dd8439c9389f07aea59d, type: 2}
+  - {fileID: 11400000, guid: 0ab67acdb22967a48abfe1b7a651e774, type: 2}
+  - {fileID: 11400000, guid: ae90c0e9bc30c444c825b35eb78e154e, type: 2}
+  - {fileID: 11400000, guid: 591282e2e0260344688bbecbeeb870be, type: 2}
+  - {fileID: 11400000, guid: 3d6153d9b2051d84bafd06d246cadd6e, type: 2}
+  - {fileID: 11400000, guid: 573d7b589469c2e4981729bb76dfced5, type: 2}
+  - {fileID: 11400000, guid: d3ec694e26d3b9c499a4ee97860b5226, type: 2}
+  - {fileID: 11400000, guid: ab0f343c0e3bab64c8b2608567041746, type: 2}
+  - {fileID: 11400000, guid: a11e29e7d32582042ac0681d0918d22d, type: 2}
+  - {fileID: 11400000, guid: 270fc4768bcb03746a663d9e557dc15d, type: 2}
+  - {fileID: 11400000, guid: 6de419747a0430c48902647350dd3c42, type: 2}
+  - {fileID: 11400000, guid: 3bdccb073f141a145b46543c6cc55aba, type: 2}
+  - {fileID: 11400000, guid: e2aa21e4cb732024c975775946edf7a4, type: 2}
+  - {fileID: 11400000, guid: 2cc3ccb5ee19ee34a9faea4835360278, type: 2}
+  - {fileID: 11400000, guid: 9ee3002950dec1240a42f01591abff1d, type: 2}
   tileLength: 50
   visibleTilesOnScreen: 2
   totalTilesToGoal: 10
@@ -1770,8 +1779,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3e77b6a1ffaa484d8bb4fb53bfa5d3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fileName: RandomPattern_06
-  savePath: TilePatterns/Random
+  fileName: PatternStage1_15
+  savePath: TilePatterns/Stage1
   obstacleCount: 5
   weightedObstacleTypes:
   - type: 3

@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7004a039280e0647b913480dfd08ad7, type: 3}
+  m_Name: RandomPattern_06
+  m_EditorClassIdentifier: 
+  obstacleLayout:
+  - id: 0
+    type: 4
+    position: {x: -8.597847, y: 4.7875814, z: -14.830988}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1, y: 1, z: 1}
+    isActive: 1
+  - id: 0
+    type: 2
+    position: {x: 14.066563, y: 9.808533, z: 14.15572}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1.2512052, y: 1.2512052, z: 1.2512052}
+    isActive: 1
+  - id: 0
+    type: 2
+    position: {x: -6.1111145, y: 4.3239903, z: -1.3903584}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1.4488087, y: 1.4488087, z: 1.4488087}
+    isActive: 1
+  - id: 0
+    type: 3
+    position: {x: -10.049816, y: 9.317544, z: 9.0582485}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1, y: 1, z: 1}
+    isActive: 1
+  - id: 0
+    type: 0
+    position: {x: -2.400032, y: 1.4222007, z: -3.3676658}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 3, y: 0.1, z: 3}
+    isActive: 1
+  - id: 0
+    type: 3
+    position: {x: -4.6374664, y: 4.2218394, z: 3.494462}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1, y: 1, z: 1}
+    isActive: 1
+  - id: 0
+    type: 3
+    position: {x: -1.3643885, y: 7.140341, z: 0.60506535}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1, y: 1, z: 1}
+    isActive: 1
+  - id: 0
+    type: 4
+    position: {x: -9.367832, y: 9.279552, z: 3.4348526}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1, y: 1, z: 1}
+    isActive: 1
+  - id: 0
+    type: 3
+    position: {x: 6.936816, y: 9.800935, z: -3.2221408}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1, y: 1, z: 1}
+    isActive: 1
+  - id: 0
+    type: 3
+    position: {x: 4.9565425, y: 5.498253, z: 8.455074}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 1, y: 1, z: 1}
+    isActive: 1

@@ -9,4 +9,5 @@ public class TilePattern : ScriptableObject
     // 필요하다면 타일의 길이나 난이도 같은 추가 정보도 넣을 수 있습니다.
     // public float tileLength = 50f;
     // public int difficulty = 1;
+
 }

@@ -74,8 +74,9 @@ public class ObjectPooler : MonoBehaviour
         if (poolDictionary[prefab].Count == 0)
         {
             objectToSpawn = Instantiate(prefab);
-            PooledObjectInfo info = objectToSpawn.AddComponent<PooledObjectInfo>();
-            info.OriginalPrefab = prefab;
+            objectToSpawn.transform.SetParent(transform);
+            PooledObjectInfo addInfo = objectToSpawn.AddComponent<PooledObjectInfo>();
+            addInfo.OriginalPrefab = prefab;
         }
         // 오브젝트 풀에 있는 경우, 기존 오브젝트 재활용
         else
@@ -104,14 +105,17 @@ public class ObjectPooler : MonoBehaviour
 
         // 2. 출신 프리팹을 Key로 사용하여 올바른 풀을 찾음
         GameObject originalPrefab = info.OriginalPrefab;
-        if (!poolDictionary.ContainsKey(originalPrefab))
+        if (poolDictionary.ContainsKey(originalPrefab) == false)
         {
             // Debug.LogWarning("Pool for prefab " + originalPrefab.name + " doesn't exist.");
             Destroy(objectToReturn);
             return;
         }
 
+        objectToReturn.transform.SetParent(transform);
+
         // 3. 오브젝트를 비활성화하고 올바른 풀에 반납
+        info.dataID = 0;
         objectToReturn.SetActive(false);
         poolDictionary[originalPrefab].Enqueue(objectToReturn);
     }

@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 public enum ObstacleType
 {
-    Wall,
-    Ramp,
-    JumpGap
+    BoxFloor,
+    CapsuleObstacle,
+    BoxObstacle,
+    SphereCanGrab,
+    ItemCoin
     // 필요에 따라 계속 추가...
 }

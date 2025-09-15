@@ -10,36 +10,36 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b7004a039280e0647b913480dfd08ad7, type: 3}
-  m_Name: PatternChallenge2_13
+  m_Name: PatternChallenge3_12
   m_EditorClassIdentifier: 
   obstacleLayout:
   - id: 0
-    type: 4
-    position: {x: -10.192618, y: 0.27674794, z: 19.613869}
+    type: 1
+    position: {x: 17.677395, y: 10.114541, z: 21.617443}
     eulerAngles: {x: 0, y: 0, z: 0}
     scale: {x: 5, y: 5, z: 5}
     isActive: 1
   - id: 0
-    type: 4
-    position: {x: 22.375648, y: -1.6534925, z: -11.452981}
+    type: 5
+    position: {x: -7.4941435, y: -4.981587, z: -5.998043}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 3.5, y: 3.5, z: 3.5}
+    isActive: 1
+  - id: 0
+    type: 1
+    position: {x: -18.532856, y: 3.5500133, z: -24.06223}
     eulerAngles: {x: 0, y: 0, z: 0}
     scale: {x: 5, y: 5, z: 5}
     isActive: 1
   - id: 0
     type: 1
-    position: {x: -20.288868, y: 1.7139492, z: 9.177797}
+    position: {x: 1.8907223, y: -1.0738328, z: -20.20538}
     eulerAngles: {x: 0, y: 0, z: 0}
     scale: {x: 5, y: 5, z: 5}
     isActive: 1
   - id: 0
     type: 3
-    position: {x: 17.237411, y: 3.457623, z: 14.412163}
-    eulerAngles: {x: 0, y: 0, z: 0}
-    scale: {x: 2, y: 2, z: 2}
-    isActive: 1
-  - id: 0
-    type: 3
-    position: {x: -17.300476, y: -3.281861, z: -11.474266}
+    position: {x: 19.927017, y: 4.4013605, z: 10.308712}
     eulerAngles: {x: 0, y: 0, z: 0}
     scale: {x: 2, y: 2, z: 2}
     isActive: 1

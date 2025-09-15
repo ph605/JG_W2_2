@@ -1862,10 +1862,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7298758603450885827, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
-      propertyPath: m_margin.z
-      value: -399.97736
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

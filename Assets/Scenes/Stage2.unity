@@ -148,12 +148,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3e77b6a1ffaa484d8bb4fb53bfa5d3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fileName: PatternStage1_20
-  savePath: TilePatterns/Stage1
+  fileName: PatternChallenge_1
+  savePath: TilePatterns/Challenge
   obstacleCount: 5
   weightedObstacleTypes:
   - type: 3
-    weight: 80
+    weight: 40
     isRandomScale: 0
     fixedScale: {x: 2, y: 2, z: 2}
     xBounds: {x: -25, y: 25}
@@ -179,7 +179,23 @@ MonoBehaviour:
   - type: 6
     weight: 5
     isRandomScale: 0
-    fixedScale: {x: 5, y: 0.1, z: 5}
+    fixedScale: {x: 5, y: 0.5, z: 5}
+    xBounds: {x: -25, y: 25}
+    yBounds: {x: -5, y: 15}
+    zBounds: {x: -25, y: 25}
+    isActive: 1
+  - type: 1
+    weight: 20
+    isRandomScale: 0
+    fixedScale: {x: 2, y: 5, z: 2}
+    xBounds: {x: -25, y: 25}
+    yBounds: {x: -5, y: 15}
+    zBounds: {x: -25, y: 25}
+    isActive: 1
+  - type: 2
+    weight: 20
+    isRandomScale: 0
+    fixedScale: {x: 2, y: 5, z: 2}
     xBounds: {x: -25, y: 25}
     yBounds: {x: -5, y: 15}
     zBounds: {x: -25, y: 25}

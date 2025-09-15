@@ -3,6 +3,8 @@ using UnityEngine.InputSystem;
 using System.Collections;
 using System;
 
+
+[DefaultExecutionOrder(150)]
 public class PlayerGrapple : MonoBehaviour
 {
     [Header("Refs")]
@@ -86,6 +88,14 @@ public class PlayerGrapple : MonoBehaviour
     Vector3 anchor;
     RaycastHit lastHit;
     int currentLayer = -1;
+
+    // ── SuperJump yaw follow 상태 ───────────────────────────────────
+    bool followCamYaw = false;
+    float followRemain = 0f;
+    float followHardLock = 0f;          // 초반 하드락 시간(초) – 0.2 권장
+    float followSpeed = 25f;            // 인스펙터에서 넘겨받는 uprightLerpSpeed
+    RigidbodyInterpolation interpBackup;
+    bool interpSwapped = false;
 
 
     bool IsHitInMask(RaycastHit h, LayerMask mask)
@@ -193,6 +203,18 @@ public class PlayerGrapple : MonoBehaviour
         }
         if (!isSwing) return;
 
+        if (transform.position.y > anchor.y)
+        {
+            Vector3 dir = (anchor - transform.position).normalized;
+            rb.AddForce(-dir * 10f, ForceMode.Force);
+            Debug.Log("Too High");
+            enableWPush = false;
+        }
+        else
+        {
+            enableWPush = true;
+        }
+
         if (rb.linearVelocity.sqrMagnitude > maxSwingSpeed * maxSwingSpeed)
             rb.linearVelocity = rb.linearVelocity.normalized * maxSwingSpeed;
 
@@ -224,6 +246,41 @@ public class PlayerGrapple : MonoBehaviour
             rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRotation, Time.fixedDeltaTime * tiltSpeed));
         }
     }
+
+    void LateUpdate()
+    {
+        if (!followCamYaw) return;
+
+        // 카메라가 방금 LateUpdate에서 회전한 값을 바로 읽음
+        Transform refT = cameraController ? cameraController.transform : transform;
+        Vector3 fwd = refT.forward; fwd.y = 0f;
+        if (fwd.sqrMagnitude < 1e-6f) fwd = transform.forward;
+        Quaternion target = Quaternion.LookRotation(fwd, Vector3.up);
+
+        if (followHardLock > 0f)
+        {
+            // 초반엔 하드락(즉시 동일)
+            rb.MoveRotation(target);
+            followHardLock -= Time.deltaTime;
+        }
+        else
+        {
+            // 이후엔 부드럽게
+            Quaternion q = Quaternion.Slerp(rb.rotation, target, Mathf.Clamp01(Time.deltaTime * followSpeed));
+            rb.MoveRotation(q);
+        }
+
+        followRemain -= Time.deltaTime;
+        if (followRemain <= 0f)
+        {
+            // 복구
+            followCamYaw = false;
+            rb.constraints = RigidbodyConstraints.FreezeRotation;
+            if (interpSwapped) { rb.interpolation = interpBackup; interpSwapped = false; }
+            playerController?.UnlockRotation();
+        }
+    }
+
 
     // 입력
     void OnGrappleStarted(InputAction.CallbackContext ctx)
@@ -569,10 +626,10 @@ public class PlayerGrapple : MonoBehaviour
         isSettling = false;
     }
 
-    // PlayerGrapple.cs 내부 (클래스 안 아무 곳)
-    public void StopTumbleForSuperJump(Transform yawRef = null, float uprightLerpSpeed = 20f)
+    // PlayerGrapple.cs 안
+    public void StopTumbleForSuperJump(Transform yawRef = null, float uprightLerpSpeed = 25f)
     {
-        // 1) 스핀 코루틴 종료
+        // 1) 스핀 중단
         if (tumbleCoroutine != null)
         {
             StopCoroutine(tumbleCoroutine);
@@ -580,31 +637,59 @@ public class PlayerGrapple : MonoBehaviour
         }
         isSettling = false;
 
-        // 2) 물리 제약/각속도 정리
-        rb.constraints = RigidbodyConstraints.FreezeRotation; // 평소 상태로 복구
-        rb.angularVelocity = Vector3.zero;
+        // 2) 스윙/로프/공중 상태 완전 초기화
+        if (cj) { Destroy(cj); cj = null; }
+        isSwing = false;
+        if (rope)
+        {
+            rope.enabled = false;
+            rope.positionCount = 0;
+            currentHangTime = 0f;
+        }
+        isAir = false;
+        airTempTime = 0f;
 
-        // 3) 플레이어 상태 해제
+        // 3) 관성 제거 + Yaw만 자유
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+        Physics.SyncTransforms();
+        rb.WakeUp(); // 첫 프레임부터 회전 반영
+
+        // 4) 상태 플래그 정리
+        rotationTracker?.StopTracking();
         if (playerController != null)
         {
             playerController.IsTumbling = false;
             playerController.UnlockController();
-            playerController.UnlockRotation();
+            playerController.LockRotation(); // 정렬 동안 입력 회전 금지
         }
 
-        // 4) 카메라(Yaw) 기준으로 부드럽게 똑바로 세우기
-        Transform refT = yawRef != null ? yawRef : (cameraController ? cameraController.transform : transform);
+        // 5) 진입 프레임 즉시 스냅(초반 "안 붙는" 느낌 제거)
+        SnapPlayerYawToCameraView();
 
-        Vector3 fwd = refT.forward; fwd.y = 0f;
-        if (fwd.sqrMagnitude < 1e-6f) fwd = transform.forward; // 안전장치
-        float yaw = Mathf.Atan2(fwd.x, fwd.z) * Mathf.Rad2Deg;
+        // 6) 카메라 Yaw 추적(후속 프레임): LateUpdate에서 바로 따라가도록 플래그 온
+        //    ※ 아래 필드들은 클래스 상단에 선언돼 있어야 합니다:
+        //    bool followCamYaw; float followRemain, followHardLock, followSpeed;
+        //    RigidbodyInterpolation interpBackup; bool interpSwapped;
+        followCamYaw = true;
+        followRemain = 0.25f + 0.35f;   // 카메라 hold + resync 시간과 맞춤(필요시 조정)
+        followHardLock = 0.20f;           // 초반 0.2초 하드락(즉시 고정)
+        followSpeed = uprightLerpSpeed;
 
-        Quaternion target = Quaternion.Euler(0f, yaw, 0f);
-        StartCoroutine(SmoothUpright(target, uprightLerpSpeed));
+        // 7) 물리 보간 잠시 끄기(인터폴레이션 지연 제거)
+        interpBackup = rb.interpolation;
+        rb.interpolation = RigidbodyInterpolation.None;
+        interpSwapped = true;
+
+        // 8) 카메라 쪽 블렌드도 트리거(기본값 사용)
+        cameraController?.OnSuperJumpAlignStarted();
     }
+
 
     private IEnumerator SmoothUpright(Quaternion target, float speed)
     {
+        // 잠깐동안 자세만 보정
         while (Quaternion.Angle(rb.rotation, target) > 1f)
         {
             Quaternion q = Quaternion.Slerp(rb.rotation, target, Time.deltaTime * speed);
@@ -613,6 +698,10 @@ public class PlayerGrapple : MonoBehaviour
         }
         rb.MoveRotation(target);
     }
+
+
+    private Coroutine superJumpYawFollowCoro;
+
 
 }
 

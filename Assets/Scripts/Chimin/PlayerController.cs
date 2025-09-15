@@ -49,6 +49,13 @@ public class PlayerController : MonoBehaviour
     [Header("Super Jump Tuning")]
     [SerializeField, Range(5f, 60f)] float superJumpUprightLerpSpeed = 25f;
 
+    [Header("Bottom Speed")]
+    [SerializeField] string bottomLayerName = "Bottom";
+    [SerializeField] float bottomSpeedMultiplier = 3f;
+
+    int bottomLayer;
+    bool isOnBottom = false;
+
 
     int superJumpLayer;
 
@@ -77,10 +84,12 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         superJumpLayer = LayerMask.NameToLayer(superJumpLayerName);
+        bottomLayer = LayerMask.NameToLayer(bottomLayerName);   // ← 추가
 
         if (viewYawSource == null && Camera.main != null)
-            viewYawSource = Camera.main.transform;   // 자동
+            viewYawSource = Camera.main.transform;
     }
+
 
 
     void OnEnable()
@@ -148,6 +157,21 @@ public class PlayerController : MonoBehaviour
         float yaw = transform.eulerAngles.y + yawDelta;
         transform.eulerAngles = new Vector3(0f, yaw, 0f);
     }
+    float GetCurrentSpeedMultiplier()
+    {
+        float mul = 1f;
+
+        // 질주가 켜져 있으면 질주 배수 적용
+        if (IsHasteActive) mul *= hasteMultiplier;
+
+        // Bottom 위면 추가로 3배
+        mul *= (isOnBottom ? bottomSpeedMultiplier : 1f);
+
+        return mul;
+
+        // 만약 '질주와 Bottom 배수'를 서로 겹치지 않게 하고 싶다면 위 3줄을 아래 한 줄로 바꾸세요.
+        // return isOnBottom ? bottomSpeedMultiplier : (IsHasteActive ? hasteMultiplier : 1f);
+    }
 
     void ProcessHaste()
     {
@@ -204,18 +228,20 @@ public class PlayerController : MonoBehaviour
         }
 
 
-        // ↓ 기존 로직 그대로
+        float speedMul = GetCurrentSpeedMultiplier();
+
         if (IsHasteActive)
         {
             Vector3 forward = transform.forward;
-            Vector3 targetPos = rb.position + forward * (moveSpeed * hasteMultiplier) * Time.fixedDeltaTime;
+            Vector3 targetPos = rb.position + forward * (moveSpeed * speedMul) * Time.fixedDeltaTime;
             rb.MovePosition(targetPos);
             return;
         }
 
         Vector3 move = GetMoveDirection();
         if (IsHasteHolding() && !IsHasteReady) return;
-        Vector3 target = rb.position + move * moveSpeed * Time.fixedDeltaTime;
+
+        Vector3 target = rb.position + move * (moveSpeed * speedMul) * Time.fixedDeltaTime;
         rb.MovePosition(target);
     }
 
@@ -265,6 +291,9 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.layer == LayerMask.NameToLayer("Clear"))
             onStageClear?.Invoke();
 
+        if (collision.gameObject.layer == bottomLayer)        // ← 추가
+            isOnBottom = true;                                // ← 추가
+
         if (collision.gameObject.layer == superJumpLayer)
         {
             // ★ 스핀 강제 종료 + 카메라 Yaw로 자연스럽게 세우기
@@ -275,7 +304,11 @@ public class PlayerController : MonoBehaviour
             DoSuperJump(); // 그 다음 위로 튕기기
         }
     }
-
+    void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.layer == bottomLayer)        // ← 추가
+            isOnBottom = false;                               // ← 추가
+    }
 
     void DoSuperJump()
     {

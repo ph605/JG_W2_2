@@ -80,6 +80,8 @@ public class PlayerGrapple : MonoBehaviour
     [SerializeField] bool restrictClickWhileTumbling = true;
     [SerializeField] LayerMask breakTumbleLayers; // ← 여기에 Bottom, SuperJump, Holding 체크
 
+    [Header("SuperJump Follow")]
+    [SerializeField] float superJumpHardLock = 0.0f; // 0~0.05 권장
 
     // 상태
     Rigidbody rb;
@@ -92,7 +94,7 @@ public class PlayerGrapple : MonoBehaviour
     // ── SuperJump yaw follow 상태 ───────────────────────────────────
     bool followCamYaw = false;
     float followRemain = 0f;
-    float followHardLock = 0f;          // 초반 하드락 시간(초) – 0.2 권장
+    float followHardLock = 0f;   // ✅ 선언만        // 초반 하드락 시간(초) – 0.2 권장
     float followSpeed = 25f;            // 인스펙터에서 넘겨받는 uprightLerpSpeed
     RigidbodyInterpolation interpBackup;
     bool interpSwapped = false;
@@ -673,8 +675,8 @@ public class PlayerGrapple : MonoBehaviour
         //    bool followCamYaw; float followRemain, followHardLock, followSpeed;
         //    RigidbodyInterpolation interpBackup; bool interpSwapped;
         followCamYaw = true;
-        followRemain = 0.25f + 0.35f;   // 카메라 hold + resync 시간과 맞춤(필요시 조정)
-        followHardLock = 0.20f;           // 초반 0.2초 하드락(즉시 고정)
+        followRemain = 0.25f + 0.35f;      // 필요하면 이것도 인스펙터로 빼세요
+        followHardLock = superJumpHardLock;  // ✅ 인스펙터 값 사용(0~0.05 권장)
         followSpeed = uprightLerpSpeed;
 
         // 7) 물리 보간 잠시 끄기(인터폴레이션 지연 제거)
@@ -684,6 +686,7 @@ public class PlayerGrapple : MonoBehaviour
 
         // 8) 카메라 쪽 블렌드도 트리거(기본값 사용)
         cameraController?.OnSuperJumpAlignStarted();
+        cameraController?.ApplyOneFrameLook(); // 선택
     }
 
 

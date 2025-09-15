@@ -84,7 +84,10 @@ public class ClingInteractor : MonoBehaviour
         if (playerController == null) playerController = GetComponent<PlayerController>();
 
         holdingLayer = LayerMask.NameToLayer(holdingLayerName);
-        if (holdingLayer == -1) Debug.LogWarning($"[ClingInteractor] '{holdingLayerName}' 레이어 없음");
+        if (holdingLayer == -1)
+            Debug.LogWarning($"[ClingInteractor] '{holdingLayerName}' 레이어 없음"); // 콘솔에서 바로 확인
+        if (aim) aim.SetActive(false); // 시작 상태 통일
+
 
         // (옵션) 더 부드러운 회전/이동을 위해
         rb.interpolation = RigidbodyInterpolation.Interpolate;
@@ -112,17 +115,34 @@ public class ClingInteractor : MonoBehaviour
     // ── Aim for Holding layer
     void UpdateHoldingAim()
     {
-        if (!cam || holdingLayer == -1 || !aim) return;
+        if (!cam || !aim) return;
 
-        Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
-        int mask = 1 << holdingLayer;
+        // 마우스가 없으면 화면 중앙 기준(패드 테스트용)
+        Vector2 cursor = Mouse.current != null
+            ? Mouse.current.position.ReadValue()
+            : new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
 
-        if (Physics.Raycast(ray, out RaycastHit hit, rayDistance, mask, QueryTriggerInteraction.Collide))
+        Ray ray = cam.ScreenPointToRay(cursor);
+
+        // 레이어가 없으면 전체로 폴백
+        int mask = (holdingLayer == -1) ? ~0 : (1 << holdingLayer);
+
+        // 먼저 레이캐스트, 실패하면 스피어캐스트(맞추기 쉬움)
+        bool got = Physics.Raycast(ray, out RaycastHit hit, rayDistance, mask, QueryTriggerInteraction.Collide);
+        if (!got)
+            got = Physics.SphereCast(ray, 0.2f, out hit, rayDistance, mask, QueryTriggerInteraction.Collide);
+
+        if (got)
         {
             if (!aim.activeSelf) aim.SetActive(true);
             aim.transform.position = hit.point;
         }
+        else
+        {
+            if (aim.activeSelf) aim.SetActive(false);
+        }
     }
+
 
     void TryBeginHold()
     {

@@ -312,5 +312,11 @@ public class PlayerCameraController : MonoBehaviour
         // 그 다음 일정 시간 동안은 타겟 Yaw로 서서히 보간
         superJumpResyncTimer = Mathf.Max(superJumpResyncTimer, resyncDuration);
     }
+    public void ApplyOneFrameLook()
+    {
+        yaw += playerController.LookInput.x * cameraRotationSpeed;
+        cameraPitch -= playerController.LookInput.y * cameraRotationSpeed;
+        cameraPitch = Mathf.Clamp(cameraPitch, minPitch, maxPitch);
+    }
 
 }

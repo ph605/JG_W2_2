@@ -1499,7 +1499,7 @@ MonoBehaviour:
   obstacleCount: 5
   weightedObstacleTypes:
   - type: 3
-    weight: 37
+    weight: 45
     isRandomScale: 0
     fixedScale: {x: 2, y: 2, z: 2}
     xBounds: {x: -25, y: 25}
@@ -1507,7 +1507,7 @@ MonoBehaviour:
     zBounds: {x: -25, y: 25}
     isActive: 1
   - type: 4
-    weight: 8
+    weight: 10
     isRandomScale: 0
     fixedScale: {x: 5, y: 5, z: 5}
     xBounds: {x: -25, y: 25}
@@ -1531,9 +1531,9 @@ MonoBehaviour:
     zBounds: {x: -25, y: 25}
     isActive: 1
   - type: 1
-    weight: 50
+    weight: 35
     isRandomScale: 0
-    fixedScale: {x: 7, y: 7, z: 7}
+    fixedScale: {x: 5, y: 5, z: 5}
     xBounds: {x: -25, y: 25}
     yBounds: {x: -5, y: 15}
     zBounds: {x: -25, y: 25}

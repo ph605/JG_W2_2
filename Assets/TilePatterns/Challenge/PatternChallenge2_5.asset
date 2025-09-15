@@ -15,31 +15,31 @@ MonoBehaviour:
   obstacleLayout:
   - id: 0
     type: 1
-    position: {x: 12.599223, y: 7.2561035, z: -7.898327}
-    eulerAngles: {x: 0, y: 0, z: 0}
-    scale: {x: 7, y: 7, z: 7}
-    isActive: 1
-  - id: 0
-    type: 3
-    position: {x: -6.2765636, y: 4.362647, z: 14.5081215}
-    eulerAngles: {x: 0, y: 0, z: 0}
-    scale: {x: 2, y: 2, z: 2}
-    isActive: 1
-  - id: 0
-    type: 4
-    position: {x: 1.2451382, y: -4.4189024, z: -21.82706}
+    position: {x: 14.8550625, y: 8.522964, z: -15.155685}
     eulerAngles: {x: 0, y: 0, z: 0}
     scale: {x: 5, y: 5, z: 5}
     isActive: 1
   - id: 0
     type: 1
-    position: {x: -7.576439, y: -4.610262, z: -18.835312}
+    position: {x: 5.4466877, y: 0.23232818, z: -6.6920795}
     eulerAngles: {x: 0, y: 0, z: 0}
-    scale: {x: 7, y: 7, z: 7}
+    scale: {x: 5, y: 5, z: 5}
+    isActive: 1
+  - id: 0
+    type: 3
+    position: {x: -14.4888115, y: 1.0852392, z: 20.848804}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 2, y: 2, z: 2}
     isActive: 1
   - id: 0
     type: 1
-    position: {x: 4.7248745, y: 14.439476, z: 15.172374}
+    position: {x: 11.595701, y: -0.02357006, z: -10.632126}
     eulerAngles: {x: 0, y: 0, z: 0}
-    scale: {x: 7, y: 7, z: 7}
+    scale: {x: 5, y: 5, z: 5}
+    isActive: 1
+  - id: 0
+    type: 3
+    position: {x: -10.620233, y: 3.8856013, z: 22.04721}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 2, y: 2, z: 2}
     isActive: 1

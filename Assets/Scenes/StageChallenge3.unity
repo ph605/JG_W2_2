@@ -1263,26 +1263,26 @@ MonoBehaviour:
   playerTransform: {fileID: 809377025}
   emptyTilePrefab: {fileID: 5653160895305078999, guid: 38b9b4cca4c6a754cb7c180dffe0dcd3, type: 3}
   tilePatterns:
-  - {fileID: 11400000, guid: f46327e3da826944ab73dd801fa7bdfd, type: 2}
-  - {fileID: 11400000, guid: acf8354c86296b649ba9cc42f73745ea, type: 2}
-  - {fileID: 11400000, guid: 2bed7abae5046954490e99b7efc485c6, type: 2}
-  - {fileID: 11400000, guid: 7277189419d7e644abb798a597bb8f75, type: 2}
-  - {fileID: 11400000, guid: 56fec1c7d9f66e747b2ffd73042d3307, type: 2}
-  - {fileID: 11400000, guid: aa6411d2543070349aacf48373b2052b, type: 2}
-  - {fileID: 11400000, guid: fcec01ea5dc3e2f4d8ec2cbbc302d642, type: 2}
-  - {fileID: 11400000, guid: 68e263e0230ac004c87c9f52bb23ae48, type: 2}
-  - {fileID: 11400000, guid: aede0695d8f32a94393ec03070bd5354, type: 2}
-  - {fileID: 11400000, guid: 3ac4719887640e947a8de7bcabd12d93, type: 2}
-  - {fileID: 11400000, guid: 9715ae9de0bbbc14396741e694b55a3c, type: 2}
-  - {fileID: 11400000, guid: cc85e8268a1eee740b5b568420765e25, type: 2}
-  - {fileID: 11400000, guid: 5fb738042aab2cb46b0de59dcdca8423, type: 2}
-  - {fileID: 11400000, guid: 5afbc0eea46f6374ca5bfd7f98a36c04, type: 2}
-  - {fileID: 11400000, guid: cffa43c96278de848b85d0dc0e6133e1, type: 2}
-  - {fileID: 11400000, guid: 6df9ee02ff0c91f439ec3ff43d460afa, type: 2}
-  - {fileID: 11400000, guid: 9e5673ef0e3cdee4e9b6a10edac48003, type: 2}
-  - {fileID: 11400000, guid: f90dd32434522aa4c9e3a83ca2b137d2, type: 2}
-  - {fileID: 11400000, guid: 8fea6398b95fa2e4f98624d6c99363ed, type: 2}
-  - {fileID: 11400000, guid: f9441e0fdf6ac404c8eab016a8d25e2f, type: 2}
+  - {fileID: 11400000, guid: bae6e810a2c70ee49a17b1655f5d8b99, type: 2}
+  - {fileID: 11400000, guid: 4027912672856d747a6b51135dd32597, type: 2}
+  - {fileID: 11400000, guid: beb1fe63edb7e494585d0349f6b1d025, type: 2}
+  - {fileID: 11400000, guid: 41a401968cc9b8a47bbc76abc3b58f8a, type: 2}
+  - {fileID: 11400000, guid: 0032ae1027116cb4bad5f0526a5394cf, type: 2}
+  - {fileID: 11400000, guid: 768bcc480ce0dec41b3c5985c4b5596a, type: 2}
+  - {fileID: 11400000, guid: c9dcaf10853e470439eb2ed593a722f3, type: 2}
+  - {fileID: 11400000, guid: cc305e44fa4fbc841ad49bdbcb8e4afb, type: 2}
+  - {fileID: 11400000, guid: 04b6439dc9de6e444a88ba0cf30569c0, type: 2}
+  - {fileID: 11400000, guid: 6cc2577fe2478834a91f8cbb3344a88c, type: 2}
+  - {fileID: 11400000, guid: 472e389693483ee4c9dc0d95dbb1f886, type: 2}
+  - {fileID: 11400000, guid: 0b23f9fbf6991194baa422348373a8e2, type: 2}
+  - {fileID: 11400000, guid: 04ac018302bf63a499c8a454395e0aa3, type: 2}
+  - {fileID: 11400000, guid: 25852dca8dceaf54bbe52d5fc1296a94, type: 2}
+  - {fileID: 11400000, guid: a44c25ea026d0f147b737f5e97cd9095, type: 2}
+  - {fileID: 11400000, guid: e8d11f6d50161f2448c8b4830aa2997c, type: 2}
+  - {fileID: 11400000, guid: 1c535c15a44485e489bb1043e10ba5f0, type: 2}
+  - {fileID: 11400000, guid: 6ae0083d35462974db46cdc26396d22d, type: 2}
+  - {fileID: 11400000, guid: a82cd9e0bd2021d48981109bc8023e85, type: 2}
+  - {fileID: 11400000, guid: b4cd58570a581694cbf0ffdd8b95bada, type: 2}
   tileLength: 50
   visibleTilesOnScreen: 2
   totalTilesToGoal: 100
@@ -1490,12 +1490,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3e77b6a1ffaa484d8bb4fb53bfa5d3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fileName: PatternChallenge_20
+  fileName: PatternChallenge3_20
   savePath: TilePatterns/Challenge
   obstacleCount: 5
   weightedObstacleTypes:
   - type: 3
-    weight: 45
+    weight: 40
     isRandomScale: 0
     fixedScale: {x: 2, y: 2, z: 2}
     xBounds: {x: -25, y: 25}
@@ -1511,7 +1511,7 @@ MonoBehaviour:
     zBounds: {x: -25, y: 25}
     isActive: 1
   - type: 5
-    weight: 7
+    weight: 6
     isRandomScale: 0
     fixedScale: {x: 3.5, y: 3.5, z: 3.5}
     xBounds: {x: -25, y: 25}
@@ -1527,7 +1527,7 @@ MonoBehaviour:
     zBounds: {x: -25, y: 25}
     isActive: 1
   - type: 1
-    weight: 35
+    weight: 40
     isRandomScale: 0
     fixedScale: {x: 5, y: 5, z: 5}
     xBounds: {x: -25, y: 25}

@@ -27,6 +27,7 @@ public class InGameUIManager : MonoBehaviour
 
     public GameObject clearUI;
     public GameObject configurationUI;
+    public GameObject Crosshair;
 
     private float time = 5000f;
     private int scoreValue = 0;
@@ -98,11 +99,13 @@ public class InGameUIManager : MonoBehaviour
         {
             configurationUI.gameObject.SetActive(false);
             MouseLock(true);
+            Crosshair.SetActive(true);
         }
         else
         {
             configurationUI.gameObject.SetActive(true);
             MouseLock(false);
+            Crosshair.SetActive(false);
         }
     }
 

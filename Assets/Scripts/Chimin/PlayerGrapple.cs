@@ -44,6 +44,17 @@ public class PlayerGrapple : MonoBehaviour
     [Header("Wall Swing (optional)")]
     [SerializeField] bool enableWallPush = true;
     [SerializeField] float pushSideways = 20f;
+    [Header("Air Gravity (optional)")]
+    [SerializeField] bool enableAirGravity = true;
+    [SerializeField] float airGravity = 0f;
+    [SerializeField] float airTime = 3f;
+    [SerializeField] float airTempTime = 0f;
+    [Header("End Swing offsets")]
+    [SerializeField] float xOffset = 1f;
+    [SerializeField] float yOffset = 1f;
+    [SerializeField] float zOffset = 1f;
+    
+    private bool isAir = false;
 
     [Header("Release Physics")]
     [SerializeField] float releaseSpinMultiplier = 0.5f;
@@ -124,9 +135,21 @@ public class PlayerGrapple : MonoBehaviour
         UpdateHookPoint();
         DrawRope();
         lastMousePos = Input.mousePosition;
+        if (isAir)
+        {
+            airTempTime += Time.deltaTime;
+            if (airTempTime >= airTime)
+            {
+                airTempTime = 0f;
+                isAir = false;
+            }
+            else
+            {
+                rb.AddForce(Vector3.up * airGravity, ForceMode.Force);
+            }
+        }
         if (isSwing)
         {
-            
             if (currentRopeDistance > maxRopeDistance)
             {
                 currentRopeDistance -= Time.deltaTime * currentRopeDistance;
@@ -165,19 +188,18 @@ public class PlayerGrapple : MonoBehaviour
             if (kb != null && kb.wKey.isPressed)
             {
                 rb.AddForce(transform.forward * pushSideways, ForceMode.Force);
-                if (currentLayer == LayerMask.NameToLayer("Left"))
+                if (currentLayer == LayerMask.NameToLayer("Right"))
                     rb.AddForce(transform.right * pushSideways, ForceMode.Force);
-                else if (currentLayer == LayerMask.NameToLayer("Right"))
+                else if (currentLayer == LayerMask.NameToLayer("Left"))
                     rb.AddForce(-transform.right * pushSideways, ForceMode.Force);
             }
         }
-
         if (enableWallPush)
         {
-            if (currentLayer == LayerMask.NameToLayer("Left"))
-                rb.AddForce(Vector3.right * pushSideways, ForceMode.Force);
-            else if (currentLayer == LayerMask.NameToLayer("Right"))
-                rb.AddForce(Vector3.left * pushSideways, ForceMode.Force);
+            if (currentLayer == LayerMask.NameToLayer("Right"))
+                rb.AddForce(transform.right * pushSideways, ForceMode.Force);
+            else if (currentLayer == LayerMask.NameToLayer("Left"))
+                rb.AddForce(-transform.right * pushSideways, ForceMode.Force);
         }
 
         if (rb.linearVelocity.sqrMagnitude > 0.1f)
@@ -327,14 +349,20 @@ public class PlayerGrapple : MonoBehaviour
         float releaseSpeed = rb.linearVelocity.magnitude;
         float initialSpin = releaseSpinMultiplier * releaseSpeed;
         tumbleCoroutine = StartCoroutine(TumbleCoroutine(initialSpin));
-
-        // rb.linearVelocity *= 0.5f;
-
+        Vector3 tempVelo = new Vector3(rb.linearVelocity.x * xOffset, rb.linearVelocity.y * yOffset, rb.linearVelocity.z * zOffset);
+        rb.linearVelocity = tempVelo;
+        
+        if(enableAirGravity)
+        {
+            isAir = true;
+            airTempTime = 0f;
+        }
         // if (sj){
         //     Destroy(sj);
         //     sj = null;
         // }
-        if (cj){
+        if (cj)
+        {
             Destroy(cj);
             cj = null;
         }

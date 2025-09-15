@@ -73,6 +73,12 @@ public class PlayerGrapple : MonoBehaviour
     [SerializeField]
     private float currentHangTime = 0;
 
+
+    [Header("Click During Tumble")]
+    [SerializeField] bool restrictClickWhileTumbling = true;
+    [SerializeField] LayerMask breakTumbleLayers; // ← 여기에 Bottom, SuperJump, Holding 체크
+
+
     // 상태
     Rigidbody rb;
     // SpringJoint sj;
@@ -80,6 +86,13 @@ public class PlayerGrapple : MonoBehaviour
     Vector3 anchor;
     RaycastHit lastHit;
     int currentLayer = -1;
+
+
+    bool IsHitInMask(RaycastHit h, LayerMask mask)
+    {
+        return h.collider != null && ((mask.value & (1 << h.collider.gameObject.layer)) != 0);
+    }
+
 
     // 입력
     InputAction grappleAction;
@@ -257,9 +270,20 @@ public class PlayerGrapple : MonoBehaviour
         }
     }
 
+
+
     // 스윙 시작
     void TryStartSwing()
     {
+
+        // 스핀 중 클릭 처리를 '레이어 유효성'으로 필터링
+        if (tumbleCoroutine != null && restrictClickWhileTumbling)
+        {
+            // 유효 타겟이 아니면 클릭 무시하고 계속 스핀
+            if (!IsHitInMask(lastHit, breakTumbleLayers))
+                return;
+        }
+
         if (tumbleCoroutine != null)
         {
             StopCoroutine(tumbleCoroutine);
@@ -285,6 +309,9 @@ public class PlayerGrapple : MonoBehaviour
         }
 
         rb.constraints = RigidbodyConstraints.FreezeRotation;
+
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
 
         if (isSwing) return;
         if (lastHit.point == Vector3.zero) return;

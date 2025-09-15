@@ -20,6 +20,7 @@ public class FogCollidier : MonoBehaviour
         {
             collision.transform.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
             collision.transform.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+            collision.transform.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
             collision.transform.SetPositionAndRotation(Vector3.zero, Quaternion.Euler(0,0,0));
         }
     }

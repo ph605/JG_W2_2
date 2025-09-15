@@ -176,13 +176,13 @@ public class PlayerGrapple : MonoBehaviour
             cj.linearLimit = limit;
             currentHangTime += Time.deltaTime;
             float t = currentHangTime / hangingTime;
-            float currentWidth = Mathf.Lerp(0.5f, 0f, t);
+            float currentWidth = Mathf.Lerp(0.3f, 0f, t);
             rope.startWidth = currentWidth;
             rope.endWidth = currentWidth;
             if (currentHangTime >= hangingTime)
             {
                 EndSwing();
-                rope.startWidth = 0.5f;
+                rope.startWidth = 0.3f;
             }
         }
         

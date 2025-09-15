@@ -10,14 +10,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float moveSpeed = 5f;
     [SerializeField] float rotationSpeed = 0.1f;
 
-    [Header("Haste (Charging)")]
+/*    [Header("Haste (Charging)")]
     [SerializeField] float hasteHoldSeconds = 1.5f;
     [SerializeField] float hasteMultiplier = 3f;
     [SerializeField] InputActionReference hasteChargeAction;
-
-    [Header("Haste UI")]
+*/
+/*    [Header("Haste UI")]
     [SerializeField] Image hasteFillImage;
-    [SerializeField] TMP_Text hasteRemainText;
+    [SerializeField] TMP_Text hasteRemainText;*/
 
     [Header("Control Lock")]
     [SerializeField] bool controllerLocked = false;
@@ -53,6 +53,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] string bottomLayerName = "Bottom";
     [SerializeField] float bottomSpeedMultiplier = 3f;
 
+    [Header("Mouse Sensitivity (UI Link)")]
+    [SerializeField] Slider mouseSensitivitySlider;     // 캔버스의 Slider 드래그
+    [SerializeField] float minMouseSensitivity = 0.02f; // 감도 최소
+    [SerializeField] float maxMouseSensitivity = 0.30f; // 감도 최대
+
     int bottomLayer;
     bool isOnBottom = false;
 
@@ -66,11 +71,11 @@ public class PlayerController : MonoBehaviour
     public void UnlockRotation() => canRotate = true;
 
     // CameraController가 참조할 플레이어 상태
-    public bool IsHasteActive { get; private set; } = false;
+/*    public bool IsHasteActive { get; private set; } = false;
     public bool IsHasteReady { get; private set; } = false;
     public float HasteHoldTimer { get; private set; } = 0f;
     public float HasteHoldDuration => hasteHoldSeconds;
-    public bool WasHasteActive { get; private set; } = false;
+    public bool WasHasteActive { get; private set; } = false;*/
     public bool IsClinging { get; set; }
     public bool IsTumbling { get; set; } = false;
 
@@ -80,6 +85,17 @@ public class PlayerController : MonoBehaviour
     // 마우스 입력을 다른 스크립트에서 읽을 수 있도록 public 속성으로 변경
     public Vector2 LookInput { get; private set; }
 
+
+    void Start()
+    {
+        if (mouseSensitivitySlider != null)
+        {
+            // 슬라이더가 0~1일 때, 현재 rotationSpeed를 0~1로 환산해 반영
+            float normalized = Mathf.InverseLerp(minMouseSensitivity, maxMouseSensitivity, rotationSpeed);
+            mouseSensitivitySlider.SetValueWithoutNotify(normalized);
+            mouseSensitivitySlider.onValueChanged.AddListener(OnMouseSensitivityChanged);
+        }
+    }
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -94,17 +110,17 @@ public class PlayerController : MonoBehaviour
 
     void OnEnable()
     {
-        if (hasteChargeAction != null && hasteChargeAction.action != null)
-            hasteChargeAction.action.Enable();
+/*        if (hasteChargeAction != null && hasteChargeAction.action != null)
+            hasteChargeAction.action.Enable();*/
     }
 
     void OnDisable()
     {
-        ResetHasteState();
-        UpdateHasteUI(false);
+        //ResetHasteState();
+        //UpdateHasteUI(false);
 
-        if (hasteChargeAction != null && hasteChargeAction.action != null)
-            hasteChargeAction.action.Disable();
+      /*  if (hasteChargeAction != null && hasteChargeAction.action != null)
+            hasteChargeAction.action.Disable();*/
     }
 
     // 입력 이벤트 핸들러
@@ -112,25 +128,25 @@ public class PlayerController : MonoBehaviour
     void OnLook(InputValue value) => LookInput = value.Get<Vector2>();
 
     // 질주 키(CapsLock) 홀드 상태 확인
-    bool IsHasteHolding()
+/*    bool IsHasteHolding()
     {
         if (hasteChargeAction != null && hasteChargeAction.action != null && hasteChargeAction.action.IsPressed())
             return true;
 
         var kb = Keyboard.current;
         return kb != null && kb.capsLockKey.isPressed;
-    }
+    }*/
 
     void Update()
     {
         if (controllerLocked)
         {
-            ResetHasteState();
-            UpdateHasteUI(false);
+            //ResetHasteState();
+            //UpdateHasteUI(false);
             return;
         }
 
-        ProcessHaste();
+        //ProcessHaste();
         ProcessPlayerRotation();
     }
 
@@ -161,8 +177,8 @@ public class PlayerController : MonoBehaviour
     {
         float mul = 1f;
 
-        // 질주가 켜져 있으면 질주 배수 적용
-        if (IsHasteActive) mul *= hasteMultiplier;
+/*        // 질주가 켜져 있으면 질주 배수 적용
+        if (IsHasteActive) mul *= hasteMultiplier;*/
 
         // Bottom 위면 추가로 3배
         mul *= (isOnBottom ? bottomSpeedMultiplier : 1f);
@@ -173,7 +189,7 @@ public class PlayerController : MonoBehaviour
         // return isOnBottom ? bottomSpeedMultiplier : (IsHasteActive ? hasteMultiplier : 1f);
     }
 
-    void ProcessHaste()
+/*    void ProcessHaste()
     {
         WasHasteActive = IsHasteActive; // 이전 프레임 상태 저장
 
@@ -203,7 +219,7 @@ public class PlayerController : MonoBehaviour
 
             UpdateHasteUI(holding);
         }
-    }
+    }*/
 
     void ProcessMove()
     {
@@ -230,16 +246,16 @@ public class PlayerController : MonoBehaviour
 
         float speedMul = GetCurrentSpeedMultiplier();
 
-        if (IsHasteActive)
+/*        if (IsHasteActive)
         {
             Vector3 forward = transform.forward;
             Vector3 targetPos = rb.position + forward * (moveSpeed * speedMul) * Time.fixedDeltaTime;
             rb.MovePosition(targetPos);
             return;
-        }
+        }*/
 
         Vector3 move = GetMoveDirection();
-        if (IsHasteHolding() && !IsHasteReady) return;
+        //if (IsHasteHolding() && !IsHasteReady) return;
 
         Vector3 target = rb.position + move * (moveSpeed * speedMul) * Time.fixedDeltaTime;
         rb.MovePosition(target);
@@ -258,7 +274,7 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    void UpdateHasteUI(bool holding)
+/*    void UpdateHasteUI(bool holding)
     {
         if (hasteFillImage)
         {
@@ -276,15 +292,19 @@ public class PlayerController : MonoBehaviour
             else
                 hasteRemainText.text = "";
         }
-    }
+    }*/
 
-    void ResetHasteState()
+    public void OnMouseSensitivityChanged(float normalized)
+    {
+        rotationSpeed = Mathf.Lerp(minMouseSensitivity, maxMouseSensitivity, Mathf.Clamp01(normalized));
+    }
+/*    void ResetHasteState()
     {
         HasteHoldTimer = 0f;
         IsHasteReady = false;
         IsHasteActive = false;
         WasHasteActive = false;
-    }
+    }*/
 
     void OnCollisionEnter(Collision collision)
     {

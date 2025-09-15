@@ -393,6 +393,7 @@ GameObject:
   - component: {fileID: 289609386}
   - component: {fileID: 289609385}
   - component: {fileID: 289609384}
+  - component: {fileID: 289609388}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -484,6 +485,23 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &289609388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289609383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd834a962b312174c8dbf38db17f21f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buttonTutorial: {fileID: 1471398747}
+  buttonStage1: {fileID: 1212382096}
+  buttonStage2: {fileID: 1071294310}
+  buttonStage3: {fileID: 1556972364}
+  buttonStageChallenge: {fileID: 1242364144}
 --- !u!1 &305980997
 GameObject:
   m_ObjectHideFlags: 0
@@ -1821,7 +1839,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.754717, g: 0.754717, b: 0.754717, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

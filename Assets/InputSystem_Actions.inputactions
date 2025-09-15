@@ -82,7 +82,7 @@
                     "name": "Sprint",
                     "type": "Button",
                     "id": "641cd816-40e6-41b4-8c3d-04687c349290",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -91,15 +91,6 @@
                     "name": "Grapple",
                     "type": "Button",
                     "id": "3117669b-17b7-48ef-b3e6-c3995d794a24",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "HasteCharge",
-                    "type": "Button",
-                    "id": "8c89da36-3433-453c-ac57-cbce2926d1d7",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -511,17 +502,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "Grapple",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "9f75edca-4595-4f59-995c-78350470297e",
-                    "path": "<Keyboard>/capsLock",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "HasteCharge",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 8520838279243964323}
   - component: {fileID: 2669761511859436200}
   - component: {fileID: 4870791913677559463}
+  - component: {fileID: 3955647184880842887}
   m_Layer: 2
   m_Name: Player
   m_TagString: Player
@@ -314,7 +315,6 @@ MonoBehaviour:
   cam: {fileID: 0}
   rope: {fileID: 4046966097992044161}
   playerInput: {fileID: 684420824400950261}
-  aim: {fileID: 0}
   cameraController: {fileID: 0}
   playerController: {fileID: 7852561111888063321}
   rotationTracker: {fileID: 4969942216472683142}
@@ -323,7 +323,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   rayDistance: 40
-  sphereRadius: 3
+  sphereRadius: 1.5
   currentRopeDistance: 10
   maxRopeDistance: 15
   minRopeDistance: 3
@@ -446,6 +446,24 @@ MonoBehaviour:
   line: {fileID: 4046966097992044161}
   keepLineWhileHolding: 1
   lineWidth: 0.1
+--- !u!114 &3955647184880842887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1618950133039396712}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a786aa3c37a25704bb1952dfa1f6d5a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tutorial1LayerName: Tutorial1
+  tutorial2LayerName: Tutorial2
+  tutorial3LayerName: Tutorial3
+  tutorial1Target: {x: 0, y: 1.5, z: 0}
+  tutorial2Target: {x: 0, y: 1.5, z: 180}
+  tutorial3Target: {x: 0, y: 1.5, z: 365}
 --- !u!1 &2304087750759680951
 GameObject:
   m_ObjectHideFlags: 0

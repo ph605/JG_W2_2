@@ -11,7 +11,7 @@ public class PlayerGrapple : MonoBehaviour
     [SerializeField] Camera cam;
     [SerializeField] LineRenderer rope;
     [SerializeField] PlayerInput playerInput;
-    [SerializeField] GameObject aim;
+    //[SerializeField] GameObject aim;
     [SerializeField] PlayerCameraController cameraController;
     [SerializeField] PlayerController playerController;
     [SerializeField] RotationTracker rotationTracker;
@@ -319,13 +319,13 @@ public class PlayerGrapple : MonoBehaviour
         if (got)
         {
             lastHit = hit;
-            if (aim && !aim.activeSelf) aim.SetActive(true);
-            if (aim) aim.transform.position = hit.point;
+           /* if (aim && !aim.activeSelf) aim.SetActive(true);
+            if (aim) aim.transform.position = hit.point;*/
         }
         else
         {
             lastHit = new RaycastHit();
-            if (aim && aim.activeSelf) aim.SetActive(false);
+            //if (aim && aim.activeSelf) aim.SetActive(false);
         }
     }
 

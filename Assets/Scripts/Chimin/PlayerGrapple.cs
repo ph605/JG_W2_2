@@ -14,11 +14,18 @@ public class PlayerGrapple : MonoBehaviour
     [SerializeField] PlayerController playerController;
     [SerializeField] RotationTracker rotationTracker;
     [SerializeField] CameraRigFollow cameraRig; // ← CameraRig 드롭
+    
 
     [Header("Aim/Raycast")]
     [SerializeField] LayerMask layerMask = ~0;
     [SerializeField] float rayDistance = 60f;
     [SerializeField] float sphereRadius = 3f;
+    [Header("Configurable Joint (Swing)")]
+    ConfigurableJoint cj;
+    [SerializeField] float currentRopeDistance = 0f;
+    [SerializeField] float maxRopeDistance = 10f;
+    [SerializeField] float minRopeDistance = 3f;
+    [SerializeField] float ropeGrowSpeed = 10f;
 
     [Header("Spring Joint (Swing)")]
     [SerializeField] float springForce = 35f;
@@ -50,10 +57,14 @@ public class PlayerGrapple : MonoBehaviour
 
     [Header("Landing")]
     [SerializeField] bool alwaysAlignOnLanding = true; // ← 착지 시 항상 카메라 방향으로 맞추기
+    [Header("Hang")]
+    public float hangingTime;
+    [SerializeField]
+    private float currentHangTime = 0;
 
     // 상태
-    Rigidbody rb;
-    SpringJoint sj;
+    Rigidbody rb;
+    // SpringJoint sj;
     bool isSwing = false;
     Vector3 anchor;
     RaycastHit lastHit;
@@ -113,6 +124,32 @@ public class PlayerGrapple : MonoBehaviour
         UpdateHookPoint();
         DrawRope();
         lastMousePos = Input.mousePosition;
+        if (isSwing)
+        {
+            
+            if (currentRopeDistance > maxRopeDistance)
+            {
+                currentRopeDistance -= Time.deltaTime * currentRopeDistance;
+            }
+            if (currentRopeDistance < minRopeDistance)
+            {
+                currentRopeDistance = minRopeDistance;
+            }
+            SoftJointLimit limit = new SoftJointLimit();
+            limit.limit = currentRopeDistance;
+            cj.linearLimit = limit;
+            currentHangTime += Time.deltaTime;
+            float t = currentHangTime / hangingTime;
+            float currentWidth = Mathf.Lerp(0.5f, 0f, t);
+            rope.startWidth = currentWidth;
+            rope.endWidth = currentWidth;
+            if (currentHangTime >= hangingTime)
+            {
+                EndSwing();
+                rope.startWidth = 0.5f;
+            }
+        }
+        
     }
 
     void FixedUpdate()
@@ -127,6 +164,7 @@ public class PlayerGrapple : MonoBehaviour
             var kb = Keyboard.current;
             if (kb != null && kb.wKey.isPressed)
             {
+                rb.AddForce(transform.forward * pushSideways, ForceMode.Force);
                 if (currentLayer == LayerMask.NameToLayer("Left"))
                     rb.AddForce(transform.right * pushSideways, ForceMode.Force);
                 else if (currentLayer == LayerMask.NameToLayer("Right"))
@@ -243,16 +281,36 @@ public class PlayerGrapple : MonoBehaviour
             rope.SetPosition(1, anchor);
         }
 
-        if (!sj) sj = gameObject.AddComponent<SpringJoint>();
-        sj.autoConfigureConnectedAnchor = false;
-        sj.connectedAnchor = anchor;
-        sj.spring = springForce;
-        sj.damper = springDamper;
-        sj.massScale = springMass;
+        // if (!sj) sj = gameObject.AddComponent<SpringJoint>();
+        // sj.autoConfigureConnectedAnchor = false;
+        // sj.connectedAnchor = anchor;
+        // sj.spring = springForce;
+        // sj.damper = springDamper;
+        // sj.massScale = springMass;
 
-        float dis = Vector3.Distance(transform.position, anchor);
-        sj.maxDistance = Mathf.Max(0.01f, dis * maxDistFrac);
-        sj.minDistance = Mathf.Clamp(dis * minDistFrac, 0f, sj.maxDistance);
+        // float dis = Vector3.Distance(transform.position, anchor);
+        // sj.maxDistance = Mathf.Max(0.01f, dis * maxDistFrac);
+        // sj.minDistance = Mathf.Clamp(dis * minDistFrac, 0f, sj.maxDistance);
+        cj = gameObject.AddComponent<ConfigurableJoint>();
+        cj.connectedAnchor = anchor; // 줄이 고정된 지점
+        cj.autoConfigureConnectedAnchor = false;
+        // 이동 제약
+        cj.xMotion = ConfigurableJointMotion.Limited;
+        cj.yMotion = ConfigurableJointMotion.Limited;
+        cj.zMotion = ConfigurableJointMotion.Limited;
+        // 회전은 자유
+        cj.angularXMotion = ConfigurableJointMotion.Free;
+        cj.angularYMotion = ConfigurableJointMotion.Free;
+        cj.angularZMotion = ConfigurableJointMotion.Free;
+
+        // 줄 최대 길이
+        currentRopeDistance = Vector3.Distance(anchor, transform.position);
+        // 줄을 탄탄하게 (스프링 효과 X)
+        JointDrive drive = new JointDrive();
+        drive.positionSpring = 0f;
+        drive.positionDamper = 0f;
+        drive.maximumForce = Mathf.Infinity;
+        cj.xDrive = cj.yDrive = cj.zDrive = drive;
     }
 
     // 스윙 종료
@@ -270,15 +328,22 @@ public class PlayerGrapple : MonoBehaviour
         float initialSpin = releaseSpinMultiplier * releaseSpeed;
         tumbleCoroutine = StartCoroutine(TumbleCoroutine(initialSpin));
 
-        rb.linearVelocity *= 0.5f;
+        // rb.linearVelocity *= 0.5f;
 
-        if (sj) Destroy(sj);
-        sj = null;
-
+        // if (sj){
+        //     Destroy(sj);
+        //     sj = null;
+        // }
+        if (cj){
+            Destroy(cj);
+            cj = null;
+        }
+        
         if (rope)
         {
             rope.positionCount = 0;
             rope.enabled = false;
+            currentHangTime = 0;
         }
     }
 

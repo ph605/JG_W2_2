@@ -1267,26 +1267,26 @@ MonoBehaviour:
   playerTransform: {fileID: 809377025}
   emptyTilePrefab: {fileID: 5653160895305078999, guid: 38b9b4cca4c6a754cb7c180dffe0dcd3, type: 3}
   tilePatterns:
-  - {fileID: 11400000, guid: f46327e3da826944ab73dd801fa7bdfd, type: 2}
-  - {fileID: 11400000, guid: acf8354c86296b649ba9cc42f73745ea, type: 2}
-  - {fileID: 11400000, guid: 2bed7abae5046954490e99b7efc485c6, type: 2}
-  - {fileID: 11400000, guid: 7277189419d7e644abb798a597bb8f75, type: 2}
-  - {fileID: 11400000, guid: 56fec1c7d9f66e747b2ffd73042d3307, type: 2}
-  - {fileID: 11400000, guid: aa6411d2543070349aacf48373b2052b, type: 2}
-  - {fileID: 11400000, guid: fcec01ea5dc3e2f4d8ec2cbbc302d642, type: 2}
-  - {fileID: 11400000, guid: 68e263e0230ac004c87c9f52bb23ae48, type: 2}
-  - {fileID: 11400000, guid: aede0695d8f32a94393ec03070bd5354, type: 2}
-  - {fileID: 11400000, guid: 3ac4719887640e947a8de7bcabd12d93, type: 2}
-  - {fileID: 11400000, guid: 9715ae9de0bbbc14396741e694b55a3c, type: 2}
-  - {fileID: 11400000, guid: cc85e8268a1eee740b5b568420765e25, type: 2}
-  - {fileID: 11400000, guid: 5fb738042aab2cb46b0de59dcdca8423, type: 2}
-  - {fileID: 11400000, guid: 5afbc0eea46f6374ca5bfd7f98a36c04, type: 2}
-  - {fileID: 11400000, guid: cffa43c96278de848b85d0dc0e6133e1, type: 2}
-  - {fileID: 11400000, guid: 6df9ee02ff0c91f439ec3ff43d460afa, type: 2}
-  - {fileID: 11400000, guid: 9e5673ef0e3cdee4e9b6a10edac48003, type: 2}
-  - {fileID: 11400000, guid: f90dd32434522aa4c9e3a83ca2b137d2, type: 2}
-  - {fileID: 11400000, guid: 8fea6398b95fa2e4f98624d6c99363ed, type: 2}
-  - {fileID: 11400000, guid: f9441e0fdf6ac404c8eab016a8d25e2f, type: 2}
+  - {fileID: 11400000, guid: 85c7265a8fe8df140bef35805e3433ae, type: 2}
+  - {fileID: 11400000, guid: 0fdb61df120098b4a88c0272165618b1, type: 2}
+  - {fileID: 11400000, guid: 9ee3e57382bc04b4ba175ac646d44206, type: 2}
+  - {fileID: 11400000, guid: 48874f10a63fcec40bc885e9ed504138, type: 2}
+  - {fileID: 11400000, guid: dc48ffdf976374a4ca4ddb72a9f831b7, type: 2}
+  - {fileID: 11400000, guid: f278b644ba2dfd44a9efb0f21c21b1a6, type: 2}
+  - {fileID: 11400000, guid: 9f813c84d934cae40808ea3933f71c64, type: 2}
+  - {fileID: 11400000, guid: f8bdc2a96dd49ba4d97514fc4fa7dafe, type: 2}
+  - {fileID: 11400000, guid: d8587e7fcc0d94149bc59b28d1fda834, type: 2}
+  - {fileID: 11400000, guid: d186b8f545254334aaa00c29700c6f0f, type: 2}
+  - {fileID: 11400000, guid: ecb50ad198633184db794692fbbcc623, type: 2}
+  - {fileID: 11400000, guid: 01c999e30ef397d43bd43b9f446725ef, type: 2}
+  - {fileID: 11400000, guid: d9491b6076e810e46839289af7ea1f66, type: 2}
+  - {fileID: 11400000, guid: 1e397c55be41ab741855e0e5e19d35b6, type: 2}
+  - {fileID: 11400000, guid: 35b5a7fe0483d39409dece73e45b82ff, type: 2}
+  - {fileID: 11400000, guid: 391a3bbdf5a63ff4a829724353dd42b0, type: 2}
+  - {fileID: 11400000, guid: 180421c19ac872b49ba04b00de6f9cd9, type: 2}
+  - {fileID: 11400000, guid: baef4648b3623794a955b295446b42d2, type: 2}
+  - {fileID: 11400000, guid: ea6c0ede91aef2544b36a1a2535f7685, type: 2}
+  - {fileID: 11400000, guid: ced84e86aa6103747a2443419d520ebd, type: 2}
   tileLength: 50
   visibleTilesOnScreen: 2
   totalTilesToGoal: 100
@@ -1494,12 +1494,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3e77b6a1ffaa484d8bb4fb53bfa5d3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fileName: PatternChallenge_20
+  fileName: PatternChallenge2_20
   savePath: TilePatterns/Challenge
   obstacleCount: 5
   weightedObstacleTypes:
   - type: 3
-    weight: 45
+    weight: 37
     isRandomScale: 0
     fixedScale: {x: 2, y: 2, z: 2}
     xBounds: {x: -25, y: 25}
@@ -1515,7 +1515,7 @@ MonoBehaviour:
     zBounds: {x: -25, y: 25}
     isActive: 1
   - type: 5
-    weight: 7
+    weight: 5
     isRandomScale: 0
     fixedScale: {x: 3.5, y: 3.5, z: 3.5}
     xBounds: {x: -25, y: 25}
@@ -1531,9 +1531,9 @@ MonoBehaviour:
     zBounds: {x: -25, y: 25}
     isActive: 1
   - type: 1
-    weight: 35
+    weight: 50
     isRandomScale: 0
-    fixedScale: {x: 5, y: 5, z: 5}
+    fixedScale: {x: 7, y: 7, z: 7}
     xBounds: {x: -25, y: 25}
     yBounds: {x: -5, y: 15}
     zBounds: {x: -25, y: 25}

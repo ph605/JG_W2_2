@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7004a039280e0647b913480dfd08ad7, type: 3}
+  m_Name: PatternChallenge2_15
+  m_EditorClassIdentifier: 
+  obstacleLayout:
+  - id: 0
+    type: 1
+    position: {x: 7.1999245, y: 1.2677994, z: 15.563702}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 7, y: 7, z: 7}
+    isActive: 1
+  - id: 0
+    type: 3
+    position: {x: -5.586014, y: 4.870665, z: -9.318099}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 2, y: 2, z: 2}
+    isActive: 1
+  - id: 0
+    type: 1
+    position: {x: 5.162546, y: 10.990612, z: -21.621895}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 7, y: 7, z: 7}
+    isActive: 1
+  - id: 0
+    type: 1
+    position: {x: -16.33274, y: -1.8575406, z: 20.313335}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 7, y: 7, z: 7}
+    isActive: 1
+  - id: 0
+    type: 1
+    position: {x: -20.99405, y: 11.396329, z: 5.3947887}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 7, y: 7, z: 7}
+    isActive: 1

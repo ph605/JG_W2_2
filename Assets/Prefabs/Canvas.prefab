@@ -610,17 +610,26 @@ MonoBehaviour:
   - time: 0
     score: 0
     isTutorial: 1
+  - time: 0
+    score: 0
+    isTutorial: 1
   - time: 300
     score: 0
     isTutorial: 0
   - time: 300
     score: 1000
     isTutorial: 0
-  - time: 360
+  - time: 300
     score: 1500
     isTutorial: 0
-  - time: 600
+  - time: 360
     score: 3500
+    isTutorial: 0
+  - time: 600
+    score: 5000
+    isTutorial: 0
+  - time: 600
+    score: 5000
     isTutorial: 0
   clearUI: {fileID: 7000650765698884807}
   configurationUI: {fileID: 8256604671371122669}

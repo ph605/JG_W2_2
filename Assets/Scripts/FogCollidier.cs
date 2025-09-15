@@ -18,7 +18,7 @@ public class FogCollidier : MonoBehaviour
     {
         if(collision.gameObject.CompareTag("Player"))
         {
-            gameObject.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+            collision.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
         }
     }
 }

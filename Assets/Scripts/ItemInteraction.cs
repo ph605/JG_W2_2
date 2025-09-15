@@ -2,7 +2,7 @@
 
 public class ItemInteraction : MonoBehaviour
 {
-    public int score = 10;
+    public int score = 150;
     public float rotateSpeed = 60f;
     public float floatAmplitude = 0.25f;
     public float floatFrequency = 1f;

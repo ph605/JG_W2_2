@@ -217,7 +217,6 @@ public class MapGenerator : ObjectNumberGenerator
     {
         foreach(var loc in nonSpawnLocs)
         {
-            Debug.Log(loc.ToString());
             TilePattern tempPattern = ScriptableObject.CreateInstance<TilePattern>();
             tempPattern.obstacleLayout = new ObstacleData[0];
             tileDataHistory.Add(loc, tempPattern);

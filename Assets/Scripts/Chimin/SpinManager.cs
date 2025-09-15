@@ -10,6 +10,7 @@ public class SpinManager : MonoBehaviour
     [SerializeField] private TMP_Text totalRotationText;
 
     private int totalRotations = 0;
+    private int rotateScore = 10;
 
     void Awake()
     {
@@ -17,9 +18,11 @@ public class SpinManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
+            SpinManager.instance.initRotate();
             Destroy(gameObject);
         }
     }
@@ -46,6 +49,7 @@ public class SpinManager : MonoBehaviour
     private void HandleRotationComplete()
     {
         totalRotations++;
+        InGameUIManager.instance.AddScore(rotateScore);
         Debug.Log($"[SpinManager] +1 spin, total={totalRotations}");
         UpdateRotationUI();
     }
@@ -57,5 +61,11 @@ public class SpinManager : MonoBehaviour
         {
             totalRotationText.text = "Total Rotations: " + totalRotations;
         }
+    }
+
+    public void initRotate()
+    {
+        totalRotations = 0;
+        UpdateRotationUI();
     }
 }

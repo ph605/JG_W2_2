@@ -13,63 +13,33 @@ MonoBehaviour:
   m_Name: RandomPattern_05
   m_EditorClassIdentifier: 
   obstacleLayout:
-  - id: 61
-    type: 0
-    position: {x: -4.612575, y: 1.5165141, z: -11.228619}
+  - id: 0
+    type: 3
+    position: {x: 20.448746, y: 7.420403, z: 15.225207}
     eulerAngles: {x: 0, y: 0, z: 0}
-    scale: {x: 3, y: 0.1, z: 3}
+    scale: {x: 2, y: 2, z: 2}
     isActive: 1
-  - id: 62
+  - id: 0
     type: 4
-    position: {x: -4.7314363, y: 1.7662287, z: -7.002735}
+    position: {x: -13.100719, y: 12.940448, z: -8.054032}
     eulerAngles: {x: 0, y: 0, z: 0}
-    scale: {x: 1, y: 1, z: 1}
+    scale: {x: 5, y: 5, z: 5}
     isActive: 1
-  - id: 63
-    type: 2
-    position: {x: -0.21510029, y: 5.322745, z: 12.5552025}
+  - id: 0
+    type: 3
+    position: {x: 6.562793, y: 2.3201017, z: -4.4679794}
     eulerAngles: {x: 0, y: 0, z: 0}
-    scale: {x: 1.6184008, y: 1.6184008, z: 1.6184008}
+    scale: {x: 2, y: 2, z: 2}
     isActive: 1
-  - id: 64
-    type: 4
-    position: {x: 2.857277, y: 9.005785, z: -2.8908477}
+  - id: 0
+    type: 3
+    position: {x: -7.635853, y: -0.72209764, z: -14.369576}
     eulerAngles: {x: 0, y: 0, z: 0}
-    scale: {x: 1, y: 1, z: 1}
+    scale: {x: 2, y: 2, z: 2}
     isActive: 1
-  - id: 65
-    type: 2
-    position: {x: 13.577536, y: 7.312805, z: 14.623615}
+  - id: 0
+    type: 3
+    position: {x: 17.519306, y: 9.0193, z: 14.306968}
     eulerAngles: {x: 0, y: 0, z: 0}
-    scale: {x: 1.0049366, y: 1.0049366, z: 1.0049366}
-    isActive: 1
-  - id: 66
-    type: 4
-    position: {x: 9.870619, y: 9.113489, z: 13.165011}
-    eulerAngles: {x: 0, y: 0, z: 0}
-    scale: {x: 1, y: 1, z: 1}
-    isActive: 1
-  - id: 67
-    type: 2
-    position: {x: 3.5114422, y: 3.1546626, z: -11.435026}
-    eulerAngles: {x: 0, y: 0, z: 0}
-    scale: {x: 1.0016131, y: 1.0016131, z: 1.0016131}
-    isActive: 1
-  - id: 68
-    type: 2
-    position: {x: -4.72442, y: 5.421298, z: -8.107067}
-    eulerAngles: {x: 0, y: 0, z: 0}
-    scale: {x: 1.1730564, y: 1.1730564, z: 1.1730564}
-    isActive: 1
-  - id: 69
-    type: 2
-    position: {x: -11.105764, y: 5.800367, z: -8.3539505}
-    eulerAngles: {x: 0, y: 0, z: 0}
-    scale: {x: 1.0200231, y: 1.0200231, z: 1.0200231}
-    isActive: 1
-  - id: 70
-    type: 0
-    position: {x: -3.0989347, y: 0.48397386, z: 7.5924163}
-    eulerAngles: {x: 0, y: 0, z: 0}
-    scale: {x: 3, y: 0.1, z: 3}
+    scale: {x: 2, y: 2, z: 2}
     isActive: 1

@@ -159,7 +159,7 @@ private void timeCalculate()
         }
 
         // 목표 점수에 도달했으면, 바로 통과
-        if(currentGoalValue.score == 0 || currentGoalValue.score <= scoreValue)
+        if(currentGoalValue.score == 0)
             ClearUI(true);
 
         // 목표 점수에 도달하지 못하면, 계속 플레이

@@ -274,11 +274,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 5
   rotationSpeed: 0.07
-  hasteHoldSeconds: 1.5
-  hasteMultiplier: 3
-  hasteChargeAction: {fileID: 8671178765093232632, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  hasteFillImage: {fileID: 0}
-  hasteRemainText: {fileID: 0}
   controllerLocked: 0
   onStageClear:
     m_PersistentCalls:
@@ -300,6 +295,9 @@ MonoBehaviour:
   superJumpUprightLerpSpeed: 25
   bottomLayerName: Bottom
   bottomSpeedMultiplier: 4
+  mouseSensitivitySlider: {fileID: 0}
+  minMouseSensitivity: 0.02
+  maxMouseSensitivity: 0.3
 --- !u!114 &8520838279243964323
 MonoBehaviour:
   m_ObjectHideFlags: 0

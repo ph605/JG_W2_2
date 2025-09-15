@@ -482,7 +482,7 @@ MonoBehaviour:
   - time: 360
     score: 1500
     isTutorial: 0
-  - time: 360
+  - time: 600
     score: 3500
     isTutorial: 0
   clearUI: {fileID: 7000650765698884807}
@@ -735,6 +735,30 @@ PrefabInstance:
     - target: {fileID: 5455790290491828897, guid: 4fa165390a8365f48a31590c80e6f8a6, type: 3}
       propertyPath: m_Name
       value: Configuration
+      objectReference: {fileID: 0}
+    - target: {fileID: 7177304907960476290, guid: 4fa165390a8365f48a31590c80e6f8a6, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7177304907960476290, guid: 4fa165390a8365f48a31590c80e6f8a6, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7177304907960476290, guid: 4fa165390a8365f48a31590c80e6f8a6, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7177304907960476290, guid: 4fa165390a8365f48a31590c80e6f8a6, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnMouseSensitivityChanged
+      objectReference: {fileID: 0}
+    - target: {fileID: 7177304907960476290, guid: 4fa165390a8365f48a31590c80e6f8a6, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PlayerController, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7177304907960476290, guid: 4fa165390a8365f48a31590c80e6f8a6, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

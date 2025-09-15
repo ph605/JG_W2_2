@@ -52,6 +52,12 @@ public class SceneManager : MonoBehaviour
         UnityEngine.SceneManagement.SceneManager.LoadScene(currentSceneName);
     }
 
+    // 빌드 기준으로 현재 씬의 번호 가져오기
+    public int GetCurrentSceneNum()
+    {
+        return UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex;
+    }
+
     public void LoadNextScene()
     {
         // 이름 충돌을 피하기 위해 전체 경로를 명시

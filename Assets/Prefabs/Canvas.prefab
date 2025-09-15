@@ -393,6 +393,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   timer: {fileID: 5698815852518735791}
   score: {fileID: 5827770327006576146}
+  goalValue:
+  - time: 0
+    score: 0
+    isTutorial: 1
+  - time: 300
+    score: 0
+    isTutorial: 0
+  - time: 300
+    score: 1000
+    isTutorial: 0
+  - time: 360
+    score: 1500
+    isTutorial: 0
+  - time: 360
+    score: 3500
+    isTutorial: 0
   clearUI: {fileID: 7000650765698884807}
   configurationUI: {fileID: 8256604671371122669}
 --- !u!1 &6651913716194117514
@@ -525,7 +541,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 0, z: -125.299805, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0

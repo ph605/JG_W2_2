@@ -1349,7 +1349,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f936d9e29ef42784ebe20c2055dc6b05, type: 2}
   tileLength: 50
   visibleTilesOnScreen: 2
-  totalTilesToGoal: 15
+  totalTilesToGoal: 10
   finishLinePrefab: {fileID: 5653160895305078999, guid: 02be3f10e82aad44e803dc666a85ce0d, type: 3}
   nonSpawnLocs: []
 --- !u!1001 &1400649616

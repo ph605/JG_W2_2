@@ -1352,8 +1352,8 @@ Transform:
   m_GameObject: {fileID: 897839830}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.07, y: -19.0828, z: -17.08}
-  m_LocalScale: {x: 18.975, y: 5.6698356, z: 12.071}
+  m_LocalPosition: {x: 0.07, y: -19.0828, z: -13.77}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1806,6 +1806,10 @@ MonoBehaviour:
     m_Bits: 192
   rayDistance: 60
   sphereRadius: 3
+  currentRopeDistance: 10
+  maxRopeDistance: 20
+  minRopeDistance: 3
+  ropeGrowSpeed: 10
   springForce: 30
   springDamper: 10
   springMass: 1
@@ -1818,11 +1822,20 @@ MonoBehaviour:
   pushUpSide: 50
   enableWallPush: 1
   pushSideways: 50
-  releaseSpinMultiplier: 0.1
+  enableAirGravity: 1
+  airGravity: 10
+  airTime: 1
+  airTempTime: 0
+  xOffset: 1
+  yOffset: 1.5
+  zOffset: 1
+  releaseSpinMultiplier: 0.2
   settleSpeed: 20
   tiltSpeed: 2
   almostFullTurnThreshold: 100
   alwaysAlignOnLanding: 0
+  hangingTime: 5
+  currentHangTime: 0
 --- !u!114 &1268665924
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1938,12 +1951,41 @@ MonoBehaviour:
   minOutwardSpeedOnRelease: 0.2
   releaseCCDMode: 2
   launchTowardsCamera: 1
-  cameraLaunchSpeed: 30
+  cameraLaunchSpeed: 20
   flattenCameraForward: 1
-  alignYawToCameraOnRelease: 1
-  smoothAlignYawOnRelease: 1
-  alignYawDuration: 0.25
-  lockRotationDuringAlign: 1
+  followCameraYawAfterRelease: 1
+  yawFollowSlerpSpeed: 20
+  yawFollowMinDuration: 0.6
+  yawFollowAfterLandingDuration: 0.6
+  softSnapOnBegin: 1
+  beginMoveDuration: 0.5
+  beginMoveCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  line: {fileID: 1268665919}
+  keepLineWhileHolding: 1
+  lineWidth: 0.1
 --- !u!1 &1272867936
 GameObject:
   m_ObjectHideFlags: 0
@@ -2417,7 +2459,7 @@ Transform:
   m_GameObject: {fileID: 1471953515}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -29.1, z: 81.5}
+  m_LocalPosition: {x: 0, y: -33.2, z: 81.5}
   m_LocalScale: {x: 100, y: 1, z: 256.45}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -8,7 +8,7 @@ public class ClingInteractor : MonoBehaviour
     [Header("References")]
     [SerializeField] private Camera cam;
     [SerializeField] private PlayerController playerController;
-    [SerializeField] private GameObject aim; // 선택
+    [SerializeField] private GameObject aim;
 
     [Header("Holding Filter")]
     [SerializeField] private string holdingLayerName = "Holding";
@@ -38,15 +38,25 @@ public class ClingInteractor : MonoBehaviour
     [SerializeField] private float cameraLaunchSpeed = 20f;
     [SerializeField] private bool flattenCameraForward = true;
 
-    [Header("Release Align (Camera)")]
-    [Tooltip("홀딩 해제 시 플레이어 Yaw를 카메라 방향으로 맞춤")]
-    [SerializeField] private bool alignYawToCameraOnRelease = true;
-    [Tooltip("스냅 대신 부드럽게 회전할지")]
-    [SerializeField] private bool smoothAlignYawOnRelease = true;
-    [Tooltip("부드러운 정렬에 걸리는 시간(초)")]
-    [SerializeField, Min(0f)] private float alignYawDuration = 0.25f;
-    [Tooltip("정렬 동안 플레이어 수동 회전 잠금")]
-    [SerializeField] private bool lockRotationDuringAlign = true;
+    [Header("Follow Camera Yaw After Release")]
+    [Tooltip("홀딩 해제 후 비행/착지 직후 동안 카메라 회전에 맞춰 지속적으로 회전")]
+    [SerializeField] private bool followCameraYawAfterRelease = true;
+    [Tooltip("회전 보간 속도(값이 클수록 빨리 따라감)")]
+    [SerializeField] private float yawFollowSlerpSpeed = 12f;
+    [Tooltip("최소로 따라갈 시간(해제 직후)")]
+    [SerializeField] private float yawFollowMinDuration = 0.35f;
+    [Tooltip("첫 착지 후 추가로 따라갈 시간")]
+    [SerializeField] private float yawFollowAfterLandingDuration = 0.35f;
+
+    [Header("Begin Hold Soft-Snap")]
+    [SerializeField] private bool softSnapOnBegin = true;
+    [SerializeField, Min(0f)] private float beginMoveDuration = 0.5f;
+    [SerializeField] private AnimationCurve beginMoveCurve = null; // 인스펙터에서 기본 EaseInOut 설정 권장
+    [Tooltip("부드럽게 당기는 동안 라인 표시(플레이어↔히트지점)")]
+    [SerializeField] private LineRenderer line;
+    [SerializeField] private bool keepLineWhileHolding = false;
+    [SerializeField] private float lineWidth = 0.03f;
+
 
     // ──────────────────────────────────────
     Rigidbody rb;
@@ -60,10 +70,10 @@ public class ClingInteractor : MonoBehaviour
     int holdingLayer;
 
     Vector3 lastSurfaceNormal = Vector3.up;
-    Collider[] holdTargetCols; // 자식 포함 캐시
+    Collider[] holdTargetCols;
 
-    // 부드러운 정렬 코루틴 핸들
-    Coroutine alignYawRoutine;
+    // yaw-follow 상태
+    Coroutine yawFollowRoutine;
 
     void Awake()
     {
@@ -74,9 +84,12 @@ public class ClingInteractor : MonoBehaviour
         if (playerController == null) playerController = GetComponent<PlayerController>();
 
         holdingLayer = LayerMask.NameToLayer(holdingLayerName);
-        if (holdingLayer == -1)
-            Debug.LogWarning($"[ClingInteractor] '{holdingLayerName}' 레이어를 찾지 못했습니다.");
+        if (holdingLayer == -1) Debug.LogWarning($"[ClingInteractor] '{holdingLayerName}' 레이어 없음");
+
+        // (옵션) 더 부드러운 회전/이동을 위해
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
     }
+
 
     void Update()
     {
@@ -87,20 +100,16 @@ public class ClingInteractor : MonoBehaviour
 
         if (!isHolding)
         {
-            if (mouse.leftButton.wasPressedThisFrame)
-                TryBeginHold();
+            if (mouse.leftButton.wasPressedThisFrame) TryBeginHold();
         }
         else
         {
-            if (mouse.leftButton.isPressed)
-                MaintainHold();
-
-            if (mouse.leftButton.wasReleasedThisFrame)
-                EndHold();
+            if (mouse.leftButton.isPressed) MaintainHold();
+            if (mouse.leftButton.wasReleasedThisFrame) EndHold();
         }
     }
 
-    // Holding 레이어도 에임 표시
+    // ── Aim for Holding layer
     void UpdateHoldingAim()
     {
         if (!cam || holdingLayer == -1 || !aim) return;
@@ -131,8 +140,7 @@ public class ClingInteractor : MonoBehaviour
         var sj = GetComponent<SpringJoint>();
         if (sj != null) Destroy(sj);
 
-        // 정렬 코루틴 돌고 있으면 중단
-        if (alignYawRoutine != null) { StopCoroutine(alignYawRoutine); alignYawRoutine = null; }
+        if (yawFollowRoutine != null) { StopCoroutine(yawFollowRoutine); yawFollowRoutine = null; }
 
         preHoldVelocity = rb.linearVelocity;
 
@@ -145,7 +153,7 @@ public class ClingInteractor : MonoBehaviour
         holdTarget = hit.collider.transform;
         holdTargetCols = holdTarget.GetComponentsInChildren<Collider>();
 
-        // 시작 시에도 무조건 콜라이더 밖으로
+        // 목표 지점도 일단 안전 보정
         anchorWorldPos = GetSafeAnchor(holdTarget, anchorWorldPos, anchorWorldRot);
 
         if (zeroVelocityOnBegin)
@@ -154,15 +162,8 @@ public class ClingInteractor : MonoBehaviour
             rb.angularVelocity = Vector3.zero;
         }
 
+        // 컨트롤 잠금 및 상태 플래그 (isHolding은 소프트 스냅 완료 후에 true)
         rb.isKinematic = true;
-        transform.SetPositionAndRotation(anchorWorldPos, anchorWorldRot);
-
-        holdLocalPos = holdTarget.InverseTransformPoint(anchorWorldPos);
-        holdLocalRot = Quaternion.Inverse(holdTarget.rotation) * anchorWorldRot;
-
-        if (parentWhileHolding && holdTarget != null)
-            transform.SetParent(holdTarget, true);
-
         if (playerController != null)
         {
             playerController.IsClinging = true;
@@ -170,8 +171,25 @@ public class ClingInteractor : MonoBehaviour
             playerController.LockRotation();
         }
 
-        isHolding = true;
+        if (softSnapOnBegin)
+        {
+            if (beginMoveCurve == null) beginMoveCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+            StartCoroutine(SoftSnapToAnchor(hit.point, anchorWorldPos, anchorWorldRot));
+        }
+        else
+        {
+            // 기존 즉시 스냅 로직(필요하면 유지)
+            transform.SetPositionAndRotation(anchorWorldPos, anchorWorldRot);
+            if (parentWhileHolding && holdTarget != null)
+                transform.SetParent(holdTarget, true);
+
+            holdLocalPos = holdTarget.InverseTransformPoint(anchorWorldPos);
+            holdLocalRot = Quaternion.Inverse(holdTarget.rotation) * anchorWorldRot;
+
+            isHolding = true;
+        }
     }
+
 
     void MaintainHold()
     {
@@ -190,56 +208,52 @@ public class ClingInteractor : MonoBehaviour
             if ((safe - transform.position).sqrMagnitude > 1e-10f)
                 transform.position = safe;
         }
+
+        // 라인 유지 옵션
+        if (line && keepLineWhileHolding)
+        {
+            line.enabled = true;
+            line.positionCount = 2;
+            line.SetPosition(0, transform.position);
+            line.SetPosition(1, holdTarget.TransformPoint(holdLocalPos)); // 현재 앵커 지점
+        }
     }
+
 
     void EndHold()
     {
         if (!isHolding) return;
 
-        // 부모 해제 전 마지막 바깥쪽으로 스냅
+        // 부모 해제 전 살짝 밖으로
         Vector3 preReleasePos = transform.position + lastSurfaceNormal * pushOutSkin;
         Vector3 safePos = GetSafeAnchor(holdTarget, preReleasePos, transform.rotation);
         transform.position = safePos;
         Physics.SyncTransforms();
 
-        // 카메라 기준 방향 계산(속도/정렬에 공용 사용)
-        Vector3 camDir = (cam != null) ? cam.transform.forward : transform.forward;
-        if (flattenCameraForward) camDir.y = 0f;
-        if (camDir.sqrMagnitude < 1e-6f) camDir = transform.forward;
-        camDir.Normalize();
-
-        // ✅ 스무스 Yaw 정렬
-        if (alignYawToCameraOnRelease)
-        {
-            if (alignYawRoutine != null) StopCoroutine(alignYawRoutine);
-            alignYawRoutine = smoothAlignYawOnRelease
-                ? StartCoroutine(AlignYawSmoothlyToCamera(camDir, alignYawDuration))
-                : StartCoroutine(AlignYawSmoothlyToCamera(camDir, 0f)); // 0이면 즉시 스냅
-        }
-
-        if (parentWhileHolding)
-            transform.SetParent(null, true);
+        if (parentWhileHolding) transform.SetParent(null, true);
 
         rb.isKinematic = false;
         rb.collisionDetectionMode = releaseCCDMode;
 
         // 기본 속도 구성
         Vector3 v = rb.linearVelocity;
-
         if (preserveHorizontalVelocityOnRelease)
         {
             Vector3 horiz = new Vector3(preHoldVelocity.x, 0f, preHoldVelocity.z);
             v.x = horiz.x; v.z = horiz.z;
         }
+        if (releaseUpBoost > 0f) v.y = Mathf.Max(v.y, releaseUpBoost);
 
-        if (releaseUpBoost > 0f)
-            v.y = Mathf.Max(v.y, releaseUpBoost);
-
-        // (옵션) 카메라 방향으로 런치
-        if (launchTowardsCamera)
+        // 카메라 방향 런치
+        if (launchTowardsCamera && cam != null)
         {
-            Vector3 launchVel = camDir * cameraLaunchSpeed;
-            if (flattenCameraForward) launchVel.y = v.y; // 수평만 교체
+            Vector3 dir = cam.transform.forward;
+            if (flattenCameraForward) dir.y = 0f;
+            if (dir.sqrMagnitude < 1e-6f) dir = transform.forward;
+            dir.Normalize();
+
+            Vector3 launchVel = dir * cameraLaunchSpeed;
+            if (flattenCameraForward) launchVel.y = v.y; // 수직은 유지
             v = launchVel;
         }
 
@@ -253,26 +267,57 @@ public class ClingInteractor : MonoBehaviour
         if (playerController != null)
         {
             playerController.IsClinging = false;
-            // 회전은 정렬 코루틴 내에서 잠금 해제(옵션)하므로 여기선 조작만 해제
             playerController.UnlockController();
+            playerController.UnlockRotation();   
         }
+
+        // ✅ 해제 후 카메라 회전에 지속적으로 맞추는 코루틴 시작
+        if (followCameraYawAfterRelease && yawFollowRoutine == null)
+            yawFollowRoutine = StartCoroutine(FollowCameraYawRoutine());
 
         isHolding = false;
         holdTarget = null;
         holdTargetCols = null;
     }
 
-    // 원하는 포즈에서 타겟과 겹치면 ComputePenetration으로 밖으로 밀어냄
+    // 비행/착지 직후 카메라 회전에 맞춰 계속 Yaw를 정렬
+    IEnumerator FollowCameraYawRoutine()
+    {
+        float timer = yawFollowMinDuration; // 설정한 최소 시간만큼만 유지
+
+        while (timer > 0f)
+        {
+            // 카메라 방향 계산
+            Vector3 dir = (cam != null) ? cam.transform.forward : transform.forward;
+            if (flattenCameraForward) dir.y = 0f;
+            if (dir.sqrMagnitude < 1e-6f) dir = transform.forward;
+            dir.Normalize();
+
+            // 목표 회전으로 부드럽게 정렬 (플레이어 회전 잠금 X)
+            Quaternion target = Quaternion.LookRotation(dir, Vector3.up);
+            Quaternion newRot = Quaternion.Slerp(
+                rb.rotation,
+                target,
+                Mathf.Clamp01(Time.deltaTime * yawFollowSlerpSpeed)
+            );
+            rb.MoveRotation(newRot);
+
+            timer -= Time.deltaTime;
+            yield return null;
+        }
+
+        yawFollowRoutine = null;
+    }
+
+
+
+    // ─────────────────────────────────────────────
     Vector3 GetSafeAnchor(Transform targetRoot, Vector3 desiredPos, Quaternion desiredRot)
     {
         if (!ownCol || !targetRoot) return desiredPos;
 
-        var targetCols = (targetRoot == holdTarget && holdTargetCols != null && holdTargetCols.Length > 0)
-            ? holdTargetCols
-            : targetRoot.GetComponentsInChildren<Collider>();
-
-        if (targetCols == null || targetCols.Length == 0)
-            return desiredPos;
+        var targetCols = targetRoot.GetComponentsInChildren<Collider>();
+        if (targetCols == null || targetCols.Length == 0) return desiredPos;
 
         Vector3 pos = desiredPos;
 
@@ -304,51 +349,63 @@ public class ClingInteractor : MonoBehaviour
         return pos;
     }
 
-    // ──────────────────────────────────────
-    // 카메라 방향으로 플레이어 Yaw를 부드럽게 맞춘다.
-    IEnumerator AlignYawSmoothlyToCamera(Vector3 targetDir, float duration)
+    IEnumerator SoftSnapToAnchor(Vector3 hitPoint, Vector3 anchorPos, Quaternion anchorRot)
     {
-        if (targetDir.sqrMagnitude < 1e-6f) yield break;
-
-        Quaternion start = transform.rotation;
-        Quaternion target = Quaternion.LookRotation(targetDir.normalized, Vector3.up);
-
-        // 회전 중 입력과 충돌 방지(옵션)
-        if (lockRotationDuringAlign && playerController != null)
-            playerController.LockRotation();
-
-        // duration == 0 이면 즉시 스냅
-        if (duration <= 0f)
+        if (line)
         {
-            if (!rb.isKinematic) rb.MoveRotation(target);
-            else transform.rotation = target;
-
-            if (lockRotationDuringAlign && playerController != null)
-                playerController.UnlockRotation();
-
-            alignYawRoutine = null;
-            yield break;
+            line.enabled = true;
+            line.positionCount = 2;
+            line.startWidth = lineWidth;
+            line.endWidth = lineWidth;
         }
+
+        Vector3 startPos = transform.position;
+        Quaternion startRot = transform.rotation;
 
         float t = 0f;
-        while (t < 1f)
+        while (t < beginMoveDuration)
         {
-            t += Time.deltaTime / duration;
-            float s = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t));
-            Quaternion q = Quaternion.Slerp(start, target, s);
+            float u = beginMoveCurve.Evaluate(t / beginMoveDuration);
 
-            if (!rb.isKinematic) rb.MoveRotation(q);
-            else transform.rotation = q;
+            Vector3 rawPos = Vector3.Lerp(startPos, anchorPos, u);
+            Quaternion rawRot = Quaternion.Slerp(startRot, anchorRot, u);
 
-            yield return null;
+            Vector3 safePos = GetSafeAnchor(holdTarget, rawPos, rawRot);
+
+            rb.MovePosition(safePos);
+            rb.MoveRotation(rawRot);
+
+            if (line)
+            {
+                // 물리 스텝 기준으로 바로 보이도록 rb.position 사용
+                line.SetPosition(0, rb.position);
+                line.SetPosition(1, hitPoint);
+            }
+
+            // 거의 붙었으면 조기 종료(끊김 방지)
+            if ((anchorPos - rb.position).sqrMagnitude < 0.0004f &&
+                Quaternion.Angle(rb.rotation, anchorRot) < 0.5f)
+                break;
+
+            t += Time.fixedDeltaTime;
+            yield return new WaitForFixedUpdate();   // ★ 핵심: 물리 스텝으로 동기화
         }
 
-        if (!rb.isKinematic) rb.MoveRotation(target);
-        else transform.rotation = target;
+        Vector3 finalPos = GetSafeAnchor(holdTarget, anchorPos, anchorRot);
+        rb.MovePosition(finalPos);
+        rb.MoveRotation(anchorRot);
+        Physics.SyncTransforms();
 
-        if (lockRotationDuringAlign && playerController != null)
-            playerController.UnlockRotation();
+        if (parentWhileHolding && holdTarget != null)
+            transform.SetParent(holdTarget, true);
 
-        alignYawRoutine = null;
+        holdLocalPos = holdTarget.InverseTransformPoint(finalPos);
+        holdLocalRot = Quaternion.Inverse(holdTarget.rotation) * anchorRot;
+
+        isHolding = true;
+
+        if (line && !keepLineWhileHolding)
+            line.enabled = false;
     }
+
 }

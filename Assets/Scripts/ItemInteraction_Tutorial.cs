@@ -1,6 +1,7 @@
-ï»¿using UnityEngine;
+using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
-public class ItemInteraction : MonoBehaviour
+public class ItemInteraction_Tutorial : MonoBehaviour
 {
     public int score = 150;
     public float rotateSpeed = 60f;
@@ -11,6 +12,12 @@ public class ItemInteraction : MonoBehaviour
 
     private bool isOnce = true;
 
+    private void Start()
+    {
+        startPos = transform.position;
+        gameObject.SetActive(true);
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -18,26 +25,26 @@ public class ItemInteraction : MonoBehaviour
         FloatingItem();
     }
 
-    // ì•„ì´í…œ í™œì„±í™”
+    // ¾ÆÀÌÅÛ È°¼ºÈ­
     public void SetStartPos(Vector3 pos)
     {
         startPos = pos;
         isOnce = true;
     }
 
-    // ì•„ì´í…œ íšŒì „
+    // ¾ÆÀÌÅÛ È¸Àü
     private void RotateItem()
     {
         transform.Rotate(Vector3.up * rotateSpeed * Time.deltaTime, Space.World);
     }
 
-    // ì•„ì´í…œ ë‘¥ë‘¥ ë– ë‹¤ë‹ˆëŠ” íš¨ê³¼
+    // ¾ÆÀÌÅÛ µÕµÕ ¶°´Ù´Ï´Â È¿°ú
     private void FloatingItem()
     {
         transform.position = startPos + Vector3.up * Mathf.Sin(Time.time * floatFrequency) * floatAmplitude;
     }
 
-    // í”Œë ˆì´ì–´ì™€ ì¶©ëŒ ì‹œ, ì ìˆ˜ ì¶”ê°€
+    // ÇÃ·¹ÀÌ¾î¿Í Ãæµ¹ ½Ã, Á¡¼ö Ãß°¡
     private void OnTriggerEnter(Collider other)
     {
         if (isOnce == false)
@@ -47,13 +54,6 @@ public class ItemInteraction : MonoBehaviour
         {
             isOnce = false;
             InGameUIManager.instance.AddScore(score);
-
-            if (gameObject.GetComponent<PooledObjectInfo>() != null)
-            {
-                int dataID = gameObject.GetComponent<PooledObjectInfo>().dataID;
-                Debug.Log(dataID);
-                MapGenerator.instance.ItemSetActive(dataID, false);
-            }
             gameObject.SetActive(false);
         }
     }

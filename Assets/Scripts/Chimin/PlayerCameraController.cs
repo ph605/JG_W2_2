@@ -104,11 +104,11 @@ public class PlayerCameraController : MonoBehaviour
         if (justReleasedCling && keepFreeOrbitAfterClingRelease)
             releaseOrbitTimer = releaseOrbitDuration;
 
-        if (!playerController.WasHasteActive && playerController.IsHasteActive)
+/*        if (!playerController.WasHasteActive && playerController.IsHasteActive)
         {
             burstShakeTimer = 1f;
             launchKickTimer = launchKickTime;
-        }
+        }*/
 
         ProcessLook();
 
@@ -232,18 +232,18 @@ public class PlayerCameraController : MonoBehaviour
 
     void ApplyFovEffect()
     {
-        float hasteTargetFov = playerController.IsHasteActive ? hasteFov : baseFov;
+       // float hasteTargetFov = playerController.IsHasteActive ? hasteFov : baseFov;
         float upwardPitchTargetFov = Mathf.Lerp(baseFov, maxPitchFov, currentUpwardPitchT);
         float downwardPitchTargetFov = Mathf.Lerp(baseFov, maxDownwardPitchFov, currentDownwardPitchT);
 
-        float defaultTargetFov = Mathf.Max(hasteTargetFov, upwardPitchTargetFov, downwardPitchTargetFov);
-        float finalTargetFov = isSwinging ? swingFov : defaultTargetFov;
+        //float defaultTargetFov = Mathf.Max(hasteTargetFov, upwardPitchTargetFov, downwardPitchTargetFov);
+        //float finalTargetFov = isSwinging ? swingFov : defaultTargetFov;
 
-        mainCamera.fieldOfView = Mathf.Lerp(
+/*        mainCamera.fieldOfView = Mathf.Lerp(
             mainCamera.fieldOfView,
-            finalTargetFov,
+            //finalTargetFov,
             1f - Mathf.Exp(-fovLerp * Time.deltaTime)
-        );
+        );*/
     }
 
     void ApplyLaunchKick(ref float targetDist)
@@ -260,11 +260,11 @@ public class PlayerCameraController : MonoBehaviour
         float amp = 0f;
         float t = Time.time;
 
-        if (IsHasteCharging())
+/*        if (IsHasteCharging())
         {
             float chargeT = Mathf.Clamp01(playerController.HasteHoldTimer / playerController.HasteHoldDuration);
             amp += chargeShakeMax * chargeT;
-        }
+        }*/
 
         if (burstShakeTimer > 0f)
         {
@@ -272,10 +272,10 @@ public class PlayerCameraController : MonoBehaviour
             burstShakeTimer = Mathf.MoveTowards(burstShakeTimer, 0f, burstShakeDecay * Time.deltaTime);
         }
 
-        if (playerController.IsHasteActive)
+/*        if (playerController.IsHasteActive)
         {
             amp += speedShakeIntensity;
-        }
+        }*/
 
         if (amp <= 0f) return;
 
@@ -289,10 +289,10 @@ public class PlayerCameraController : MonoBehaviour
         transform.rotation *= Quaternion.Euler(rotOffset);
     }
 
-    private bool IsHasteCharging()
+/*    private bool IsHasteCharging()
     {
         return !playerController.IsHasteActive && playerController.HasteHoldTimer > 0;
-    }
+    }*/
 
     public void HoldFreeOrbit(float duration)
     {

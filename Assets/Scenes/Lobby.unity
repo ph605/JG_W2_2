@@ -503,7 +503,9 @@ MonoBehaviour:
   buttonStage1: {fileID: 1212382096}
   buttonStage2: {fileID: 1071294310}
   buttonStage3: {fileID: 1556972364}
-  buttonStageChallenge: {fileID: 1242364144}
+  buttonStageChallenge1: {fileID: 1242364144}
+  buttonStageChallenge2: {fileID: 2123215122}
+  buttonStageChallenge3: {fileID: 1824920665}
 --- !u!1 &305980997
 GameObject:
   m_ObjectHideFlags: 0

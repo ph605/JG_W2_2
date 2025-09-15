@@ -1011,6 +1011,10 @@ PrefabInstance:
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: OnMouseSensitivityChanged
       objectReference: {fileID: 0}
+    - target: {fileID: 7298758603450885827, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
+      propertyPath: m_margin.z
+      value: -398.643
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

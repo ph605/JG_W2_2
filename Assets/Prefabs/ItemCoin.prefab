@@ -154,7 +154,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f50ce609cf166048a317c75307622a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  score: 10
+  score: 150
   rotateSpeed: 60
   floatAmplitude: 0.25
   floatFrequency: 1

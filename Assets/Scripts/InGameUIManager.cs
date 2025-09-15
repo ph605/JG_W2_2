@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class InGameUIManager : MonoBehaviour
@@ -26,14 +27,10 @@ public class InGameUIManager : MonoBehaviour
         }
         else
         {
+            InGameUIManager.instance.InitData();
             Destroy(gameObject);
             return;
         }
-    }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        InitData();
     }
 
     void InitData()

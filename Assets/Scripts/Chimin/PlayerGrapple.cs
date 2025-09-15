@@ -568,5 +568,51 @@ public class PlayerGrapple : MonoBehaviour
 
         isSettling = false;
     }
+
+    // PlayerGrapple.cs 내부 (클래스 안 아무 곳)
+    public void StopTumbleForSuperJump(Transform yawRef = null, float uprightLerpSpeed = 20f)
+    {
+        // 1) 스핀 코루틴 종료
+        if (tumbleCoroutine != null)
+        {
+            StopCoroutine(tumbleCoroutine);
+            tumbleCoroutine = null;
+        }
+        isSettling = false;
+
+        // 2) 물리 제약/각속도 정리
+        rb.constraints = RigidbodyConstraints.FreezeRotation; // 평소 상태로 복구
+        rb.angularVelocity = Vector3.zero;
+
+        // 3) 플레이어 상태 해제
+        if (playerController != null)
+        {
+            playerController.IsTumbling = false;
+            playerController.UnlockController();
+            playerController.UnlockRotation();
+        }
+
+        // 4) 카메라(Yaw) 기준으로 부드럽게 똑바로 세우기
+        Transform refT = yawRef != null ? yawRef : (cameraController ? cameraController.transform : transform);
+
+        Vector3 fwd = refT.forward; fwd.y = 0f;
+        if (fwd.sqrMagnitude < 1e-6f) fwd = transform.forward; // 안전장치
+        float yaw = Mathf.Atan2(fwd.x, fwd.z) * Mathf.Rad2Deg;
+
+        Quaternion target = Quaternion.Euler(0f, yaw, 0f);
+        StartCoroutine(SmoothUpright(target, uprightLerpSpeed));
+    }
+
+    private IEnumerator SmoothUpright(Quaternion target, float speed)
+    {
+        while (Quaternion.Angle(rb.rotation, target) > 1f)
+        {
+            Quaternion q = Quaternion.Slerp(rb.rotation, target, Time.deltaTime * speed);
+            rb.MoveRotation(q);
+            yield return null;
+        }
+        rb.MoveRotation(target);
+    }
+
 }
 

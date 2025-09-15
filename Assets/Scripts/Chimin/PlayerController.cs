@@ -36,11 +36,22 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float superJumpForwardBoost = 0f;     // 앞방향 추가 가속(원하면 사용)
     [SerializeField] bool cancelTumbleOnSuperJump = true;  // 점프 시 스핀 해제 여부
 
+
+    [Header("Tumble Air Control")]
+    [SerializeField] bool enableTumbleAirControl = true;
+    [SerializeField] float tumbleAirAccel = 60f;     // 공중 가속(힘)
+    [SerializeField] float tumbleAirMaxSpeed = 20f;  // 수평 최대 속도
+
+    // PlayerController.cs
+    [Header("View / Camera")]
+    [SerializeField] Transform viewYawSource;   // 카메라 Transform 드롭(없으면 자동 할당)
+
+
     int superJumpLayer;
 
 
     private bool canRotate = true; // 회전 가능 여부를 나타내는 플래그
-    // ... (다른 함수들 아래에 이 두 함수를 추가)
+
     public void LockRotation() => canRotate = false;
     public void UnlockRotation() => canRotate = true;
 
@@ -63,7 +74,11 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         superJumpLayer = LayerMask.NameToLayer(superJumpLayerName);
+
+        if (viewYawSource == null && Camera.main != null)
+            viewYawSource = Camera.main.transform;   // 자동
     }
+
 
     void OnEnable()
     {
@@ -165,9 +180,28 @@ public class PlayerController : MonoBehaviour
 
     void ProcessMove()
     {
-        if (IsTumbling) return; // << 이 줄을 추가하세요
         if (IsClinging) return;
 
+        // ★ 스핀 중 공중 제어
+        // ProcessMove()의 스핀 분기 안
+        if (IsTumbling && enableTumbleAirControl)
+        {
+            Vector3 moveDir = GetMoveDirection(useCameraYaw: true); // ★ 카메라 기준
+            if (moveDir.sqrMagnitude > 0.0001f)
+                rb.AddForce(moveDir.normalized * tumbleAirAccel, ForceMode.Acceleration);
+
+            Vector3 v = rb.linearVelocity;
+            Vector2 hv = new Vector2(v.x, v.z);
+            if (hv.magnitude > tumbleAirMaxSpeed)
+            {
+                hv = hv.normalized * tumbleAirMaxSpeed;
+                rb.linearVelocity = new Vector3(hv.x, v.y, hv.y);
+            }
+            return;
+        }
+
+
+        // ↓ 기존 로직 그대로
         if (IsHasteActive)
         {
             Vector3 forward = transform.forward;
@@ -176,23 +210,24 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        Vector3 moveDir = GetMoveDirection();
-
-        if (IsHasteHolding() && !IsHasteReady)
-            return;
-
-        Vector3 target = rb.position + moveDir * moveSpeed * Time.fixedDeltaTime;
+        Vector3 move = GetMoveDirection();
+        if (IsHasteHolding() && !IsHasteReady) return;
+        Vector3 target = rb.position + move * moveSpeed * Time.fixedDeltaTime;
         rb.MovePosition(target);
     }
 
-    public Vector3 GetMoveDirection()
+
+    // 기존 GetMoveDirection 교체
+    public Vector3 GetMoveDirection(bool useCameraYaw = false)
     {
-        Vector3 forward = transform.forward;
-        Vector3 right = transform.right;
-        forward.y = 0;
-        right.y = 0;
+        Transform basis = (useCameraYaw && viewYawSource != null) ? viewYawSource : transform;
+
+        Vector3 forward = basis.forward; forward.y = 0f;
+        Vector3 right = basis.right; right.y = 0f;
+
         return right.normalized * moveInput.x + forward.normalized * moveInput.y;
     }
+
 
     void UpdateHasteUI(bool holding)
     {
@@ -224,18 +259,20 @@ public class PlayerController : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        
         if (collision.gameObject.layer == LayerMask.NameToLayer("Clear"))
-        {
             onStageClear?.Invoke();
-        }
 
-        // ↓ 추가: SuperJump 레이어 밟으면 위로 튀기
         if (collision.gameObject.layer == superJumpLayer)
         {
-            DoSuperJump();
+            // ★ 스핀 강제 종료 + 카메라 Yaw로 자연스럽게 세우기
+            var grapple = GetComponent<PlayerGrapple>();
+            if (grapple != null)
+                grapple.StopTumbleForSuperJump(viewYawSource, 20f); // 속도는 취향대로
+
+            DoSuperJump(); // 그 다음 위로 튕기기
         }
     }
+
 
     void DoSuperJump()
     {

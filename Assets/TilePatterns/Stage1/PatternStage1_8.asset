@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7004a039280e0647b913480dfd08ad7, type: 3}
+  m_Name: PatternStage1_8
+  m_EditorClassIdentifier: 
+  obstacleLayout:
+  - id: 0
+    type: 3
+    position: {x: -19.707829, y: 2.1784039, z: -24.760246}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 2, y: 2, z: 2}
+    isActive: 1
+  - id: 0
+    type: 3
+    position: {x: 8.710723, y: -3.2392945, z: 22.41589}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 2, y: 2, z: 2}
+    isActive: 1
+  - id: 0
+    type: 3
+    position: {x: -4.845854, y: 0.94116735, z: 3.3031425}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 2, y: 2, z: 2}
+    isActive: 1
+  - id: 0
+    type: 3
+    position: {x: 0.21748161, y: -4.4219894, z: 4.734394}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 2, y: 2, z: 2}
+    isActive: 1
+  - id: 0
+    type: 3
+    position: {x: 18.840801, y: 8.099254, z: 10.421794}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 2, y: 2, z: 2}
+    isActive: 1

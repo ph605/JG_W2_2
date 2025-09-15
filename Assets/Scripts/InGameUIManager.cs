@@ -64,6 +64,7 @@ public class InGameUIManager : MonoBehaviour
         time = currentGoalValue.time;
 
         clearUI.SetActive(false);
+        Crosshair.SetActive(true);
         configurationUI.SetActive(false);
         AddScore(0);
 

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4084163540217441224}
   - component: {fileID: 6665784524971057462}
   - component: {fileID: 4476996105967373659}
-  m_Layer: 9
+  m_Layer: 2
   m_Name: SuperJumpObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -2404,7 +2404,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8520838279243964323, guid: 40499a880a316f941b502a946ccfa5bf, type: 3}
       propertyPath: rayDistance
-      value: 40
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 8520838279243964323, guid: 40499a880a316f941b502a946ccfa5bf, type: 3}
       propertyPath: pushSideways
@@ -2420,7 +2420,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8520838279243964323, guid: 40499a880a316f941b502a946ccfa5bf, type: 3}
       propertyPath: maxRopeDistance
-      value: 15
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 8520838279243964323, guid: 40499a880a316f941b502a946ccfa5bf, type: 3}
       propertyPath: pushForwardSide

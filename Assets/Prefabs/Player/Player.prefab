@@ -285,7 +285,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   superJumpLayerName: SuperJump
-  superJumpUpVelocity: 40
+  superJumpUpVelocity: 60
   superJumpForwardBoost: 0
   cancelTumbleOnSuperJump: 0
   enableTumbleAirControl: 1
@@ -320,10 +320,10 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 64
-  rayDistance: 40
-  sphereRadius: 1.5
+  rayDistance: 50
+  sphereRadius: 3
   currentRopeDistance: 10
-  maxRopeDistance: 15
+  maxRopeDistance: 20
   minRopeDistance: 3
   ropeGrowSpeed: 10
   springForce: 30
@@ -396,13 +396,13 @@ MonoBehaviour:
   playerController: {fileID: 7852561111888063321}
   aim: {fileID: 0}
   holdingLayerName: Holding
-  rayDistance: 40
+  rayDistance: 50
   clingOffset: 0.5
   alignToSurface: 0
   parentWhileHolding: 0
   zeroVelocityOnBegin: 0
   preserveHorizontalVelocityOnRelease: 0
-  releaseUpBoost: 20
+  releaseUpBoost: 30
   pushOutSkin: 0.05
   pushOutMaxIterations: 3
   continuousPushOut: 1

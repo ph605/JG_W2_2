@@ -959,62 +959,6 @@ PrefabInstance:
       propertyPath: m_text
       value: "\uC810\uC218\uB97C \uBAA8\uC73C\uC138\uC694!"
       objectReference: {fileID: 0}
-    - target: {fileID: 3530417025400114408, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
-      propertyPath: configurationUI
-      value: 
-      objectReference: {fileID: 1928488674}
-    - target: {fileID: 3530417025400114408, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
-      propertyPath: goalValue.Array.size
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 3530417025400114408, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
-      propertyPath: goalValue.Array.data[1].time
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3530417025400114408, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
-      propertyPath: goalValue.Array.data[3].time
-      value: 300
-      objectReference: {fileID: 0}
-    - target: {fileID: 3530417025400114408, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
-      propertyPath: goalValue.Array.data[4].time
-      value: 300
-      objectReference: {fileID: 0}
-    - target: {fileID: 3530417025400114408, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
-      propertyPath: goalValue.Array.data[5].time
-      value: 360
-      objectReference: {fileID: 0}
-    - target: {fileID: 3530417025400114408, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
-      propertyPath: goalValue.Array.data[2].score
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3530417025400114408, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
-      propertyPath: goalValue.Array.data[3].score
-      value: 1000
-      objectReference: {fileID: 0}
-    - target: {fileID: 3530417025400114408, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
-      propertyPath: goalValue.Array.data[4].score
-      value: 1500
-      objectReference: {fileID: 0}
-    - target: {fileID: 3530417025400114408, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
-      propertyPath: goalValue.Array.data[5].score
-      value: 3500
-      objectReference: {fileID: 0}
-    - target: {fileID: 3530417025400114408, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
-      propertyPath: goalValue.Array.data[6].score
-      value: 5000
-      objectReference: {fileID: 0}
-    - target: {fileID: 3530417025400114408, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
-      propertyPath: goalValue.Array.data[7].score
-      value: 7000
-      objectReference: {fileID: 0}
-    - target: {fileID: 3530417025400114408, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
-      propertyPath: goalValue.Array.data[1].isTutorial
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3530417025400114408, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
-      propertyPath: goalValue.Array.data[7].isTutorial
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5256768980223783185, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
       propertyPath: m_Name
       value: Canvas
@@ -1820,11 +1764,6 @@ Transform:
   - {fileID: 1364026387}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1928488674 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8256604671371122669, guid: 024b7fef9b131c842b89e252e02d461c, type: 3}
-  m_PrefabInstance: {fileID: 1149694151}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

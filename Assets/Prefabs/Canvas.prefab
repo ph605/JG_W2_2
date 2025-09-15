@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1789021848033834952}
   - component: {fileID: 6809370245633952162}
   - component: {fileID: 3205245595440641491}
+  - component: {fileID: 374940601214039383}
   m_Layer: 5
   m_Name: StageInfo
   m_TagString: Untagged
@@ -136,6 +137,18 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &374940601214039383
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2631007293174335122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f324821dc3e6f94439f04743fd2b0697, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2924803201551627292
 GameObject:
   m_ObjectHideFlags: 0
@@ -743,6 +756,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   timer: {fileID: 5698815852518735791}
   score: {fileID: 5827770327006576146}
+  textInfo: {fileID: 2631007293174335122}
   goalValue:
   - time: 0
     score: 0
@@ -751,12 +765,12 @@ MonoBehaviour:
     score: 0
     isTutorial: 1
   - time: 300
-    score: 0
+    score: 500
     isTutorial: 0
   - time: 300
     score: 1000
     isTutorial: 0
-  - time: 300
+  - time: 360
     score: 1500
     isTutorial: 0
   - time: 360
@@ -766,7 +780,7 @@ MonoBehaviour:
     score: 5000
     isTutorial: 0
   - time: 600
-    score: 5000
+    score: 7000
     isTutorial: 0
   clearUI: {fileID: 7000650765698884807}
   configurationUI: {fileID: 8256604671371122669}

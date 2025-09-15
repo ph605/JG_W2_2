@@ -25,12 +25,14 @@ public class ObjectPooler : MonoBehaviour
             Destroy(gameObject);
             return; // 아래 코드를 실행하지 않고 즉시 종료
         }
-
-        // 2. Instance가 아직 없다면, 이 오브젝트를 유일한 Instance로 지정합니다.
-        Instance = this;
-        InitPool();
-        // 3. 이 오브젝트를 씬이 바뀌어도 파괴되지 않도록 설정합니다.
-        DontDestroyOnLoad(gameObject);
+        else
+        {
+            // 2. Instance가 아직 없다면, 이 오브젝트를 유일한 Instance로 지정합니다.
+            Instance = this;
+            InitPool();
+            // 3. 이 오브젝트를 씬이 바뀌어도 파괴되지 않도록 설정합니다.
+            DontDestroyOnLoad(gameObject);
+        }
     }
 
     void Start()

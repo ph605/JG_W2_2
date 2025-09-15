@@ -21,6 +21,7 @@ public class InGameUIManager : MonoBehaviour
 
     public TextMeshProUGUI timer;
     public TextMeshProUGUI score;
+    public GameObject textInfo;
 
     // 스테이지별로 목표 점수
     public List<GoalValue> goalValue;
@@ -70,6 +71,9 @@ public class InGameUIManager : MonoBehaviour
 
         Time.timeScale = 1f;
         useTimer = (currentGoalValue.isTutorial == false);
+
+        int stageNum = SceneManager.instance.GetCurrentSceneNum();
+        textInfo.SetActive(stageNum > 1);
     }
 
     // Update is called once per frame

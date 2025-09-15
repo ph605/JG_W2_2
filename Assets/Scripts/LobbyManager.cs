@@ -32,10 +32,10 @@ public class LobbyManager : MonoBehaviour
         buttonStageChallenge1.onClick.AddListener(() => LoadScene(SceneType.StageChallenge1));
 
         // 챌린지2 버튼 클릭 시 StageChallenge 씬 로드
-        buttonStageChallenge2.onClick.AddListener(() => LoadScene(SceneType.StageChallenge1));
+        buttonStageChallenge2.onClick.AddListener(() => LoadScene(SceneType.StageChallenge2));
 
         // 챌린지3 버튼 클릭 시 StageChallenge 씬 로드
-        buttonStageChallenge3.onClick.AddListener(() => LoadScene(SceneType.StageChallenge1));
+        buttonStageChallenge3.onClick.AddListener(() => LoadScene(SceneType.StageChallenge3));
     }
 
     // 3. 씬을 실제로 로드하는 함수입니다.

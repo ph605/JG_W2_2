@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class ClearUI : MonoBehaviour
 {
-    public TextMeshPro textTitle;
+    public TextMeshProUGUI textTitle;
     public Button buttonLobby;
     public Button buttonRestart;
     public Button buttonNextStage;

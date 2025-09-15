@@ -1,8 +1,19 @@
-﻿using System.Threading;
+﻿using NUnit.Framework;
+using System.Threading;
 using TMPro;
 using UnityEngine;
+using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+
+[System.Serializable]
+public struct GoalValue
+{
+    public float time;
+    public int score;
+    public bool isTutorial;
+};
+
 
 public class InGameUIManager : MonoBehaviour
 {
@@ -11,12 +22,18 @@ public class InGameUIManager : MonoBehaviour
     public TextMeshProUGUI timer;
     public TextMeshProUGUI score;
 
+    // 스테이지별로 목표 점수
+    public List<GoalValue> goalValue;
+
     public GameObject clearUI;
     public GameObject configurationUI;
 
-    private float time = 0f;
+    private float time = 5000f;
     private int scoreValue = 0;
     private bool useTimer = true;
+
+    private int stage = 0;
+    private GoalValue currentGoalValue;
 
     void Awake()
     {
@@ -33,15 +50,24 @@ public class InGameUIManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        InitData();
+    }
+
     void InitData()
     {
+        stage = SceneManager.instance.GetCurrentSceneNum();
+        currentGoalValue = goalValue[stage];
+        scoreValue = 0;
+        time = currentGoalValue.time;
+
         clearUI.SetActive(false);
         configurationUI.SetActive(false);
-        scoreValue = 0;
-        time = 0f;
         AddScore(0);
+
         Time.timeScale = 1f;
-        useTimer = true;
+        useTimer = (currentGoalValue.isTutorial == false);
     }
 
     // Update is called once per frame
@@ -72,17 +98,25 @@ public class InGameUIManager : MonoBehaviour
 // 타이머 시간 계산 및 출력
 private void timeCalculate()
     {
-        time += Time.deltaTime;
+        time -= Time.deltaTime;
         int min = Mathf.FloorToInt(time / 60f);
         int sec = Mathf.FloorToInt(time % 60f);
         timer.text = string.Format("Timer : {0:00}:{1:00}", min, sec);
+
+        if (time < 0f)
+            ClearUI(false);
     }
 
     // 점수 증가 및 출력
     public void AddScore(int addValue)
     {
         scoreValue += addValue;
-        score.text = string.Format("Score : {0}", scoreValue);
+        int targetScore = currentGoalValue.score;
+
+        if(targetScore != 0)
+            score.text = string.Format("Score : {0}/{0}", scoreValue, targetScore);
+        else
+            score.text = string.Format("Score : {0}", scoreValue);
     }
 
     // 마우스 잠금/해제 설정
@@ -100,13 +134,31 @@ private void timeCalculate()
         }
     }
 
+    // 현재 스테이지를 클리어했는지 확인
+    public void CheckClearStage()
+    {
+        // 튜토리얼은 반드시 통과
+        if (currentGoalValue.isTutorial)
+        {
+            ClearUI(true);
+            return;
+        }
+
+        // 목표 점수에 도달했으면, 바로 통과
+        if(currentGoalValue.score == 0 || currentGoalValue.score >= scoreValue)
+            ClearUI(true);
+
+        // 목표 점수에 도달하지 못하면, 계속 플레이
+    }
+
     // 클리어 UI 출력
-    public void ClearUI(bool isClear)
+    private void ClearUI(bool isClear)
     {
         Time.timeScale = 0;
-        MouseLock(true);
+        MouseLock(false);
         useTimer = false;
 
+        clearUI.SetActive(true);
         clearUI.GetComponent<ClearUI>().SetGame(isClear);
     }
 }
